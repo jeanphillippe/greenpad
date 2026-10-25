@@ -1,7 +1,7 @@
 {
   "name": "Greenpad",
   "short_name": "Greenpad",
-  "description": "Caja de ritmos de 16 pasos. Funciona offline y guarda tus beats en el dispositivo.",
+  "description": "Caja de ritmos y secuenciador con batería, bajo, guitarra, acordes y melodía. Funciona offline y guarda en el dispositivo.",
   "lang": "es",
   "start_url": "./",
   "scope": "./",
