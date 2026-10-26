@@ -42,7 +42,7 @@ Para probar en local: `python3 -m http.server 8080` dentro de la carpeta y abrir
 | 7 | Acordes | Piano, Stab, 8-bit (arpegio), Órgano, Pad |
 | 8 | Melodía | Marimba, Lead, 8-bit, Campana, Flauta |
 
-- El nombre del estilo se ve debajo de cada ícono. **SONIDO** (arriba) pone a todos en Estudio, Electro, 8-bit o Especial; si cada uno tiene uno distinto dice "MIXTO".
+- El nombre del estilo se ve debajo de cada ícono. **SONIDO** (arriba) pone a todos los instrumentos del patrón actual en Estudio, Electro, 8-bit o Especial; si cada uno tiene uno distinto dice "MIXTO".
 - Tocar un ícono lo hace sonar. Mantenerlo apretado (o clic derecho, o mantener la tecla 1 a 8) abre su panel: estilo, afinación ±12 semitonos, volumen, silenciar y solo.
 - **Capas:** en ese panel, el **+** de cada estilo lo suma encima del elegido (por ejemplo bombo Estudio + Sub 808). El ícono muestra "+1", "+2".
 
@@ -61,6 +61,7 @@ Para probar en local: `python3 -m http.server 8080` dentro de la carpeta y abrir
 - **Dado** (cabecera o tecla `D`): inventa un patrón completo donde bajo, guitarra, acordes y melodía combinan entre sí.
 - **Inventar línea nueva** (en el panel de cada instrumento, o tecla `I` con el panel abierto): cambia solo ese instrumento y respeta lo que ya está.
 - **AMBIENTE** (cabecera): Oscuro, Triste, Alegre, Pop, Groove o Blues. Elige qué notas usan bajo, guitarra, acordes y melodía (la batería no cambia), así el mismo patrón suena oscuro, triste, alegre, etc. Cualquier altura combina.
+- **Por patrón:** cada patrón (A a H) guarda su propio AMBIENTE, su SONIDO y el estilo de cada instrumento. Al mezclar o encadenar patrones, cada uno suena con lo suyo. En el `.txt` cada sección `[A]`, `[B]`... lleva sus líneas `AMBIENTE:` y `ESTILOS:`; las de la cabecera valen para los patrones que no las tengan.
 - La nota base es opcional y está en el menú, en Sonido.
 
 ## Alturas
@@ -157,7 +158,7 @@ MELODÍA   .... .... .... ....
 
 ## En el teléfono
 
-- Vertical: la grilla se gira (instrumentos en columnas, pasos hacia abajo). Horizontal: igual que la consola.
-- Tocar y arrastrar pinta o borra varios pasos.
+- Vertical: la grilla se gira (instrumentos en columnas, pasos hacia abajo) y ocupa todo el ancho. Si no entra de alto, se desplaza deslizando el dedo por los márgenes de los costados o por la franja entre batería y melódicos, y sigue sola a la reproducción. Horizontal: igual que la consola.
+- Tocar y arrastrar sobre los cuadros pinta o borra varios pasos.
 - Mantener apretado un ícono abre sus estilos; mantener apretado un paso melódico abre las notas.
 - En iPhone, si no suena, revisar el interruptor de silencio.

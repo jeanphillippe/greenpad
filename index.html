@@ -177,11 +177,12 @@ svg{display:block}
 @media (min-width:700px){#styles{align-items:center}}
 .sh{width:min(620px,100%)}
 @media (max-width:699px){#styles{padding:0}.sh{border-radius:22px 22px 0 0;padding-bottom:calc(env(safe-area-inset-bottom) + 18px);transform:translateY(40px)}}
-.shh{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.shh{display:flex;align-items:center;gap:12px;margin-bottom:14px;position:sticky;top:-20px;z-index:2;background:var(--drawer);padding:6px 0;margin-top:-6px}
 .shic{width:52px;height:52px;border-radius:14px;background:var(--pad);box-shadow:inset 0 0 0 1px var(--line);display:grid;place-items:center;color:var(--sc,var(--cy));flex:none}
 .shic svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .shh b{display:block;font-size:20px;color:var(--ink2);letter-spacing:-.01em}
 .shh .grow{flex:1;min-width:0}
+#shNum{display:block;overflow:hidden;text-overflow:ellipsis}
 .shnav{display:flex;gap:6px}
 .sts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 @media (max-width:520px){.sts{grid-template-columns:repeat(2,1fr)}}
@@ -219,12 +220,13 @@ svg{display:block}
 .v .sel{min-width:0;padding:0 6px}
 .v #matrix{display:none}
 .v #bpm{font-size:40px}
-.v #stage{align-items:flex-start;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 8px 14px}
+.v #stage{align-items:flex-start;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 12px 14px}
 .v .trk{position:sticky;top:0;z-index:4}
-.v .trk::before{content:"";position:absolute;z-index:-1;left:-8px;right:-8px;top:-10px;bottom:calc(var(--cell)*-.09);background:var(--body)}
+.v .trk::before{content:"";position:absolute;z-index:-1;left:-12px;right:-12px;top:-10px;bottom:calc(var(--cell)*-.09);background:var(--body)}
 .v .trk.mute{opacity:1}
 .v .trk.mute>svg,.v .trk.mute>.tn{opacity:.35}
 .scrolly #board{touch-action:pan-y}
+.scrolly .pad{touch-action:none}
 .v #tap{display:none}
 .v .trk .tn{font-size:7.5px;letter-spacing:-.03em}
 @media (max-width:370px){.v .tools{max-width:70px;gap:6px}.v .rb{width:28px;height:28px}}
@@ -338,7 +340,7 @@ svg{display:block}
 /* ---------- modals ---------- */
 .modal{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.35);opacity:0;pointer-events:none;transition:opacity .2s}
 .modal.on{opacity:1;pointer-events:auto}
-.card{background:var(--drawer);border-radius:18px;box-shadow:var(--shadow);padding:20px;width:min(660px,100%);max-height:88vh;overflow:auto;transform:translateY(12px) scale(.98);transition:transform .25s cubic-bezier(.2,.9,.25,1);user-select:text;-webkit-user-select:text}
+.card{background:var(--drawer);border-radius:18px;box-shadow:var(--shadow);padding:20px;width:min(660px,100%);max-height:88vh;max-height:calc(var(--app-h,100vh)*.88);overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;transform:translateY(12px) scale(.98);transition:transform .25s cubic-bezier(.2,.9,.25,1);user-select:text;-webkit-user-select:text}
 .modal.on .card{transform:none}
 .card h2{margin:0 0 14px;font-size:18px;color:var(--ink2)}
 .keys{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px;font-size:13px}
@@ -459,7 +461,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <h2>Cómo se usa</h2>
     <p class="tips" style="margin-top:0"><b>No hace falta saber música.</b> Elegí un ejemplo del menú o tocá el dado para inventar un patrón, y después cambiá lo que quieras.<br><br>
     <b>Instrumentos:</b> arriba la batería (bombo, caja, hi-hat, percusión) y abajo los melódicos (bajo, guitarra, acordes, melodía). Tocá un ícono para escucharlo; mantenelo apretado (o clic derecho) para elegir su estilo, volumen, inventar una línea nueva o usar tu voz. El <b>+</b> de cada estilo lo suma como capa.<br><br>
-    <b>Altura:</b> en los melódicos, cuanto más lleno está el círculo, más agudo suena. Mantené apretado un paso (o clic derecho) para elegir la altura; en la compu también con la rueda del mouse o Shift + ↑ ↓. <b>AMBIENTE</b> elige qué notas usan bajo, guitarra, acordes y melodía: el mismo patrón suena oscuro, triste, alegre, etc. La batería no cambia, y todas las alturas combinan entre sí.<br><br>
+    <b>Altura:</b> en los melódicos, cuanto más lleno está el círculo, más agudo suena. Mantené apretado un paso (o clic derecho) para elegir la altura; en la compu también con la rueda del mouse o Shift + ↑ ↓. <b>AMBIENTE</b> elige qué notas usan bajo, guitarra, acordes y melodía: el mismo patrón suena oscuro, triste, alegre, etc. La batería no cambia, y todas las alturas combinan entre sí. Cada patrón (A a H) guarda su propio AMBIENTE y su propio SONIDO, igual que los estilos que elijas para cada instrumento.<br><br>
     <b>Tu voz:</b> el botón del micrófono tiene 2 grabaciones de hasta 8 segundos. Podés recortar dónde empieza y dónde termina, hacerla más grave o más aguda, darla vuelta, ponerle eco o voz de robot, y elegir en qué instrumento usarla. Siempre suena completa; en los melódicos además sube y baja según la altura de cada paso.<br><br>
     <b>Patrones A a H:</b> 8 grillas distintas. Tocá la letra para editarla. Tildá la casilla de una letra para que suene <b>mezclada</b> con la que estás editando; sus notas se ven como fantasmas en la grilla. Con CADENA suenan uno detrás de otro.</p>
     <h2 style="margin-top:18px">Atajos de teclado</h2>
@@ -507,8 +509,8 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       </div>
     </div>
     <div class="sts" id="shSts"></div>
-    <p class="hint" style="margin-top:10px">Tocá un estilo para elegirlo. El <b>+</b> lo suma como capa encima del elegido.</p>
-    <div class="shrow" style="margin-top:10px"><button class="btn pri" id="shGen">Inventar línea nueva</button><button class="btn" id="shVoice">Usar mi voz</button></div>
+    <p class="hint" style="margin-top:10px">Tocá un estilo para elegirlo. El <b>+</b> lo suma como capa encima del elegido. Vale para el patrón que estás editando.</p>
+    <div class="shrow" style="margin-top:10px"><button class="btn pri" id="shGen">Inventar línea nueva</button><button class="btn" id="shVoice">Grabar</button></div>
     <label class="sl">Afinación <output id="shTuneO"></output><input type="range" id="shTune" min="-12" max="12" step="1"></label>
     <label class="sl">Volumen <output id="shLvlO"></output><input type="range" id="shLvl" min="0" max="150" step="5"></label>
     <div class="shrow">
@@ -607,6 +609,7 @@ const MOODS = [
 const FAM = ['Estudio', 'Electro', '8-bit', 'Especial'];
 const B64 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_';
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let CP = null; // patrón cuyo sonido y ambiente se usan en este momento (null = el que se está editando)
 const FINE = matchMedia('(hover:hover) and (pointer:fine)').matches;
 
 /* ================= helpers ================= */
@@ -630,9 +633,21 @@ function rowsToPat(rows) {
   return p;
 }
 function blank() {
-  return { v: 3, id: null, name: 'Mi beat', bpm: 120, swing: 0, chain: false, vol: .8, cur: 0, dirty: false, key: 9, scale: 2, mix: 0,
-    st: Array(NT).fill(0), lay: Array(NT).fill(0), tune: Array(NT).fill(0), lvl: Array(NT).fill(1), smp: Array(NT).fill(null),
-    mutes: Array(NT).fill(false), pats: Array.from({ length: NP }, emptyPat) };
+  return withPS({ v: 4, id: null, name: 'Mi beat', bpm: 120, swing: 0, chain: false, vol: .8, cur: 0, dirty: false, key: 9, mix: 0,
+    ps: Array.from({ length: NP }, () => ({ st: Array(NT).fill(0), lay: Array(NT).fill(0), sc: 2 })),
+    tune: Array(NT).fill(0), lvl: Array(NT).fill(1), smp: Array(NT).fill(null),
+    mutes: Array(NT).fill(false), pats: Array.from({ length: NP }, emptyPat) });
+}
+// cada patrón guarda su sonido (estilo y capas de cada instrumento) y su ambiente en ps[p].
+// S.st, S.lay y S.scale apuntan al patrón que se edita, o al que está sonando mientras se programa el audio (CP).
+function withPS(d) {
+  const q = () => d.ps[CP == null ? d.cur : CP];
+  Object.defineProperties(d, {
+    st: { get: () => q().st, set: (v) => { q().st = v; }, configurable: true },
+    lay: { get: () => q().lay, set: (v) => { q().lay = v; }, configurable: true },
+    scale: { get: () => q().sc, set: (v) => { q().sc = v; }, configurable: true },
+  });
+  return d;
 }
 // beats de Drumpa / Greenpad 1 (8 pistas de percusión) al set nuevo
 function migrateOld(o) {
@@ -661,7 +676,9 @@ function normalize(o) {
   d.vol = clamp(o.vol == null ? .8 : +o.vol, 0, 1);
   d.cur = clamp(o.cur | 0, 0, NP - 1);
   d.key = clamp(o.key == null ? 9 : o.key | 0, 0, 11);
-  d.scale = clamp(o.scale == null ? 2 : o.scale | 0, 0, SCALES.length - 1);
+  // beats viejos (un solo sonido y ambiente para todo): se copian a los 8 patrones
+  const srcPS = (p) => (Array.isArray(o.ps) && o.ps[p] ? o.ps[p] : { st: o.st, lay: o.lay, sc: o.scale });
+  for (let p = 0; p < NP; p++) { const sc = srcPS(p).sc; d.ps[p].sc = clamp(sc == null ? 2 : sc | 0, 0, SCALES.length - 1); }
   d.mix = (o.mix | 0) & 255;
   d.id = typeof o.id === 'string' ? o.id : null;
   d.dirty = !!o.dirty;
@@ -671,8 +688,11 @@ function normalize(o) {
     const sm = o.smp && o.smp[t];
     if (sm && typeof sm.id === 'string') { const len = clamp(+sm.len || 1, .05, 1); d.smp[t] = { id: sm.id, rev: !!sm.rev, echo: !!sm.echo, robot: !!sm.robot, len, a: clamp(+sm.a || 0, 0, len - .05), pit: Math.round(clamp(+sm.pit || 0, -12, 12)) }; }
     else d.smp[t] = null;
-    d.st[t] = Array.isArray(o.st) ? clamp(o.st[t] | 0, 0, ns - 1) : 0;
-    d.lay[t] = Array.isArray(o.lay) ? (o.lay[t] | 0) & ((1 << ns) - 1) & ~(1 << d.st[t]) : 0;
+    for (let p = 0; p < NP; p++) {
+      const sp = srcPS(p), q = d.ps[p];
+      q.st[t] = Array.isArray(sp.st) ? clamp(sp.st[t] | 0, 0, ns - 1) : 0;
+      q.lay[t] = Array.isArray(sp.lay) ? (sp.lay[t] | 0) & ((1 << ns) - 1) & ~(1 << q.st[t]) : 0;
+    }
     d.tune[t] = Array.isArray(o.tune) ? Math.round(clamp(+o.tune[t] || 0, -12, 12)) : 0;
     d.lvl[t] = Array.isArray(o.lvl) && o.lvl[t] != null && isFinite(o.lvl[t]) ? clamp(+o.lvl[t], 0, 1.5) : 1;
   }
@@ -1009,8 +1029,9 @@ let S = normalize(store.get(LS_STATE)) || defaultState();
 function defaultState() {
   const s = blank(); s.name = 'Primer beat';
   const a = presetByName('Trap'), b = presetByName('Rock');
-  s.bpm = a.bpm; s.key = a.key; s.scale = a.sc; s.pats[0] = rowsToPat(a.r); s.pats[1] = rowsToPat(b.r);
-  for (let t = 0; t < NT; t++) s.st[t] = a.st[TR[t].id] || 0;
+  s.bpm = a.bpm; s.key = a.key; s.pats[0] = rowsToPat(a.r); s.pats[1] = rowsToPat(b.r);
+  [a, b].forEach((pr, p) => { s.ps[p].sc = pr.sc; for (let t = 0; t < NT; t++) s.ps[p].st[t] = pr.st[TR[t].id] || 0; });
+  for (let p = 2; p < NP; p++) s.ps[p] = clone(s.ps[0]);
   return s;
 }
 const PREF = Object.assign({ theme: 'night' }, store.get(LS_PREF) || {});
@@ -1047,9 +1068,9 @@ function stash() {
 }
 
 /* ================= undo ================= */
-const snap = () => JSON.stringify({ p: S.pats, b: S.bpm, k: S.key, sc: S.scale, st: S.st, ly: S.lay });
+const snap = () => JSON.stringify({ p: S.pats, b: S.bpm, k: S.key, ps: S.ps });
 function pushUndo() { H.u.push(snap()); if (H.u.length > 80) H.u.shift(); H.r.length = 0; }
-function restore(j) { const o = JSON.parse(j); S.pats = o.p; S.key = o.k; S.scale = o.sc; S.st = o.st; S.lay = o.ly; setBpm(o.b, true); renderAll(); markEdit(); }
+function restore(j) { const o = JSON.parse(j); S.pats = o.p; S.key = o.k; if (o.ps) S.ps = o.ps; setBpm(o.b, true); renderAll(); markEdit(); }
 function undo() { if (!H.u.length) return toast('Nada para deshacer'); H.r.push(snap()); restore(H.u.pop()); toast('Deshecho'); }
 function redo() { if (!H.r.length) return toast('Nada para rehacer'); H.u.push(snap()); restore(H.r.pop()); toast('Rehecho'); }
 
@@ -1088,7 +1109,7 @@ for (let i = 0; i < NP; i++) {
 const sndsEl = $('#snds'); const sbs = [];
 FAM.forEach((f, i) => {
   const b = document.createElement('button'); b.className = 'sb'; b.textContent = f; b.style.setProperty('--c', `var(--s${i})`);
-  b.title = `Poner todos los instrumentos en ${f} (K)`;
+  b.title = `Poner todos los instrumentos de este patrón en ${f} (K)`;
   b.addEventListener('click', () => setAllStyles(i)); sndsEl.appendChild(b); sbs.push(b);
 });
 const keySel = $('#keySel'), moodSel = $('#moodSel');
@@ -1098,7 +1119,7 @@ keySel.addEventListener('change', () => { keySel.blur(); pushUndo(); S.key = +ke
 moodSel.addEventListener('change', () => {
   moodSel.blur(); pushUndo(); S.scale = MOODS[+moodSel.value].sc; renderPads(); markEdit(); ensureAudio();
   const c = AU.ctx; if (c) [1, 3, 5, 8].forEach((v, i) => playTrack(7, c.currentTime + .02 + i * .12, .9, v, .2));
-  toast(`Ambiente ${MOODS[+moodSel.value].n}: cambian las notas de bajo, guitarra, acordes y melodía`, 1800);
+  toast(`Ambiente ${MOODS[+moodSel.value].n} en el patrón ${LET[S.cur]}: cambian las notas de bajo, guitarra, acordes y melodía`, 2000);
 });
 
 /* ================= layout ================= */
@@ -1114,22 +1135,23 @@ function placeItems() {
 }
 function layout() {
   const vw = document.documentElement.clientWidth, vh = window.innerHeight;
-  app.style.height = vh + 'px';
+  app.style.height = vh + 'px'; document.documentElement.style.setProperty('--app-h', vh + 'px');
   const vert = vw < vh && vw < 760;
   if (vert !== L.vert) { L.vert = vert; app.classList.toggle('v', vert); placeItems(); }
   const cs = getComputedStyle(stage);
   const aw = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
   const ah = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
   // eje largo: cabecera(1.35) + 16 pasos + 3 separadores(.18) + 19 espacios(.09) + separación bateria/melódicos = 19.6
-  // teléfono vertical: la grilla ocupa todo el ancho; si no entra de alto se desplaza, mostrando siempre al menos 2 bloques de 4 pasos
-  let cell = vert ? Math.min(aw / 8.9, ah / 9.6) : Math.min(aw / 19.6, ah / 8.9);
-  cell = Math.floor(Math.max(cell, vert ? 28 : 22));
-  const gOf = (c) => Math.max(2, Math.round(c * .09));
-  if (vert) while (cell > 28 && 8 * cell + Math.round(cell * .12) + 8 * gOf(cell) > aw) cell--;
+  // teléfono vertical: la grilla ocupa todo el ancho (con un margen chico a los costados y una franja en el medio
+  // para desplazar con el dedo); si no entra de alto se desplaza
+  let cell = vert ? Math.min(aw / 8.9, 56) : Math.min(aw / 19.6, ah / 8.9);
+  cell = Math.floor(Math.max(cell, vert ? 20 : 22));
+  const gOf = (c) => Math.max(2, Math.round(c * .09)), midOf = (c) => (vert ? Math.max(12, Math.round(c * .3)) : Math.round(c * .12));
+  if (vert) while (cell > 20 && 8 * cell + midOf(cell) + 8 * gOf(cell) > aw) cell--;
   const g = gOf(cell), sp = Math.round(cell * .18), hw = Math.round(cell * (vert ? 1.05 : 1.35));
   const parts = [hw + 'px'];
   for (let k = 0; k < 4; k++) { parts.push(`repeat(4, ${cell}px)`); if (k < 3) parts.push(sp + 'px'); }
-  const long = parts.join(' '), short = `repeat(4, ${cell}px) ${Math.round(cell * .12)}px repeat(4, ${cell}px)`;
+  const long = parts.join(' '), short = `repeat(4, ${cell}px) ${midOf(cell)}px repeat(4, ${cell}px)`;
   board.style.gridTemplateColumns = vert ? short : long;
   board.style.gridTemplateRows = vert ? long : short;
   board.style.gap = g + 'px';
@@ -1199,6 +1221,7 @@ function renderPats() {
   });
 }
 function renderTone() { keySel.value = S.key; moodSel.value = Math.max(0, MOODS.findIndex(m => m.sc === S.scale)); }
+function patChanged() { renderTracks(); renderTone(); if (SH.open) renderStyles(); }
 function renderAll(anim) { renderTracks(); renderPads(anim); renderPats(); renderTone(); }
 function setCell(t, s, v) {
   const pat = S.pats[S.cur]; if (pat[t][s] === v) return false;
@@ -1290,9 +1313,11 @@ function schedule(s, t) {
     if (P.skip.has(k)) { P.skip.delete(k); continue; }
     const done = new Set();
     for (const p of list) {
-      const v = S.pats[p][tr][s]; if (!v || done.has(TR[tr].mel ? v : 1)) continue;
-      done.add(TR[tr].mel ? v : 1);
-      playTrack(tr, t, 1, v, TR[tr].mel ? noteLen(S.pats[p][tr], s) : .3);
+      const v = S.pats[p][tr][s]; if (!v) continue;
+      const q = S.ps[p], key = (TR[tr].mel ? v + ':' + q.sc : 1) + ':' + q.st[tr] + ':' + q.lay[tr];
+      if (done.has(key)) continue; done.add(key);
+      CP = p; // cada patrón suena con su propio sonido y ambiente, también al mezclarlos
+      try { playTrack(tr, t, 1, v, TR[tr].mel ? noteLen(S.pats[p][tr], s) : .3); } finally { CP = null; }
     }
   }
   P.queue.push({ s, t, p: P.pat });
@@ -1345,7 +1370,7 @@ function frame() {
   if (P.playing || MX.active) loop();
 }
 function showStep(it) {
-  if (it.p !== S.cur) { S.cur = it.p; renderPads(true); renderPats(); save(); }
+  if (it.p !== S.cur) { S.cur = it.p; renderPads(true); renderPats(); patChanged(); save(); }
   P.vstep = it.s; P.vt = it.t;
   setPH(it.s); if (it.s % 4 === 0) follow(it.s);
   const pat = S.pats[S.cur];
@@ -1356,12 +1381,12 @@ function selectPattern(i) {
   if (P.playing) {
     if (i === P.pending || (i === P.pat && P.pending < 0 && i !== S.cur)) {
       P.pat = i; P.pending = -1; P.queue.forEach(q => q.p = i);
-      S.cur = i; renderPads(true);
+      S.cur = i; renderPads(true); patChanged();
     } else if (i === P.pat) { P.pending = -1; }
     else { P.pending = i; toast(`Patrón ${LET[i]} entra al terminar el compás. Tocalo otra vez para saltar ya.`, 1600); }
   } else {
     if (i === S.cur) return;
-    S.cur = i; P.pat = i; renderPads(true);
+    S.cur = i; P.pat = i; renderPads(true); patChanged();
   }
   renderPats(); save();
 }
@@ -1440,26 +1465,11 @@ $('#tap').addEventListener('pointerdown', (e) => { e.preventDefault(); tapTempo(
 const paint = { on: false, val: 0, last: null, id: null, t0: 0, s0: 0, pend: false, moved: false, lp: 0 };
 function padFromPoint(x, y) { const el = document.elementFromPoint(x, y); return el && el.classList && el.classList.contains('pad') ? el : null; }
 const newVal = (t) => TR[t].mel ? NOTE[t] : 1;
-// con la grilla desplazable (teléfono), un toque se confirma al soltar: arrastrar arriba o abajo desplaza sin marcar pasos,
-// arrastrar de costado pinta, mantener apretado un paso melódico abre las alturas
-const tapQ = { on: false, pad: null, id: null, x: 0, y: 0, lp: 0 };
 board.addEventListener('pointerdown', (e) => {
   app.classList.remove('kb');
   const trk = e.target.closest('.trk');
   if (trk) return trackDown(e, +trk.dataset.t);
   const pad = e.target.closest('.pad'); if (!pad) return;
-  if (e.pointerType === 'touch' && app.classList.contains('scrolly')) {
-    clearTimeout(tapQ.lp); closeNotes();
-    Object.assign(tapQ, { on: true, pad, id: e.pointerId, x: e.clientX, y: e.clientY });
-    const t = +pad.dataset.t, s = +pad.dataset.s;
-    if (TR[t].mel) tapQ.lp = setTimeout(() => {
-      if (!tapQ.on) return; tapQ.on = false; ensureAudio();
-      if (!S.pats[S.cur][t][s]) { pushUndo(); setCell(t, s, NOTE[t]); renderPats(); markEdit(); }
-      if (navigator.vibrate) try { navigator.vibrate(12); } catch {}
-      openNotes(t, s);
-    }, 420);
-    return;
-  }
   padDown(e, pad);
 });
 function padDown(e, pad) {
@@ -1482,11 +1492,6 @@ function padDown(e, pad) {
   if (navigator.vibrate && !FINE) try { navigator.vibrate(5); } catch {}
 }
 addEventListener('pointermove', (e) => {
-  if (tapQ.on && e.pointerId === tapQ.id) {
-    const dx = e.clientX - tapQ.x, dy = e.clientY - tapQ.y;
-    if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) { tapQ.on = false; clearTimeout(tapQ.lp); padDown(e, tapQ.pad); paint.moved = true; clearTimeout(paint.lp); }
-    else if (Math.abs(dy) > 10) { tapQ.on = false; clearTimeout(tapQ.lp); }
-  }
   if (!paint.on || e.pointerId !== paint.id) return;
   const pad = padFromPoint(e.clientX, e.clientY);
   if (!pad || pad === paint.last) return;
@@ -1497,7 +1502,6 @@ addEventListener('pointermove', (e) => {
   if (setCell(t, s, v) && v && !P.playing && !S.mutes[t]) playTrack(t, null, .7, v, .3);
 });
 function endPaint(e) {
-  if (tapQ.on && e && e.pointerId === tapQ.id) { tapQ.on = false; clearTimeout(tapQ.lp); if (e.type === 'pointerup') padDown(e, tapQ.pad); }
   if (e && e.pointerId !== paint.id) return;
   clearTimeout(paint.lp);
   if (!paint.on) return;
@@ -1665,10 +1669,10 @@ function randomPat() {
   return p;
 }
 function dice() { pushUndo(); S.pats[S.cur] = randomPat(); renderPads(true); renderPats(); markEdit(); if (!P.playing) play(); toast('Patrón inventado. Tirá de nuevo o tocá Deshacer.', 1600); }
-function copyPattern() { P.clip = clone(S.pats[S.cur]); toast(`Patrón ${LET[S.cur]} copiado`); }
+function copyPattern() { P.clip = { p: clone(S.pats[S.cur]), s: clone(S.ps[S.cur]) }; toast(`Patrón ${LET[S.cur]} copiado`); }
 function pastePattern() {
   if (!P.clip) return toast('Primero copiá un patrón');
-  pushUndo(); S.pats[S.cur] = clone(P.clip); renderPads(true); renderPats(); markEdit(); toast(`Pegado en ${LET[S.cur]}`);
+  pushUndo(); S.pats[S.cur] = clone(P.clip.p); S.ps[S.cur] = clone(P.clip.s); renderAll(true); markEdit(); toast(`Pegado en ${LET[S.cur]}`);
 }
 function loadPreset(pr) {
   pushUndo();
@@ -1681,13 +1685,24 @@ function setAllStyles(i) {
   for (let t = 0; t < NT; t++) { S.st[t] = Math.min(i, VOICES[t].length - 1); S.lay[t] = 0; }
   renderTracks(); save(); ensureAudio(); playTrack(0, null, 1); playTrack(6, null, .8, 1, .4);
   if (!RM) trks.forEach((el, t) => el.animate([{ transform: 'translateY(4px)', opacity: .3 }, { transform: 'none', opacity: 1 }], { duration: 260, delay: t * 30, fill: 'backwards' }));
-  toast(`Sonido ${FAM[i]} para todos`, 1200);
+  toast(`Sonido ${FAM[i]} en el patrón ${LET[S.cur]}`, 1400);
 }
 
 /* ================= text format ================= */
 const tok = (s) => s.replace(/\s+/g, '_');
+const moodName = (sc) => (MOODS.find(m => m.sc === sc) || SCALES[sc] || SCALES[0]).n;
+function patLines(p) {
+  CP = p;
+  try { return [`AMBIENTE: ${moodName(S.scale)}`, `ESTILOS: ${TR.map((x, t) => `${x.id}=${stylesOf(t).map(i => tok(styleName(t, i))).join('+')}`).join(' ')}`]; }
+  finally { CP = null; }
+}
+const stInto = (q) => (t, x) => {
+  const parts = x.split('+').map(y => styleIndex(t, y)).filter(i => i >= 0);
+  if (parts.length) { q.st[t] = parts[0]; q.lay[t] = parts.slice(1).reduce((a, i) => a | (1 << i), 0); }
+};
+const scaleOf = (v) => { const n = norm(v); let i = MOODS.findIndex(m => norm(m.n) === n); if (i >= 0) return MOODS[i].sc; i = SCALES.findIndex(s => norm(s.n) === n); return i >= 0 ? i : null; };
 function toText() {
-  const L2 = ['# GREENPAD beat v3', '# Batería: x = golpe, . = silencio. Melódicos: 1 a 8 = nota de la escala.', '# Podés editarlo a mano y volver a importarlo.', '',
+  const L2 = ['# GREENPAD beat v3', '# Batería: x = golpe, . = silencio. Melódicos: 1 a 8 = nota de la escala.', '# Podés editarlo a mano y volver a importarlo. Cada patrón lleva su AMBIENTE y sus ESTILOS.', '',
     `NOMBRE: ${S.name}`, `BPM: ${S.bpm}`, `SWING: ${S.swing}`, `TONO: ${NOTES[S.key]} ${SCALES[S.scale].n}`,
     `CADENA: ${S.chain ? 'si' : 'no'}`, `MEZCLA: ${bits(S.mix).map(i => LET[i]).join(' ') || '-'}`,
     `ESTILOS: ${TR.map((x, t) => `${x.id}=${stylesOf(t).map(i => tok(styleName(t, i))).join('+')}`).join(' ')}`,
@@ -1698,7 +1713,7 @@ function toText() {
   if (vz.length) L2.push(`VOZ: ${vz.join(' ')}`);
   S.pats.forEach((p, i) => {
     if (!patHas(p) && i !== S.cur) return;
-    L2.push('', `[${LET[i]}]`);
+    L2.push('', `[${LET[i]}]`, ...patLines(i));
     p.forEach((r, t) => L2.push(TR[t].name.padEnd(10) + r.map(v => v ? (TR[t].mel ? String(v) : 'x') : '.').join('').match(/.{4}/g).join(' ')));
   });
   if (vz.length) {
@@ -1718,7 +1733,7 @@ function parseTone(v, o) {
 }
 function parseText(txt) {
   const o = blank(); let p = -1, ti = 0, found = false, legacy = /DRUMPA|beat v1/i.test(txt) && !/beat v3/i.test(txt);
-  const vfx = {};
+  const vfx = {}, H0 = { st: Array(NT).fill(0), lay: Array(NT).fill(0), sc: null }, PP = [];
   for (const raw of txt.split(/\r?\n/)) {
     const line = raw.trim(); if (!line || line[0] === '#') continue;
     if (/^\[\s*VOCES\s*\]$/i.test(line)) { p = -2; continue; }
@@ -1735,13 +1750,10 @@ function parseText(txt) {
       if (k === 'NOMBRE' || k === 'NAME') o.name = v.slice(0, 60);
       else if (k === 'BPM' || k === 'TEMPO') o.bpm = +v;
       else if (k === 'SWING') o.swing = parseFloat(v);
-      else if (k === 'TONO' || k === 'KEY') parseTone(v, o);
-      else if (k === 'KIT') { const i = /chip|8/i.test(v) ? 2 : /electro/i.test(v) ? 1 : 0; o.st.fill(i); }
+      else if (k === 'TONO' || k === 'KEY') { const tmp = {}; parseTone(v, tmp); if (tmp.key != null) o.key = tmp.key; if (tmp.scale != null) H0.sc = tmp.scale; }
+      else if (k === 'KIT') { const i = /chip|8/i.test(v) ? 2 : /electro/i.test(v) ? 1 : 0; H0.st.fill(i); }
       else if (legacy && /^(ESTILOS?|AFINACION|VOLUMEN|NIVEL|MUTE)$/.test(k)) { /* pistas viejas: se ignoran */ }
-      else if (k === 'ESTILOS' || k === 'ESTILO') pairs(v, (t, x) => {
-        const parts = x.split('+').map(y => styleIndex(t, y)).filter(i => i >= 0);
-        if (parts.length) { o.st[t] = parts[0]; o.lay[t] = parts.slice(1).reduce((a, i) => a | (1 << i), 0); }
-      });
+      else if (k === 'ESTILOS' || k === 'ESTILO') pairs(v, stInto(H0));
       else if (k === 'AFINACION') pairs(v, (t, x) => { o.tune[t] = parseInt(x, 10) || 0; });
       else if (k === 'VOLUMEN' || k === 'NIVEL') pairs(v, (t, x) => { const n = parseFloat(x); if (isFinite(n)) o.lvl[t] = n / 100; });
       else if (k === 'VOZ') pairs(v, (t, x) => { const f = x.toLowerCase().split('+'), lm = f.find(y => /^l\d+$/.test(y)), im = f.find(y => /^i\d+$/.test(y)), tm = f.find(y => /^t-?\d+$/.test(y)); vfx[t] = { rev: f.includes('reves'), echo: f.includes('eco'), robot: f.includes('robot'), len: lm ? +lm.slice(1) / 100 : 1, a: im ? +im.slice(1) / 100 : 0, pit: tm ? +tm.slice(1) : 0 }; })
@@ -1749,6 +1761,12 @@ function parseText(txt) {
       else if (k === 'MEZCLA' || k === 'MIX') v.toUpperCase().split(/[\s,]+/).forEach(x => { const i = LET.indexOf(x); if (i >= 0) o.mix |= 1 << i; });
       else if (k === 'MUTE' || k === 'SILENCIO') v.split(/[\s,]+/).forEach(x => { const i = trackIndex(x); if (i >= 0) o.mutes[i] = true; });
       else if (k === 'ACTUAL') { const i = LET.indexOf(v.toUpperCase()); if (i >= 0) o.cur = i; }
+      continue;
+    }
+    if (m && p >= 0) { // sonido y ambiente propios del patrón
+      const k = norm(m[1]), v = m[2].trim(), q = PP[p] || (PP[p] = { st: H0.st.slice(), lay: H0.lay.slice(), sc: null });
+      if (k === 'ESTILOS' || k === 'ESTILO' || k === 'SONIDO') pairs(v, stInto(q));
+      else if (k === 'AMBIENTE' || k === 'ESCALA') q.sc = scaleOf(v);
       continue;
     }
     if (p < 0) continue;
@@ -1762,7 +1780,8 @@ function parseText(txt) {
       ti = t + 1;
     }
   }
-  if (legacy) for (let t = 0; t < NT; t++) if (o.st[t] >= VOICES[t].length) o.st[t] = 0;
+  if (legacy) for (let t = 0; t < NT; t++) if (H0.st[t] >= VOICES[t].length) H0.st[t] = 0;
+  o.ps = o.ps.map((_, i) => { const q = PP[i]; return { st: (q ? q.st : H0.st).slice(), lay: (q ? q.lay : H0.lay).slice(), sc: q && q.sc != null ? q.sc : H0.sc != null ? H0.sc : 2 }; });
   return found ? normalize(o) : null;
 }
 function encodeData() {
@@ -1778,13 +1797,14 @@ function decodeData(str, o) {
 function encodeLink() {
   const st = S.st.map(x => B64[x]).join(''), ly = S.lay.map(x => x.toString(16).padStart(2, '0')).join('');
   const tu = S.tune.map(x => B64[x + 12]).join(''), lv = S.lvl.map(x => B64[Math.round(x * 20)]).join('');
-  return `${location.origin}${location.pathname}#b=3.${S.bpm}.${S.swing}.${S.key}.${S.scale}.${st}.${ly}.${tu}.${lv}.${S.chain ? 1 : 0}.${S.mix.toString(16)}.${S.cur}.${encodeData()}.${encodeURIComponent(S.name)}`;
+  const pst = S.ps.map(q => B64[q.sc] + q.st.map(x => B64[x]).join('') + q.lay.map(x => B64[(x >> 6) & 63] + B64[x & 63]).join('')).join('');
+  return `${location.origin}${location.pathname}#b=4.${S.bpm}.${S.swing}.${S.key}.${S.scale}.${st}.${ly}.${tu}.${lv}.${S.chain ? 1 : 0}.${S.mix.toString(16)}.${S.cur}.${encodeData()}.${pst}.${encodeURIComponent(S.name)}`;
 }
 function decodeLink(str) {
   const i = str.indexOf('b='); if (i < 0) return null;
   const parts = str.slice(i + 2).split('.');
   let o, rest;
-  if (parts[0] === '3' && parts.length >= 13) {
+  if ((parts[0] === '3' && parts.length >= 13) || (parts[0] === '4' && parts.length >= 14)) {
     o = blank();
     o.bpm = +parts[1]; o.swing = +parts[2]; o.key = +parts[3]; o.scale = +parts[4];
     for (let t = 0; t < NT; t++) {
@@ -1792,6 +1812,10 @@ function decodeLink(str) {
       o.tune[t] = Math.max(0, B64.indexOf(parts[7][t] || 'c')) - 12; o.lvl[t] = Math.max(0, B64.indexOf(parts[8][t] || 'k')) / 20;
     }
     o.chain = parts[9] === '1'; o.mix = parseInt(parts[10], 16) || 0; o.cur = +parts[11]; decodeData(parts[12], o); rest = 13;
+    if (parts[0] === '4') {
+      const x = parts[13], at = (i) => Math.max(0, B64.indexOf(x[i])); rest = 14;
+      o.ps = o.ps.map((_, p) => { const b = p * 25, q = { sc: at(b), st: [], lay: [] }; for (let t = 0; t < NT; t++) { q.st[t] = at(b + 1 + t); q.lay[t] = at(b + 9 + t * 2) * 64 + at(b + 10 + t * 2); } return q; });
+    } else o.ps = o.ps.map(() => clone(o.ps[0]));
   } else if ((parts[0] === '1' && parts.length >= 8) || (parts[0] === '2' && parts.length >= 10)) {
     // enlaces viejos: 8 pistas de percusión
     o = { v: 2, pats: [], st: Array(8).fill(0), tune: Array(8).fill(0), lvl: Array(8).fill(1) };
@@ -1810,7 +1834,7 @@ function decodeLink(str) {
 function parseAny(txt) {
   txt = String(txt || '').trim(); if (!txt) return null;
   if (txt[0] === '{') { try { const j = JSON.parse(txt); return normalize(j.data || j); } catch { return null; } }
-  const lm = /(?:^|#)b=[123]\./.exec(txt); if (lm && /^\S*$/.test(txt)) return decodeLink(txt.slice(txt.indexOf('b=', lm.index)));
+  const lm = /(?:^|#)b=[1-4]\./.exec(txt); if (lm && /^\S*$/.test(txt)) return decodeLink(txt.slice(txt.indexOf('b=', lm.index)));
   return parseText(txt);
 }
 function openBeat(o, msg, keepId) {
@@ -1916,7 +1940,7 @@ $('#saveLib').addEventListener('click', () => {
   syncDrawer(); renderLib();
 });
 $('#newBeat').addEventListener('click', () => {
-  stash(); const st = S.st.slice(), vol = S.vol, key = S.key, sc = S.scale; S = blank(); S.st = st; S.vol = vol; S.key = key; S.scale = sc;
+  stash(); const keep = clone(S.ps[S.cur]), vol = S.vol, key = S.key; S = blank(); S.ps = S.ps.map(() => clone(keep)); S.vol = vol; S.key = key;
   H.u = []; H.r = []; applyAll(); saveNow(); syncDrawer(); renderLib(); toast('Beat nuevo');
 });
 $('#exp').addEventListener('click', exportTxt);
@@ -1924,7 +1948,7 @@ $('#imp').addEventListener('click', () => $('#file').click());
 $('#copyTxt').addEventListener('click', () => copyText(toText(), 'Texto copiado. Pegalo donde quieras.'));
 $('#pasteTxt').addEventListener('click', async () => {
   openModal('#paste'); const ta = $('#pasteArea'); ta.value = '';
-  try { const t = await navigator.clipboard.readText(); if (t && /GREENPAD|DRUMPA|\[A\]|b=[123]\./i.test(t)) ta.value = t; } catch {}
+  try { const t = await navigator.clipboard.readText(); if (t && /GREENPAD|DRUMPA|\[A\]|b=[1-4]\./i.test(t)) ta.value = t; } catch {}
   setTimeout(() => ta.focus(), 50);
 });
 $('#pasteGo').addEventListener('click', () => importText($('#pasteArea').value));
@@ -1981,14 +2005,14 @@ function renderStyles(anim) {
   const t = SH.t, tr = TR[t];
   shCard.style.setProperty('--sc', effSt(t) === VC(t) ? 'var(--red)' : `var(--s${effSt(t)})`);
   $('#shIc').innerHTML = svgIcon(tr.ic);
-  $('#shNum').textContent = `INSTRUMENTO ${t + 1} DE 8`;
+  $('#shNum').textContent = `INSTRUMENTO ${t + 1} · PATRÓN ${LET[S.cur]}`;
   $('#shName').textContent = tr.name;
   $('#shGen').textContent = tr.mel ? 'Inventar línea nueva' : 'Inventar ritmo nuevo';
   shSts.innerHTML = '';
   const cards = VOICES[t].map((vo, i) => ({ i, n: vo.n, d: vo.d, bars: WAVES[i], c: `var(--s${i})` }));
   const sm = S.smp[t], e = sm && SMP.get(sm.id);
   cards.push(e ? { i: VC(t), n: 'Tu voz', d: [sm.rev && 'al revés', sm.echo && 'eco', sm.robot && 'robot'].filter(Boolean).join(', ') || 'Tu grabación', bars: pcmBars(e.pcm, 12), c: 'var(--red)' }
-               : { i: VC(t), rec: true, n: 'Grabar voz', d: 'Usá tu voz acá', bars: [20, 45, 80, 55, 95, 40, 70, 30, 60, 25, 40, 15], c: 'var(--red)' });
+               : { i: VC(t), rec: true, n: 'Grabar voz', d: 'Tocá para grabar', bars: [20, 45, 80, 55, 95, 40, 70, 30, 60, 25, 40, 15], c: 'var(--red)' });
   cards.forEach((cd, k) => {
     const i = cd.i, b = document.createElement('button');
     b.className = 'st' + (cd.rec ? ' rec' : '');
@@ -2158,7 +2182,7 @@ async function startRec() {
   if (!stream) {
     restoreSession(); syncVoice();
     const n = (err && err.name) || 'error';
-    const where = ios ? `En el iPhone: Ajustes > ${/CriOS/.test(ua) ? 'Chrome' : 'Safari'} > Micrófono, y volvé a intentar.` : 'Habilitalo desde el candado de la barra de direcciones.';
+    const where = ios ? `En el iPhone: Ajustes > ${/CriOS/.test(ua) ? 'Chrome' : 'Safari'} > Micrófono, y volvé a intentar.` : /Android/.test(ua) ? 'En Android: tocá el candado de la barra de direcciones > Permisos > Micrófono, y revisá Ajustes > Apps > Chrome > Permisos > Micrófono.' : 'Habilitalo desde el candado de la barra de direcciones.';
     return toast(n === 'NotAllowedError' || n === 'SecurityError' ? `Sin permiso para el micrófono. ${where}` : n === 'NotFoundError' ? 'No se encontró ningún micrófono' : `No se pudo abrir el micrófono (${n}). ${where}`, 6000);
   }
   if (!$('#voice').classList.contains('on')) { stream.getTracks().forEach(tk => tk.stop()); restoreSession(); syncVoice(); return; } // se cerró mientras pedía permiso

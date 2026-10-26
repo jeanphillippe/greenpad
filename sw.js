@@ -1,5 +1,5 @@
 // Greenpad service worker. Subí VERSION en cada release para renovar la caché.
-const VERSION = 'greenpad-v1.4.0';
+const VERSION = 'greenpad-v1.5.0';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {
