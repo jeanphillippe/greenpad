@@ -48,18 +48,19 @@ Para probar en local: `python3 -m http.server 8080` dentro de la carpeta y abrir
 
 ## Tu voz (estilo Koala)
 
-- El botón del micrófono (tecla `V`) graba hasta 4 segundos. Se recorta solo el silencio del principio y del final.
-- Efectos: al revés, eco, robot, y "Largo" para usar solo una parte.
+- El botón del micrófono (tecla `V`) tiene 2 grabaciones (Grabación 1 y 2) de hasta 8 segundos cada una. Se recorta solo el silencio del principio y del final.
+- Ajustes: "Empieza en" y "Termina en" para recortar, "Tono" para hacerla más grave o más aguda (±12 semitonos), y efectos al revés, eco y robot.
+- Siempre suena completa (entre el inicio y el final elegidos), no se corta al largo del paso. Si el instrumento elegido ya usa esa grabación, los cambios se aplican en vivo.
 - "Usarla en" elige el instrumento. En los melódicos tu voz sube y baja según la altura de cada paso; en la batería suena tal cual.
 - Queda como estilo "Tu voz" en el panel de ese instrumento: se puede volver a otro estilo o sumarla como capa.
 - Se guarda en este dispositivo (IndexedDB) y viaja dentro del `.txt` exportado (sección `[VOCES]`). El enlace no la incluye.
-- Para grabar, la página tiene que estar en https (Cloudflare Pages lo da) y el navegador pide permiso para el micrófono.
+- Para grabar, la página tiene que estar en https (Cloudflare Pages lo da) y el navegador pide permiso para el micrófono. En iPhone, si no lo pide, revisar Ajustes > Chrome (o Safari) > Micrófono.
 
 ## Sin saber música
 
 - **Dado** (cabecera o tecla `D`): inventa un patrón completo donde bajo, guitarra, acordes y melodía combinan entre sí.
 - **Inventar línea nueva** (en el panel de cada instrumento, o tecla `I` con el panel abierto): cambia solo ese instrumento y respeta lo que ya está.
-- **AMBIENTE** (cabecera): Oscuro, Triste, Alegre, Pop, Groove o Blues. Cambia el carácter de todo y cualquier altura combina.
+- **AMBIENTE** (cabecera): Oscuro, Triste, Alegre, Pop, Groove o Blues. Elige qué notas usan bajo, guitarra, acordes y melodía (la batería no cambia), así el mismo patrón suena oscuro, triste, alegre, etc. Cualquier altura combina.
 - La nota base es opcional y está en el menú, en Sonido.
 
 ## Alturas
@@ -99,7 +100,7 @@ NOMBRE: Mi beat
 BPM: 118
 SWING: 0
 TONO: Mi menor
-VOZ: LD=voz+eco+L80
+VOZ: LD=voz+eco+L80+I10+T-3
 CADENA: no
 MEZCLA: B
 ESTILOS: BD=Estudio SN=Estudio HH=Estudio PC=Crash BS=Eléctrico GT=Eléctrica+Nylon CH=Piano LD=Marimba

@@ -112,18 +112,13 @@ svg{display:block}
 .rec.on i{background:#fff;opacity:1;animation:blink 1s steps(2) infinite}
 @keyframes blink{50%{opacity:.3}}
 
-.leverbox{display:flex;align-items:center;gap:2px;flex:none}
-#lever{width:60px;height:60px}
-#lvArm{transform-origin:14px 32px;transition:transform .5s cubic-bezier(.3,1.7,.45,1)}
-.lv-base{fill:var(--btn)}
-.lv-arm{fill:var(--pad);stroke:var(--line);stroke-width:1.2}
-:root[data-theme="night"] .lv-arm{fill:#3a3f46;stroke:#4a5058}
-.lv-hub{fill:var(--cy)}
-.lvl{display:flex;flex-direction:column;gap:1px}
-.lvl button{display:flex;align-items:center;gap:5px;font-size:9px;letter-spacing:.14em;font-weight:700;color:var(--ink);padding:3px 2px}
-.lvl b{width:6px;height:6px;border-radius:50%;background:var(--line)}
-.lvl button.on{color:var(--cy)}
-.lvl button.on b{background:var(--cy);box-shadow:0 0 6px var(--cy)}
+.leverbox{display:flex;align-items:center;flex:none}
+.pp{width:58px;height:58px;border-radius:50%;background:var(--cy);color:var(--acc-ink);display:grid;place-items:center;flex:none;box-shadow:0 4px 14px color-mix(in srgb,var(--cy) 35%,transparent);transition:transform .12s}
+.pp:active{transform:scale(.92)}
+.pp svg{grid-area:1/1;width:26px;height:26px;fill:currentColor}
+.pp .ip{transform:translateX(1px)}
+.pp .ia,.pp.on .ip{display:none}
+.pp.on .ia{display:block}
 .logo{font-weight:800;font-size:clamp(22px,2.2vw,32px);letter-spacing:-.03em;color:var(--ink);flex:none;line-height:1}
 .logo span{color:var(--cy)}
 .spacer{flex:1}
@@ -207,14 +202,14 @@ svg{display:block}
 .btn.tog.solo.on{background:var(--cy);color:var(--acc-ink)}
 
 /* ---------- vertical (phone portrait) ---------- */
-.v #top{display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"tempo lever tools" "pats pats pats" "snd snd tone" "mx mx mx";gap:7px 10px;padding:8px 12px}
+.v #top{display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"tempo lever tools" "pats pats pats" "snd snd tone";gap:7px 10px;padding:8px 12px}
 .v .grille,.v .logo,.v .spacer{display:none}
 .v .tempo{grid-area:tempo}
 .v .leverbox{grid-area:lever;justify-self:center}
 .v .tools{grid-area:tools;flex-wrap:wrap;justify-content:flex-end;max-width:112px;gap:6px}
 .v .patbox{grid-area:pats;width:100%}
 .v .pats{grid-template-columns:repeat(4,1fr);width:100%;gap:6px}
-.v .pb{width:auto;height:38px;font-size:13px}
+.v .pb{width:auto;height:34px;font-size:13px}
 .v .pb .cz{width:34px}
 .v .pb .ck{width:16px;height:16px}
 .v .sndbox{grid-area:snd;min-width:0}
@@ -222,9 +217,14 @@ svg{display:block}
 .v .sb{padding:0 2px;font-size:10px}
 .v .tone{grid-area:tone;flex-direction:column;align-items:stretch}
 .v .sel{min-width:0;padding:0 6px}
-.v #matrix{grid-area:mx;max-width:none;width:100%;height:24px}
+.v #matrix{display:none}
 .v #bpm{font-size:40px}
-.v #stage{align-items:flex-start;overflow:auto;padding:8px 8px 14px}
+.v #stage{align-items:flex-start;overflow-x:hidden;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:4px 8px 14px}
+.v .trk{position:sticky;top:0;z-index:4}
+.v .trk::before{content:"";position:absolute;z-index:-1;left:-8px;right:-8px;top:-10px;bottom:calc(var(--cell)*-.09);background:var(--body)}
+.v .trk.mute{opacity:1}
+.v .trk.mute>svg,.v .trk.mute>.tn{opacity:.35}
+.scrolly #board{touch-action:pan-y}
 .v #tap{display:none}
 .v .trk .tn{font-size:7.5px;letter-spacing:-.03em}
 @media (max-width:370px){.v .tools{max-width:70px;gap:6px}.v .rb{width:28px;height:28px}}
@@ -234,8 +234,8 @@ svg{display:block}
   #top{padding:5px 10px;gap:8px}
   .grille,.logo{display:none}
   #bpm{font-size:32px}
-  #lever{width:42px;height:42px}
-  .lvl button{font-size:8px;padding:1px}
+  .pp{width:42px;height:42px}
+  .pp svg{width:20px;height:20px}
   #matrix{height:34px}
   .pb,.sb,.sel{height:20px}
   .pb{width:40px;font-size:10px}
@@ -272,6 +272,9 @@ svg{display:block}
 .vfx{display:flex;gap:8px;flex-wrap:wrap}
 .vchip{padding:10px 16px;border-radius:999px;background:var(--chip);font-size:13px;font-weight:700;color:var(--ink2);transition:background .15s,color .15s}
 .vchip.on{background:var(--cy);color:var(--acc-ink)}
+.vslots{display:flex;gap:8px;margin:0 0 12px}
+.vslots .vchip{flex:1;position:relative}
+.vslots .vchip.has::after{content:"";position:absolute;right:12px;top:50%;width:7px;height:7px;margin-top:-3.5px;border-radius:50%;background:var(--red)}
 .vh{margin:14px 0 8px;font-size:11px;color:var(--ink);font-weight:600}
 .vdest{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
 .vd{position:relative;height:50px;border-radius:10px;background:var(--pad);box-shadow:inset 0 0 0 1px var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;color:var(--ink);font-size:8px;font-weight:700;letter-spacing:.04em}
@@ -375,7 +378,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <div class="snds" id="snds" aria-label="Estilo de sonido para todos"></div>
     </div>
     <div class="box tone">
-      <span class="lbl" title="Cambia el carácter de bajo, guitarra, acordes y melodía. Cualquier combinación suena bien.">AMBIENTE</span>
+      <span class="lbl" title="Elige qué notas usan bajo, guitarra, acordes y melodía (la batería no cambia). Oscuro y Triste suenan a menor; Alegre y Pop, a mayor.">AMBIENTE</span>
       <select id="moodSel" class="sel" aria-label="Ambiente de los instrumentos melódicos"></select>
     </div>
     <canvas id="matrix" aria-hidden="true"></canvas>
@@ -388,14 +391,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <button id="menuBtn" class="rb" aria-label="Menú y ejemplos" title="Menú y ejemplos (M)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h10"/></svg></button>
     </div>
     <div class="leverbox">
-      <button id="lever" aria-label="Play o pausa (Espacio)">
-        <svg viewBox="0 0 64 64"><circle class="lv-base" cx="14" cy="32" r="11"/><g id="lvArm"><path class="lv-arm" d="M14 27.5 L50 26 A6 6 0 0 1 50 38 L14 36.5 Z"/></g><circle class="lv-hub" cx="14" cy="32" r="4.5"/></svg>
-      </button>
-      <div class="lvl">
-        <button data-tr="play"><b></b>PLAY</button>
-        <button data-tr="stop"><b></b>STOP</button>
-        <button data-tr="pause"><b></b>PAUSE</button>
-      </div>
+      <button id="playBtn" class="pp" aria-label="Play (Espacio)" title="Play / pausa (Espacio)"><svg class="ip" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.2v15.6c0 .8.9 1.3 1.6.9l12.4-7.8c.6-.4.6-1.4 0-1.8L8.1 3.3c-.7-.4-1.6.1-1.6.9z"/></svg><svg class="ia" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="5" height="16" rx="1.3"/><rect x="14" y="4" width="5" height="16" rx="1.3"/></svg></button>
     </div>
     <div class="spacer"></div>
     <div class="logo">GREEN<span>PAD</span></div>
@@ -463,8 +459,8 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <h2>Cómo se usa</h2>
     <p class="tips" style="margin-top:0"><b>No hace falta saber música.</b> Elegí un ejemplo del menú o tocá el dado para inventar un patrón, y después cambiá lo que quieras.<br><br>
     <b>Instrumentos:</b> arriba la batería (bombo, caja, hi-hat, percusión) y abajo los melódicos (bajo, guitarra, acordes, melodía). Tocá un ícono para escucharlo; mantenelo apretado (o clic derecho) para elegir su estilo, volumen, inventar una línea nueva o usar tu voz. El <b>+</b> de cada estilo lo suma como capa.<br><br>
-    <b>Altura:</b> en los melódicos, cuanto más lleno está el círculo, más agudo suena. Mantené apretado un paso (o clic derecho) para elegir la altura; en la compu también con la rueda del mouse o Shift + ↑ ↓. <b>AMBIENTE</b> cambia el carácter (oscuro, triste, alegre...) y todas las alturas combinan entre sí.<br><br>
-    <b>Tu voz:</b> el botón del micrófono graba hasta 4 segundos. Podés darla vuelta, ponerle eco o voz de robot, y elegir en qué instrumento usarla. En los melódicos sube y baja según la altura de cada paso.<br><br>
+    <b>Altura:</b> en los melódicos, cuanto más lleno está el círculo, más agudo suena. Mantené apretado un paso (o clic derecho) para elegir la altura; en la compu también con la rueda del mouse o Shift + ↑ ↓. <b>AMBIENTE</b> elige qué notas usan bajo, guitarra, acordes y melodía: el mismo patrón suena oscuro, triste, alegre, etc. La batería no cambia, y todas las alturas combinan entre sí.<br><br>
+    <b>Tu voz:</b> el botón del micrófono tiene 2 grabaciones de hasta 8 segundos. Podés recortar dónde empieza y dónde termina, hacerla más grave o más aguda, darla vuelta, ponerle eco o voz de robot, y elegir en qué instrumento usarla. Siempre suena completa; en los melódicos además sube y baja según la altura de cada paso.<br><br>
     <b>Patrones A a H:</b> 8 grillas distintas. Tocá la letra para editarla. Tildá la casilla de una letra para que suene <b>mezclada</b> con la que estás editando; sus notas se ven como fantasmas en la grilla. Con CADENA suenan uno detrás de otro.</p>
     <h2 style="margin-top:18px">Atajos de teclado</h2>
     <div class="keys">
@@ -531,6 +527,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <div class="grow"><span class="lbl">GRABÁ UN SONIDO</span><b>Tu voz como instrumento</b></div>
       <div class="shnav"><button class="rb" data-close aria-label="Cerrar"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
     </div>
+    <div class="vslots" id="vSlots"><button class="vchip" data-s="0">Grabación 1</button><button class="vchip" data-s="1">Grabación 2</button></div>
     <div class="vrec">
       <button id="vRec" class="vbtn" aria-label="Grabar o parar"><span></span></button>
       <div class="vwave" id="vWave" title="Tocá para escuchar"><canvas id="vCanvas"></canvas><span id="vTime"></span></div>
@@ -540,11 +537,13 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <button class="vchip" data-fx="echo">Eco</button>
       <button class="vchip" data-fx="robot">Robot</button>
     </div>
-    <label class="sl">Largo <output id="vLenO"></output><input type="range" id="vLen" min="10" max="100" step="5"></label>
+    <label class="sl">Empieza en <output id="vAO"></output><input type="range" id="vA" min="0" max="95" step="1"></label>
+    <label class="sl">Termina en <output id="vLenO"></output><input type="range" id="vLen" min="5" max="100" step="1"></label>
+    <label class="sl">Tono: grave ↔ agudo <output id="vPitO"></output><input type="range" id="vPit" min="-12" max="12" step="1"></label>
     <h4 class="vh">Usarla en</h4>
     <div class="vdest" id="vDest"></div>
     <div class="shrow"><button class="btn" id="vTry">Escuchar</button><button class="btn pri" id="vUse">Usar en <span id="vUseName"></span></button></div>
-    <p class="hint">En bajo, guitarra, acordes y melodía tu voz sube y baja según la altura de cada paso. La grabación queda guardada en este dispositivo y viaja en el .txt exportado.</p>
+    <p class="hint">Suena completa, entre el inicio y el final que elijas. En bajo, guitarra, acordes y melodía además sube y baja según la altura de cada paso. Si el instrumento elegido ya usa esta grabación, los cambios se aplican en vivo. Las grabaciones quedan en este dispositivo y viajan en el .txt exportado.</p>
   </div>
 </div>
 
@@ -670,7 +669,8 @@ function normalize(o) {
     const ns = VOICES[t].length + 1; // +1: el lugar de "Tu voz"
     d.mutes[t] = !!(o.mutes && o.mutes[t]);
     const sm = o.smp && o.smp[t];
-    d.smp[t] = sm && typeof sm.id === 'string' ? { id: sm.id, rev: !!sm.rev, echo: !!sm.echo, robot: !!sm.robot, len: clamp(+sm.len || 1, .1, 1) } : null;
+    if (sm && typeof sm.id === 'string') { const len = clamp(+sm.len || 1, .05, 1); d.smp[t] = { id: sm.id, rev: !!sm.rev, echo: !!sm.echo, robot: !!sm.robot, len, a: clamp(+sm.a || 0, 0, len - .05), pit: Math.round(clamp(+sm.pit || 0, -12, 12)) }; }
+    else d.smp[t] = null;
     d.st[t] = Array.isArray(o.st) ? clamp(o.st[t] | 0, 0, ns - 1) : 0;
     d.lay[t] = Array.isArray(o.lay) ? (o.lay[t] | 0) & ((1 << ns) - 1) & ~(1 << d.st[t]) : 0;
     d.tune[t] = Array.isArray(o.tune) ? Math.round(clamp(+o.tune[t] || 0, -12, 12)) : 0;
@@ -950,24 +950,24 @@ function echoBus() {
 // toca una grabación: en los melódicos cambia de tono según la altura del paso
 function voiceOut(c, o, t, v, sm, rates, maxLen) {
   const buf = sampleBuf(sm.id, sm.rev); if (!buf) return null;
-  const full = buf.duration * sm.len; let g;
+  const off = buf.duration * (sm.a || 0), full = buf.duration * Math.max(.02, sm.len - (sm.a || 0)), pf = Math.pow(2, (sm.pit || 0) / 12); let g;
   for (const rate of rates) {
-    const r = rate * PF, len = Math.min(full / r, maxLen);
+    const r = rate * PF * pf, len = Math.min(full / r, maxLen);
     const s = c.createBufferSource(); s.buffer = buf; s.playbackRate.value = r;
     g = c.createGain(); const pk = v * (sm.robot ? 1.5 : .95) / Math.sqrt(rates.length);
-    g.gain.setValueAtTime(pk, t); g.gain.setValueAtTime(pk, t + Math.max(.005, len - .025)); g.gain.linearRampToValueAtTime(.0001, t + len);
+    g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(pk, t + .006); g.gain.setValueAtTime(pk, t + Math.max(.008, len - .025)); g.gain.linearRampToValueAtTime(.0001, t + len);
     let node = s;
     if (sm.robot) { const rg = c.createGain(); rg.gain.value = 0; const osc = c.createOscillator(); osc.type = 'square'; osc.frequency.value = 55; const og = c.createGain(); og.gain.value = .9; osc.connect(og); og.connect(rg.gain); s.connect(rg); node = rg; osc.start(t); osc.stop(t + len + .05); }
     node.connect(g); g.connect(o); if (sm.echo) g.connect(echoBus());
-    s.start(t); s.stop(t + len + .02);
+    s.start(t, off); s.stop(t + len + .02);
   }
   return g;
 }
 function playSample(c, o, t, v, tr, info) {
   const sm = S.smp[tr]; if (!sm || !SMP.has(sm.id)) return null;
-  let rates = [1], maxLen = 8;
+  let rates = [1], maxLen = 30; // suena completa, sin cortarse al largo del paso
   if (TR[tr].mel) {
-    const base = mtof(midiOf(tr, 1)); maxLen = Math.max(.12, info.dur + .08);
+    const base = mtof(midiOf(tr, 1));
     rates = TR[tr].chord ? info.fs.map(f => f / chordOf(tr, 1)[0]) : [info.f / base];
   }
   return voiceOut(c, o, t, v, sm, rates, maxLen);
@@ -1098,7 +1098,7 @@ keySel.addEventListener('change', () => { keySel.blur(); pushUndo(); S.key = +ke
 moodSel.addEventListener('change', () => {
   moodSel.blur(); pushUndo(); S.scale = MOODS[+moodSel.value].sc; renderPads(); markEdit(); ensureAudio();
   const c = AU.ctx; if (c) [1, 3, 5, 8].forEach((v, i) => playTrack(7, c.currentTime + .02 + i * .12, .9, v, .2));
-  toast(`Ambiente ${MOODS[+moodSel.value].n}`, 1000);
+  toast(`Ambiente ${MOODS[+moodSel.value].n}: cambian las notas de bajo, guitarra, acordes y melodía`, 1800);
 });
 
 /* ================= layout ================= */
@@ -1121,9 +1121,12 @@ function layout() {
   const aw = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
   const ah = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
   // eje largo: cabecera(1.35) + 16 pasos + 3 separadores(.18) + 19 espacios(.09) + separación bateria/melódicos = 19.6
-  let cell = vert ? Math.min(aw / 8.9, ah / 19.6) : Math.min(aw / 19.6, ah / 8.9);
+  // teléfono vertical: la grilla ocupa todo el ancho; si no entra de alto se desplaza, mostrando siempre al menos 2 bloques de 4 pasos
+  let cell = vert ? Math.min(aw / 8.9, ah / 9.6) : Math.min(aw / 19.6, ah / 8.9);
   cell = Math.floor(Math.max(cell, vert ? 28 : 22));
-  const g = Math.max(2, Math.round(cell * .09)), sp = Math.round(cell * .18), hw = Math.round(cell * 1.35);
+  const gOf = (c) => Math.max(2, Math.round(c * .09));
+  if (vert) while (cell > 28 && 8 * cell + Math.round(cell * .12) + 8 * gOf(cell) > aw) cell--;
+  const g = gOf(cell), sp = Math.round(cell * .18), hw = Math.round(cell * (vert ? 1.05 : 1.35));
   const parts = [hw + 'px'];
   for (let k = 0; k < 4; k++) { parts.push(`repeat(4, ${cell}px)`); if (k < 3) parts.push(sp + 'px'); }
   const long = parts.join(' '), short = `repeat(4, ${cell}px) ${Math.round(cell * .12)}px repeat(4, ${cell}px)`;
@@ -1137,7 +1140,8 @@ function layout() {
     trks[t].style.gridArea = L.vert ? `1 / ${tr}` : `${tr} / 1`;
     for (let s = 0; s < STEPS; s++) { const c = 2 + s + (s >> 2); pads[t][s].style.gridArea = L.vert ? `${c} / ${tr}` : `${tr} / ${c}`; }
   }
-  L.cell = cell;
+  L.cell = cell; L.g = g; L.hw = hw;
+  app.classList.toggle('scrolly', vert && board.offsetHeight > ah + 2);
   L.pos = pads.map(row => row.map(p => [p.offsetLeft, p.offsetTop]));
   sizeMatrix();
 }
@@ -1145,6 +1149,15 @@ let layT = 0;
 function relayout() { cancelAnimationFrame(layT); layT = requestAnimationFrame(layout); }
 addEventListener('resize', relayout);
 if (window.visualViewport) visualViewport.addEventListener('resize', relayout);
+// con la grilla desplazable, sigue a la reproducción salvo que el usuario la esté moviendo
+stage.addEventListener('touchstart', () => { L.touchT = Date.now(); }, { passive: true });
+stage.addEventListener('wheel', () => { L.touchT = Date.now(); }, { passive: true });
+function follow(s) {
+  if (!app.classList.contains('scrolly') || paint.on || Date.now() - (L.touchT || 0) < 2500) return;
+  const hdr = L.hw + L.g, top = board.offsetTop + pads[0][s].offsetTop, st = stage.scrollTop;
+  const end = board.offsetTop + pads[0][Math.min(STEPS - 1, s + 3)].offsetTop + L.cell;
+  if (top - hdr < st || end > st + stage.clientHeight) stage.scrollTo({ top: Math.max(0, top - hdr - L.g), behavior: RM ? 'auto' : 'smooth' });
+}
 
 /* ================= render ================= */
 const mixedFor = (cur) => bits(S.mix).filter(p => p !== cur);
@@ -1316,8 +1329,8 @@ function stop() {
 }
 function togglePlay() { P.playing ? pause() : play(); }
 function setLever(st) {
-  $('#lvArm').style.transform = `rotate(${st === 'play' ? -26 : st === 'pause' ? 26 : 0}deg)`;
-  document.querySelectorAll('.lvl button').forEach(b => b.classList.toggle('on', b.dataset.tr === st));
+  const b = $('#playBtn'), on = st === 'play';
+  b.classList.toggle('on', on); b.setAttribute('aria-label', on ? 'Pausa (Espacio)' : 'Play (Espacio)');
 }
 
 let raf = 0;
@@ -1334,7 +1347,7 @@ function frame() {
 function showStep(it) {
   if (it.p !== S.cur) { S.cur = it.p; renderPads(true); renderPats(); save(); }
   P.vstep = it.s; P.vt = it.t;
-  setPH(it.s);
+  setPH(it.s); if (it.s % 4 === 0) follow(it.s);
   const pat = S.pats[S.cur];
   for (let t = 0; t < NT; t++) if ((pat[t][it.s] || ghostVal(t, it.s)) && !S.mutes[t]) { hitVisual(t, it.s); if (t === 0) { bump(gl, 1.07, 160); bump(gr, 1.07, 160); } }
 }
@@ -1427,11 +1440,29 @@ $('#tap').addEventListener('pointerdown', (e) => { e.preventDefault(); tapTempo(
 const paint = { on: false, val: 0, last: null, id: null, t0: 0, s0: 0, pend: false, moved: false, lp: 0 };
 function padFromPoint(x, y) { const el = document.elementFromPoint(x, y); return el && el.classList && el.classList.contains('pad') ? el : null; }
 const newVal = (t) => TR[t].mel ? NOTE[t] : 1;
+// con la grilla desplazable (teléfono), un toque se confirma al soltar: arrastrar arriba o abajo desplaza sin marcar pasos,
+// arrastrar de costado pinta, mantener apretado un paso melódico abre las alturas
+const tapQ = { on: false, pad: null, id: null, x: 0, y: 0, lp: 0 };
 board.addEventListener('pointerdown', (e) => {
   app.classList.remove('kb');
   const trk = e.target.closest('.trk');
   if (trk) return trackDown(e, +trk.dataset.t);
   const pad = e.target.closest('.pad'); if (!pad) return;
+  if (e.pointerType === 'touch' && app.classList.contains('scrolly')) {
+    clearTimeout(tapQ.lp); closeNotes();
+    Object.assign(tapQ, { on: true, pad, id: e.pointerId, x: e.clientX, y: e.clientY });
+    const t = +pad.dataset.t, s = +pad.dataset.s;
+    if (TR[t].mel) tapQ.lp = setTimeout(() => {
+      if (!tapQ.on) return; tapQ.on = false; ensureAudio();
+      if (!S.pats[S.cur][t][s]) { pushUndo(); setCell(t, s, NOTE[t]); renderPats(); markEdit(); }
+      if (navigator.vibrate) try { navigator.vibrate(12); } catch {}
+      openNotes(t, s);
+    }, 420);
+    return;
+  }
+  padDown(e, pad);
+});
+function padDown(e, pad) {
   e.preventDefault(); ensureAudio();
   if (e.button === 2) return;
   closeNotes();
@@ -1449,8 +1480,13 @@ board.addEventListener('pointerdown', (e) => {
   }, 420);
   L.cur = [t, s]; moveCursor(0, 0, true);
   if (navigator.vibrate && !FINE) try { navigator.vibrate(5); } catch {}
-});
+}
 addEventListener('pointermove', (e) => {
+  if (tapQ.on && e.pointerId === tapQ.id) {
+    const dx = e.clientX - tapQ.x, dy = e.clientY - tapQ.y;
+    if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) { tapQ.on = false; clearTimeout(tapQ.lp); padDown(e, tapQ.pad); paint.moved = true; clearTimeout(paint.lp); }
+    else if (Math.abs(dy) > 10) { tapQ.on = false; clearTimeout(tapQ.lp); }
+  }
   if (!paint.on || e.pointerId !== paint.id) return;
   const pad = padFromPoint(e.clientX, e.clientY);
   if (!pad || pad === paint.last) return;
@@ -1461,6 +1497,7 @@ addEventListener('pointermove', (e) => {
   if (setCell(t, s, v) && v && !P.playing && !S.mutes[t]) playTrack(t, null, .7, v, .3);
 });
 function endPaint(e) {
+  if (tapQ.on && e && e.pointerId === tapQ.id) { tapQ.on = false; clearTimeout(tapQ.lp); if (e.type === 'pointerup') padDown(e, tapQ.pad); }
   if (e && e.pointerId !== paint.id) return;
   clearTimeout(paint.lp);
   if (!paint.on) return;
@@ -1657,7 +1694,7 @@ function toText() {
     `AFINACION: ${TR.map((x, t) => S.tune[t] ? `${x.id}=${S.tune[t] > 0 ? '+' : ''}${S.tune[t]}` : '').filter(Boolean).join(' ') || '-'}`,
     `VOLUMEN: ${TR.map((x, t) => S.lvl[t] !== 1 ? `${x.id}=${Math.round(S.lvl[t] * 100)}` : '').filter(Boolean).join(' ') || '-'}`,
     `MUTE: ${S.mutes.map((m, i) => m ? TR[i].id : '').filter(Boolean).join(' ') || '-'}`, `ACTUAL: ${LET[S.cur]}`];
-  const vz = TR.map((x, t) => { const sm = S.smp[t]; return sm && SMP.has(sm.id) ? `${x.id}=${['voz', sm.rev && 'reves', sm.echo && 'eco', sm.robot && 'robot', `L${Math.round(sm.len * 100)}`].filter(Boolean).join('+')}` : ''; }).filter(Boolean);
+  const vz = TR.map((x, t) => { const sm = S.smp[t]; return sm && SMP.has(sm.id) ? `${x.id}=${['voz', sm.rev && 'reves', sm.echo && 'eco', sm.robot && 'robot', `L${Math.round(sm.len * 100)}`, sm.a > 0 && `I${Math.round(sm.a * 100)}`, sm.pit && `T${sm.pit}`].filter(Boolean).join('+')}` : ''; }).filter(Boolean);
   if (vz.length) L2.push(`VOZ: ${vz.join(' ')}`);
   S.pats.forEach((p, i) => {
     if (!patHas(p) && i !== S.cur) return;
@@ -1707,7 +1744,7 @@ function parseText(txt) {
       });
       else if (k === 'AFINACION') pairs(v, (t, x) => { o.tune[t] = parseInt(x, 10) || 0; });
       else if (k === 'VOLUMEN' || k === 'NIVEL') pairs(v, (t, x) => { const n = parseFloat(x); if (isFinite(n)) o.lvl[t] = n / 100; });
-      else if (k === 'VOZ') pairs(v, (t, x) => { const f = x.toLowerCase().split('+'), lm = f.find(y => /^l\d+$/.test(y)); vfx[t] = { rev: f.includes('reves'), echo: f.includes('eco'), robot: f.includes('robot'), len: lm ? +lm.slice(1) / 100 : 1 }; })
+      else if (k === 'VOZ') pairs(v, (t, x) => { const f = x.toLowerCase().split('+'), lm = f.find(y => /^l\d+$/.test(y)), im = f.find(y => /^i\d+$/.test(y)), tm = f.find(y => /^t-?\d+$/.test(y)); vfx[t] = { rev: f.includes('reves'), echo: f.includes('eco'), robot: f.includes('robot'), len: lm ? +lm.slice(1) / 100 : 1, a: im ? +im.slice(1) / 100 : 0, pit: tm ? +tm.slice(1) : 0 }; })
       else if (k === 'CADENA' || k === 'CHAIN') o.chain = /^(si|sí|yes|1|true)/i.test(v);
       else if (k === 'MEZCLA' || k === 'MIX') v.toUpperCase().split(/[\s,]+/).forEach(x => { const i = LET.indexOf(x); if (i >= 0) o.mix |= 1 << i; });
       else if (k === 'MUTE' || k === 'SILENCIO') v.split(/[\s,]+/).forEach(x => { const i = trackIndex(x); if (i >= 0) o.mutes[i] = true; });
@@ -1919,10 +1956,7 @@ function setTheme(v) {
 $('#rec').addEventListener('click', toggleRec);
 $('#undo').addEventListener('click', undo);
 $('#clear').addEventListener('click', clearPattern);
-$('#lever').addEventListener('click', () => { ensureAudio(); togglePlay(); });
-document.querySelectorAll('.lvl button').forEach(b => b.addEventListener('click', () => {
-  ensureAudio(); const a = b.dataset.tr; if (a === 'play') play(); else if (a === 'pause') pause(); else stop();
-}));
+$('#playBtn').addEventListener('click', () => { ensureAudio(); togglePlay(); });
 
 /* ================= style picker ================= */
 const WAVES = [
@@ -2025,51 +2059,125 @@ function styleKeys(e) {
 }
 
 /* ================= voice recorder (estilo Koala) ================= */
-const VE = { pcm: null, id: null, fx: { rev: false, echo: false, robot: false }, len: 1, dest: 7, rec: null, live: [], playT: 0, playDur: 0, raf: 0 };
-const vDest = $('#vDest'), vCanvas = $('#vCanvas'), vctx = vCanvas.getContext('2d'), vDs = [];
+// 2 grabaciones. El audio de cada una queda en IndexedDB ('vslot0' y 'vslot1') y sus ajustes en las preferencias.
+const MAXS = 8; // segundos máximos por grabación
+const VE = { slot: 0, sl: [null, null], ready: null, pcm: null, id: null, fx: { rev: false, echo: false, robot: false }, a: 0, len: 1, pit: 0, dest: 7, rec: null, starting: false, live: [], playT: 0, playDur: 0, raf: 0 };
+const vDest = $('#vDest'), vCanvas = $('#vCanvas'), vctx = vCanvas.getContext('2d'), vDs = [], vSl = [...document.querySelectorAll('#vSlots .vchip')];
 TR.forEach((tr, t) => { const b = document.createElement('button'); b.className = 'vd'; b.innerHTML = svgIcon(tr.ic) + `<span>${tr.name}</span>`; b.addEventListener('click', () => setVoiceDest(t)); vDest.appendChild(b); vDs.push(b); });
+const tmpKey = (k) => '__ve' + k;
+const veKey = () => VE.id || tmpKey(VE.slot);
+const pitF = () => Math.pow(2, VE.pit / 12);
+const veDur = () => (VE.pcm ? VE.pcm.length / SR : 0);
+function storeSlot() { // copia el editor a la grabación elegida y guarda sus ajustes
+  VE.sl[VE.slot] = VE.pcm ? { pcm: VE.pcm, id: VE.id, fx: Object.assign({}, VE.fx), a: VE.a, len: VE.len, pit: VE.pit } : null;
+  PREF.vs = VE.sl.map(s => s && { id: s.id, a: s.a, len: s.len, pit: s.pit, rev: s.fx.rev, echo: s.fx.echo, robot: s.fx.robot });
+  store.set(LS_PREF, PREF);
+}
+function loadSlot(k) {
+  const s = VE.sl[k]; VE.slot = k;
+  VE.pcm = s ? s.pcm : null; VE.id = s ? s.id : null; VE.fx = s ? Object.assign({}, s.fx) : { rev: false, echo: false, robot: false };
+  VE.a = s ? s.a : 0; VE.len = s ? s.len : 1; VE.pit = s ? s.pit : 0;
+}
+function loadSlots() {
+  if (!VE.ready) VE.ready = (async () => {
+    const meta = Array.isArray(PREF.vs) ? PREF.vs : [];
+    for (let k = 0; k < 2; k++) {
+      const r = await IDB.get('vslot' + k); if (!r || !r.b64) continue;
+      const e = addSample(tmpKey(k), r.b64), m = meta[k] || {};
+      let id = typeof m.id === 'string' ? m.id : null;
+      if (id && !SMP.has(id)) { const r2 = await IDB.get(id); if (r2 && r2.b64) addSample(id, r2.b64); else id = null; }
+      const len = clamp(+m.len || 1, .05, 1);
+      VE.sl[k] = { pcm: e.pcm, id, fx: { rev: !!m.rev, echo: !!m.echo, robot: !!m.robot }, a: clamp(+m.a || 0, 0, len - .05), len, pit: Math.round(clamp(+m.pit || 0, -12, 12)) };
+    }
+    if (!VE.pcm && !VE.rec && !VE.starting) loadSlot(VE.slot);
+  })().catch(() => {});
+  return VE.ready;
+}
+// al abrir desde un instrumento que ya usa una voz, la muestra en una de las 2 grabaciones (nunca pisa una toma sin usar)
 function loadDestVoice() {
-  const sm = S.smp[VE.dest];
-  if ((!VE.pcm || VE.id) && sm && SMP.has(sm.id)) { VE.pcm = SMP.get(sm.id).pcm; VE.id = sm.id; VE.fx = { rev: sm.rev, echo: sm.echo, robot: sm.robot }; VE.len = sm.len; }
+  const sm = S.smp[VE.dest]; if (!sm || !SMP.has(sm.id)) return;
+  storeSlot();
+  let k = VE.sl.findIndex(s => s && s.id === sm.id);
+  if (k < 0) k = VE.sl.findIndex(s => !s);
+  if (k < 0) k = VE.sl[VE.slot].id ? VE.slot : VE.sl.findIndex(s => s.id);
+  if (k < 0) return;
+  loadSlot(k);
+  if (VE.id !== sm.id) { const e = SMP.get(sm.id); VE.pcm = e.pcm; VE.id = sm.id; IDB.put('vslot' + k, { b64: e.b64, t: Date.now() }); }
+  VE.fx = { rev: sm.rev, echo: sm.echo, robot: sm.robot }; VE.len = sm.len; VE.a = sm.a || 0; VE.pit = sm.pit || 0;
+  storeSlot();
 }
 function openVoice(t) {
   ensureAudio();
   if (t != null) VE.dest = t;
-  loadDestVoice();
   openModal('#voice'); syncVoice(); requestAnimationFrame(drawVoice);
+  loadSlots().then(() => { if (VE.rec || VE.starting) return; if (t != null) loadDestVoice(); syncVoice(); drawVoice(); });
 }
-function setVoiceDest(t) { VE.dest = t; loadDestVoice(); syncVoice(); drawVoice(); if (!RM) bump(vDs[t], 1.08, 160); }
+function setVoiceDest(t) { VE.dest = t; syncVoice(); drawVoice(); if (!RM) bump(vDs[t], 1.08, 160); }
+function pickSlot(k) {
+  if (VE.rec || VE.starting || k === VE.slot) return;
+  storeSlot(); loadSlot(k); syncVoice(); drawVoice(); if (VE.pcm) previewVoice();
+}
+vSl.forEach((b, k) => b.addEventListener('click', () => pickSlot(k)));
 function syncVoice() {
   $('#vRec').classList.toggle('on', !!VE.rec); $('#micBtn').classList.toggle('on', !!VE.rec);
+  vSl.forEach((b, k) => { b.classList.toggle('on', k === VE.slot); b.classList.toggle('has', !!(k === VE.slot ? VE.pcm : VE.sl[k])); });
   document.querySelectorAll('#vFx .vchip').forEach(b => b.classList.toggle('on', !!VE.fx[b.dataset.fx]));
-  $('#vLen').value = Math.round(VE.len * 100); $('#vLenO').textContent = Math.round(VE.len * 100) + '%';
+  const d = veDur();
+  $('#vA').value = Math.round(VE.a * 100); $('#vAO').textContent = (d * VE.a).toFixed(1) + ' s';
+  $('#vLen').value = Math.round(VE.len * 100); $('#vLenO').textContent = (d * VE.len).toFixed(1) + ' s';
+  $('#vPit').value = VE.pit; $('#vPitO').textContent = VE.pit ? `${VE.pit > 0 ? '+' : ''}${VE.pit} (más ${VE.pit > 0 ? 'agudo' : 'grave'})` : 'normal';
   vDs.forEach((b, t) => { b.classList.toggle('on', t === VE.dest); b.classList.toggle('has', !!(S.smp[t] && SMP.has(S.smp[t].id))); });
   $('#vUseName').textContent = TR[VE.dest].name.toLowerCase();
-  $('#vTry').disabled = $('#vUse').disabled = !VE.pcm || !!VE.rec;
+  $('#vTry').disabled = $('#vUse').disabled = !VE.pcm || !!VE.rec || VE.starting;
   voiceTime();
 }
 function voiceTime() {
   const el = $('#vTime');
-  if (VE.rec) el.textContent = '';
-  else if (VE.pcm) el.textContent = '';
-  else el.textContent = 'Tocá el botón rojo y hablá, cantá, chasqueá o golpeá algo (hasta 4 s)';
+  if (VE.starting) el.textContent = 'Pidiendo permiso para usar el micrófono…';
+  else if (VE.rec || VE.pcm) el.textContent = '';
+  else el.textContent = `Tocá el botón rojo y hablá, cantá, chasqueá o golpeá algo (hasta ${MAXS} s)`;
 }
+function restoreSession() { try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch {} }
 async function startRec() {
-  const c = ensureAudio(); if (!c || VE.rec) return;
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) return toast('Este navegador no deja grabar');
-  let stream;
-  try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: true } }); }
-  catch (e) { return toast(window.isSecureContext ? 'Sin permiso para usar el micrófono' : 'Para grabar, abrí Greenpad desde https (por ejemplo en Cloudflare Pages)', 3200); }
-  try { await c.resume(); } catch {}
-  const src = c.createMediaStreamSource(stream), proc = c.createScriptProcessor(2048, 1, 1), mute = c.createGain(); mute.gain.value = 0;
-  const r = { stream, src, proc, mute, chunks: [], n: 0, sr: c.sampleRate, t0: performance.now() };
-  proc.onaudioprocess = (ev) => {
-    if (VE.rec !== r) return;
-    const d = ev.inputBuffer.getChannelData(0); r.chunks.push(new Float32Array(d)); r.n += d.length;
-    let pk = 0; for (let i = 0; i < d.length; i += 8) pk = Math.max(pk, Math.abs(d[i])); VE.live.push(pk);
-    if (r.n >= r.sr * 4) stopRec();
-  };
-  src.connect(proc); proc.connect(mute); mute.connect(c.destination);
+  if (VE.rec || VE.starting) return;
+  const md = navigator.mediaDevices, ua = navigator.userAgent, ios = /iPhone|iPad|iPod/.test(ua) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(ua));
+  if (!window.isSecureContext) return toast('Para grabar, abrí Greenpad desde https (por ejemplo en Cloudflare Pages)', 3200);
+  if (!md || !md.getUserMedia) return toast('Este navegador no deja grabar. Probá actualizarlo.', 3200);
+  ensureAudio();
+  // iPhone: con la sesión de audio en "playback" el sistema niega el micrófono sin preguntar.
+  // Se pasa a "play-and-record" justo antes de pedirlo y se vuelve a "playback" al terminar.
+  try { if (navigator.audioSession) navigator.audioSession.type = 'play-and-record'; } catch {}
+  VE.starting = true; syncVoice();
+  let stream = null, err = null;
+  try { stream = await md.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: true } }); }
+  catch (e) { err = e; }
+  if (!stream && err && err.name !== 'NotAllowedError' && err.name !== 'SecurityError') {
+    try { stream = await md.getUserMedia({ audio: true }); err = null; } catch (e) { err = e; }
+  }
+  VE.starting = false;
+  if (!stream) {
+    restoreSession(); syncVoice();
+    const n = (err && err.name) || 'error';
+    const where = ios ? `En el iPhone: Ajustes > ${/CriOS/.test(ua) ? 'Chrome' : 'Safari'} > Micrófono, y volvé a intentar.` : 'Habilitalo desde el candado de la barra de direcciones.';
+    return toast(n === 'NotAllowedError' || n === 'SecurityError' ? `Sin permiso para el micrófono. ${where}` : n === 'NotFoundError' ? 'No se encontró ningún micrófono' : `No se pudo abrir el micrófono (${n}). ${where}`, 6000);
+  }
+  if (!$('#voice').classList.contains('on')) { stream.getTracks().forEach(tk => tk.stop()); restoreSession(); syncVoice(); return; } // se cerró mientras pedía permiso
+  const c = ensureAudio();
+  if (c) try { await c.resume(); } catch {}
+  const r = { stream, chunks: [], n: 0, sr: c ? c.sampleRate : 48000, t0: performance.now(), blobs: [], mr: null, to: 0 };
+  if (c) try {
+    r.src = c.createMediaStreamSource(stream); r.proc = c.createScriptProcessor(2048, 1, 1); r.mute = c.createGain(); r.mute.gain.value = 0;
+    r.proc.onaudioprocess = (ev) => {
+      if (VE.rec !== r) return;
+      const d = ev.inputBuffer.getChannelData(0); r.chunks.push(new Float32Array(d)); r.n += d.length;
+      let pk = 0; for (let i = 0; i < d.length; i += 8) pk = Math.max(pk, Math.abs(d[i])); VE.live.push(pk);
+      if (r.n >= r.sr * MAXS) stopRec();
+    };
+    r.src.connect(r.proc); r.proc.connect(r.mute); r.mute.connect(c.destination);
+  } catch {}
+  // respaldo: en algunos iPhone el AudioContext no entrega el audio del micrófono; MediaRecorder graba igual
+  if (window.MediaRecorder) try { r.mr = new MediaRecorder(stream); r.mr.ondataavailable = (ev) => { if (ev.data && ev.data.size) r.blobs.push(ev.data); }; r.mr.start(); } catch { r.mr = null; }
+  r.to = setTimeout(() => { if (VE.rec === r) stopRec(); }, MAXS * 1000 + 200);
   VE.rec = r; VE.live = []; syncVoice(); voiceLoop();
   if (navigator.vibrate && !FINE) try { navigator.vibrate(10); } catch {}
 }
@@ -2086,23 +2194,39 @@ function processRec(d, sr) {
   return out;
 }
 function stopRec() {
-  const r = VE.rec; if (!r) return; VE.rec = null;
-  try { r.src.disconnect(); r.proc.disconnect(); r.mute.disconnect(); } catch {}
+  const r = VE.rec; if (!r) return; VE.rec = null; clearTimeout(r.to);
+  try { if (r.src) r.src.disconnect(); if (r.proc) r.proc.disconnect(); if (r.mute) r.mute.disconnect(); } catch {}
+  syncVoice();
+  if (r.mr && r.mr.state !== 'inactive') { r.mr.onstop = () => finishRec(r); try { r.mr.stop(); } catch { finishRec(r); } }
+  else finishRec(r);
+}
+async function finishRec(r) {
   r.stream.getTracks().forEach(tk => tk.stop());
-  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch {}
-  const all = new Float32Array(r.n); let o = 0; for (const ch of r.chunks) { all.set(ch, o); o += ch.length; }
-  const pcm = processRec(all, r.sr);
+  restoreSession();
+  let pcm = null;
+  if (r.n > r.sr * .1) {
+    const all = new Float32Array(r.n); let o = 0; for (const ch of r.chunks) { all.set(ch, o); o += ch.length; }
+    pcm = processRec(all, r.sr);
+  } else if (r.blobs.length && AU.ctx) {
+    try {
+      const ab = await new Blob(r.blobs, { type: r.blobs[0].type }).arrayBuffer();
+      const b = await new Promise((res, rej) => AU.ctx.decodeAudioData(ab, res, rej));
+      pcm = processRec(b.getChannelData(0).subarray(0, Math.floor(b.sampleRate * MAXS)), b.sampleRate);
+    } catch {}
+  }
   if (!pcm) { syncVoice(); drawVoice(); return toast('No se escuchó nada. Probá más cerca del micrófono.'); }
-  addSample('__ve', pcmToB64(pcm)); VE.pcm = SMP.get('__ve').pcm; VE.id = null; VE.len = 1;
-  syncVoice(); drawVoice(); previewVoice();
+  const k = VE.slot, b64 = pcmToB64(pcm);
+  addSample(tmpKey(k), b64); IDB.put('vslot' + k, { b64, t: Date.now() });
+  VE.pcm = SMP.get(tmpKey(k)).pcm; VE.id = null; VE.a = 0; VE.len = 1; VE.pit = 0;
+  storeSlot(); syncVoice(); drawVoice(); previewVoice();
   if (!RM) bump(vCanvas, 1.04, 220);
 }
 function previewVoice() {
   if (!VE.pcm) return;
   const c = ensureAudio(); if (!c) return;
-  const sm = Object.assign({ id: VE.id || '__ve', len: VE.len }, VE.fx), t = c.currentTime + .02;
-  voiceOut(c, AU.master, t, 1, sm, [1], 8);
-  VE.playT = t; VE.playDur = VE.pcm.length / SR * VE.len; voiceLoop();
+  const sm = Object.assign({ id: veKey(), a: VE.a, len: VE.len, pit: VE.pit }, VE.fx), t = c.currentTime + .02;
+  voiceOut(c, AU.master, t, 1, sm, [1], 30);
+  VE.playT = t; VE.playDur = veDur() * (VE.len - VE.a) / pitF(); voiceLoop();
   MX.active = true; loop();
 }
 function voiceLoop() { if (!VE.raf) VE.raf = requestAnimationFrame(() => { VE.raf = 0; drawVoice(); const c = AU.ctx; if (VE.rec || (c && c.currentTime < VE.playT + VE.playDur + .05)) voiceLoop(); }); }
@@ -2117,44 +2241,53 @@ function drawVoice() {
     const L = VE.live, st = Math.max(0, L.length - n); vctx.fillStyle = red;
     for (let i = 0; i < n && st + i < L.length; i++) { const bh = Math.max(2 * dpr, Math.min(1, L[st + i] * 1.8) * h * .88); vctx.fillRect(i * (bw + gap), (h - bh) / 2, bw, bh); }
     const sec = (performance.now() - VE.rec.t0) / 1000;
-    vctx.fillStyle = cs.getPropertyValue('--ink2').trim(); vctx.font = `700 ${11 * dpr}px system-ui`; vctx.fillText(`${Math.min(4, sec).toFixed(1)} / 4 s`, 8 * dpr, 16 * dpr);
+    vctx.fillStyle = cs.getPropertyValue('--ink2').trim(); vctx.font = `700 ${11 * dpr}px system-ui`; vctx.fillText(`${Math.min(MAXS, sec).toFixed(1)} / ${MAXS} s`, 8 * dpr, 16 * dpr);
     return;
   }
   if (!VE.pcm) return;
   const bars = pcmBars(VE.pcm, n);
   for (let i = 0; i < n; i++) {
-    const v = bars[VE.fx.rev ? n - 1 - i : i], bh = Math.max(2 * dpr, v / 100 * h * .86);
-    vctx.fillStyle = i / n <= VE.len ? on : off; vctx.fillRect(i * (bw + gap), (h - bh) / 2, bw, bh);
+    const v = bars[VE.fx.rev ? n - 1 - i : i], bh = Math.max(2 * dpr, v / 100 * h * .86), x = (i + .5) / n;
+    vctx.fillStyle = x >= VE.a && x <= VE.len ? on : off; vctx.fillRect(i * (bw + gap), (h - bh) / 2, bw, bh);
   }
   const c = AU.ctx;
   if (c && c.currentTime >= VE.playT && c.currentTime < VE.playT + VE.playDur) {
-    const x = (c.currentTime - VE.playT) / VE.playDur * VE.len * w;
+    const x = (VE.a + (c.currentTime - VE.playT) / VE.playDur * (VE.len - VE.a)) * w;
     vctx.fillStyle = cs.getPropertyValue('--or').trim(); vctx.fillRect(x, 0, 2 * dpr, h);
   }
   vctx.fillStyle = cs.getPropertyValue('--ink').trim(); vctx.font = `700 ${10 * dpr}px system-ui`;
-  vctx.fillText(`${(VE.pcm.length / SR * VE.len).toFixed(1)} s`, 8 * dpr, 15 * dpr);
+  vctx.fillText(`${(veDur() * (VE.len - VE.a) / pitF()).toFixed(1)} s`, 8 * dpr, 15 * dpr);
 }
 function useVoice() {
   if (!VE.pcm) return toast('Primero grabá algo');
-  let id = VE.id;
-  if (!id) {
-    id = uid(); const e = SMP.get('__ve'); SMP.set(id, { b64: e.b64, pcm: e.pcm, buf: e.buf, rbuf: e.rbuf }); VE.id = id;
+  if (!VE.id) {
+    const id = uid(), e = SMP.get(tmpKey(VE.slot)); SMP.set(id, { b64: e.b64, pcm: e.pcm, buf: e.buf, rbuf: e.rbuf }); VE.id = id;
     IDB.put(id, { b64: e.b64, t: Date.now() }).then(ok => { if (!ok) toast('No se pudo guardar la grabación en este dispositivo'); });
   }
+  storeSlot();
   const t = VE.dest;
-  S.smp[t] = { id, rev: VE.fx.rev, echo: VE.fx.echo, robot: VE.fx.robot, len: VE.len };
+  S.smp[t] = { id: VE.id, rev: VE.fx.rev, echo: VE.fx.echo, robot: VE.fx.robot, len: VE.len, a: VE.a, pit: VE.pit };
   S.st[t] = VC(t); S.lay[t] &= ~(1 << VC(t));
   renderTracks(); markEdit(); closeAll(); live(t);
   if (!RM) bump(trks[t], 1.15, 260);
   toast(`Tu voz ahora suena en ${TR[t].name.toLowerCase()}. Mantené el ícono para cambiar de estilo.`, 2600);
 }
+// recorte, tono y efectos se aplican en vivo al instrumento elegido si ya usa esta grabación
+function bindVoice() {
+  storeSlot();
+  const sm = S.smp[VE.dest];
+  if (VE.id && sm && sm.id === VE.id) { Object.assign(sm, { rev: VE.fx.rev, echo: VE.fx.echo, robot: VE.fx.robot, len: VE.len, a: VE.a, pit: VE.pit }); markEdit(); }
+}
 $('#vRec').addEventListener('click', () => { VE.rec ? stopRec() : startRec(); });
 $('#vWave').addEventListener('click', previewVoice);
 $('#vTry').addEventListener('click', previewVoice);
 $('#vUse').addEventListener('click', useVoice);
-document.querySelectorAll('#vFx .vchip').forEach(b => b.addEventListener('click', () => { VE.fx[b.dataset.fx] = !VE.fx[b.dataset.fx]; syncVoice(); drawVoice(); previewVoice(); }));
+document.querySelectorAll('#vFx .vchip').forEach(b => b.addEventListener('click', () => { VE.fx[b.dataset.fx] = !VE.fx[b.dataset.fx]; bindVoice(); syncVoice(); drawVoice(); previewVoice(); }));
 let vLenT = 0;
-$('#vLen').addEventListener('input', (e) => { VE.len = +e.target.value / 100; $('#vLenO').textContent = e.target.value + '%'; drawVoice(); clearTimeout(vLenT); vLenT = setTimeout(previewVoice, 160); });
+function voiceEdit() { bindVoice(); syncVoice(); drawVoice(); clearTimeout(vLenT); vLenT = setTimeout(previewVoice, 160); }
+$('#vA').addEventListener('input', (e) => { VE.a = Math.max(0, Math.min(+e.target.value / 100, VE.len - .05)); voiceEdit(); });
+$('#vLen').addEventListener('input', (e) => { VE.len = Math.min(1, Math.max(+e.target.value / 100, VE.a + .05)); voiceEdit(); });
+$('#vPit').addEventListener('input', (e) => { VE.pit = +e.target.value; voiceEdit(); });
 $('#micBtn').addEventListener('click', () => openVoice());
 $('#diceBtn').addEventListener('click', () => { ensureAudio(); dice(); });
 
@@ -2265,6 +2398,7 @@ readColors();
 setLever('stop');
 layout();
 applyAll();
+loadSlots();
 if (/^#b=/.test(location.hash)) {
   const o = decodeLink(location.hash);
   history.replaceState(null, '', location.pathname + location.search);
