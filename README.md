@@ -38,13 +38,29 @@ Para probar en local: `python3 -m http.server 8080` dentro de la carpeta y abrir
 | 3 | Hi-hat | Estudio, Electro, 8-bit, Abierto, Semiabierto, Ride |
 | 4 | Percu | Palmas, Clap 808, 8-bit, Shaker, Pandereta, Conga, Tom, Crash |
 | 5 | Bajo | Eléctrico, Sub 808, 8-bit, Acid, Contrabajo |
-| 6 | Guitarra | Acústica, Eléctrica, 8-bit, Funk, Nylon |
+| 6 | Guitarra | Acústica, Eléctrica, 8-bit, Funk, Nylon, Limpia (eléctrica sin distorsión) |
 | 7 | Acordes | Piano, Stab, 8-bit (arpegio), Órgano, Pad |
 | 8 | Melodía | Marimba, Lead, 8-bit, Campana, Flauta |
 
 - El nombre del estilo se ve debajo de cada ícono. **SONIDO** (arriba) pone a todos los instrumentos del patrón actual en Estudio, Electro, 8-bit o Especial; si cada uno tiene uno distinto dice "MIXTO".
 - Tocar un ícono lo hace sonar. Mantenerlo apretado (o clic derecho, o mantener la tecla 1 a 8) abre su panel: estilo, afinación ±12 semitonos, volumen, silenciar y solo.
 - **Capas:** en ese panel, el **+** de cada estilo lo suma encima del elegido (por ejemplo bombo Estudio + Sub 808). El ícono muestra "+1", "+2".
+
+## Bandejas (segunda pantalla)
+
+El botón del disco, al lado de Play (o la tecla `B`), cambia entre la grilla y las bandejas. Las dos pantallas comparten el mismo beat y el mismo tempo.
+
+- **Dos bandejas, A y B.** Cada una toca el patrón que elijas con las letras de arriba del disco. Si cambiás de patrón mientras suena, entra en el próximo tiempo.
+- **Crossfader** (abajo en el centro): pasa de una bandeja a la otra. Los botones A y B lo llevan de golpe a cada punta.
+- **Scratch:** arrastrá un disco con el dedo o el mouse. La velocidad y el sentido del giro son la velocidad y el sentido del audio (usa los últimos segundos de esa bandeja).
+- **FRENO:** el disco se detiene como un tocadiscos. Tocalo otra vez para soltarlo. **REBOBINAR:** lo tira para atrás un instante.
+- **VOLUMEN** y **FILTRO** por bandeja (el filtro a la izquierda deja solo graves y a la derecha solo agudos; doble toque lo vuelve al centro).
+- **AGUDOS, MEDIOS, GRAVES:** cortan esa parte del sonido de la bandeja.
+- **Íconos de abajo:** apagan o prenden cada instrumento en esa bandeja, para armar la mezcla en vivo.
+- **Centro:** REVERB, ECO, LO-FI (sonido gastado), VINILO (ruido de disco), MODO 90 (vinilo, polvo, algo de reverb y swing de una) y REPETIR 1/4, 1/8, 1/16 (mantenido repite el último pedacito en las dos bandejas).
+- Los efectos también suenan en la grilla y se guardan con el beat.
+- Las perillas se mueven arrastrando arriba/abajo, con la rueda del mouse o con las flechas si tienen foco.
+- Scratch, freno, rebobinar y repetir usan AudioWorklet (Chrome, Edge, Firefox y Safari 14.1 o más nuevos).
 
 ## Tu voz (estilo Koala)
 
@@ -81,7 +97,7 @@ Para probar en local: `python3 -m http.server 8080` dentro de la carpeta y abrir
 
 ## Ejemplos
 
-En el menú, 24 ejemplos. Trap y rap: Trap, Drill, Phonk, Trap melódico, Rage, Boom bap. Rock: Rock, Punk, Metal, Grunge, Rock nacional, Captura. Otros: Pop, Cumbia, Dembow, House, Techno, Lo-fi, Reggae, Funk, Disco, Bossa nova, Synthwave, Chiptune. Se cargan en el patrón actual con su tempo, tono y estilos, y arranca a sonar.
+En el menú, 30 ejemplos. Noventas (con swing y efectos): Golden era, Guitarra 90, Trip hop, G-funk, Rap rock, Jazz rap. Trap y rap: Trap, Drill, Phonk, Trap melódico, Rage, Boom bap. Rock: Rock, Punk, Metal, Grunge, Rock nacional, Captura. Otros: Pop, Cumbia, Dembow, House, Techno, Lo-fi, Reggae, Funk, Disco, Bossa nova, Synthwave, Chiptune. Se cargan en el patrón actual con su tempo, swing, tono y estilos, y arranca a sonar. Los noventosos también ponen sus efectos (reverb, lo-fi, vinilo).
 
 ## Cómo guarda
 
@@ -104,6 +120,7 @@ TONO: Mi menor
 VOZ: LD=voz+eco+L80+I10+T-3
 CADENA: no
 MEZCLA: B
+EFECTOS: reverb=20 eco=0 lofi=35 vinilo=si
 ESTILOS: BD=Estudio SN=Estudio HH=Estudio PC=Crash BS=Eléctrico GT=Eléctrica+Nylon CH=Piano LD=Marimba
 AFINACION: -
 VOLUMEN: -
@@ -123,6 +140,7 @@ MELODÍA   .... .... .... ....
 
 - `ESTILOS`: nombre del estilo (los espacios van con `_`, por ejemplo `Sub_808`) y las capas con `+`.
 - `TONO`: nota en Do Re Mi o en letras (A, C#, Bb) más la escala.
+- `EFECTOS`: reverb, eco y lo-fi de 0 a 100, vinilo si/no.
 - `AFINACION` en semitonos y `VOLUMEN` en porcentaje; `-` deja todo por defecto.
 - Nombres de pista aceptados: los de arriba, sus códigos `BD SN HH PC BS GT CH LD` o en inglés (KICK, SNARE, BASS, GUITAR, CHORDS, LEAD).
 - También se importa el JSON interno, los textos de las versiones anteriores y los enlaces de "Copiar enlace" (el beat viaja dentro del enlace, sin servidor).
@@ -155,10 +173,17 @@ MELODÍA   .... .... .... ....
 | Guardar en Mis beats | Ctrl+S |
 | Exportar / importar | Ctrl+E / Ctrl+O |
 | Menú y ejemplos / ayuda | M / ? |
+| Grilla / bandejas | B |
+| Bandejas: patrón en A | Q W E R T Y U I (A a H) |
+| Bandejas: patrón en B | A S D F G H J K (A a H) |
+| Bandejas: crossfader | ← → (Shift: a la punta), ↓ al medio |
+| Bandejas: repetir 1/4, 1/8, 1/16 | mantener Z, X, C |
+| Bandejas: freno A / B | N / , |
 
 ## En el teléfono
 
 - Vertical: la grilla se gira (instrumentos en columnas, pasos hacia abajo) y ocupa todo el ancho. Si no entra de alto, se desplaza deslizando el dedo por los márgenes de los costados o por la franja entre batería y melódicos, y sigue sola a la reproducción. Horizontal: igual que la consola.
 - Tocar y arrastrar sobre los cuadros pinta o borra varios pasos.
 - Mantener apretado un ícono abre sus estilos; mantener apretado un paso melódico abre las notas.
+- Bandejas en vertical: los dos discos arriba, la mezcla con el crossfader en el medio y los controles de cada bandeja abajo.
 - En iPhone, si no suena, revisar el interruptor de silencio.
