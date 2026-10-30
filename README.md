@@ -187,3 +187,12 @@ MELODÍA   .... .... .... ....
 - Mantener apretado un ícono abre sus estilos; mantener apretado un paso melódico abre las notas.
 - Bandejas en vertical: los dos discos arriba, la mezcla con el crossfader en el medio y los controles de cada bandeja abajo.
 - En iPhone, si no suena, revisar el interruptor de silencio.
+- Modo liviano (menú, Sonido): reverb más corta, menos sonidos superpuestos y la animación de fondo a la mitad de cuadros. Se activa solo si el reloj de audio se atrasa (el equipo no da abasto) y queda guardado en ese dispositivo.
+
+## Rendimiento (notas técnicas)
+
+- Cada golpe arma su propio grupo de nodos de audio. Al terminar se desconecta a mano, porque Safari no libera solo los nodos que siguen conectados y con el tiempo se va poniendo lento.
+- Hay un tope de sonidos a la vez por instrumento (el más viejo se apaga suave) y un tope general (40 en táctiles, 72 en la compu).
+- Caja, hi-hat y percu se pre-renderizan una vez por estilo y afinación, y después cada golpe es un solo nodo. El bombo sigue sintetizado en vivo para que pegue en fase con el bajo.
+- Las cuerdas (Karplus-Strong) usan búferes más chicos con afinación exacta y una caché de 48 notas.
+- Con lo-fi en 0 la señal no pasa por sus filtros, el vinilo apagado no procesa nada y en la grilla la bandeja A va directo (sin filtros ni scratch).

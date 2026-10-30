@@ -448,7 +448,7 @@ input.xf::-moz-range-thumb{width:30px;height:40px;border:0;border-radius:8px;bac
 .sl output{font-variant-numeric:tabular-nums;color:var(--ink)}
 .sl input{grid-column:1/-1;width:100%;accent-color:var(--cy)}
 .tg{display:flex;align-items:center;gap:10px;font-size:13px;margin-top:14px}
-.tg input{width:20px;height:20px;accent-color:var(--cy)}
+.tg input{width:20px;height:20px;flex:none;accent-color:var(--cy)}
 .ex{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .exg{grid-column:1/-1;font-size:10px;letter-spacing:.14em;color:var(--ink);font-weight:700;margin:6px 0 0}
 #keySel{width:100%;height:38px;font-size:13px;margin-top:8px}
@@ -556,6 +556,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <label class="sl">Swing <output id="swO"></output><input type="range" id="sw" min="0" max="100" step="1"></label>
     <label class="sl">Volumen general <output id="volO"></output><input type="range" id="vol" min="0" max="100" step="1"></label>
     <label class="tg"><input type="checkbox" id="chain"> Encadenar patrones con notas (C)</label>
+    <label class="tg"><input type="checkbox" id="lite"> Modo liviano: menos reverb y menos sonidos superpuestos, para equipos que se traban</label>
     <h4>Nota base (opcional)</h4>
     <p class="hint" style="margin:0">Sube o baja todo el tema. Si no sabés de música, dejala como está: con cualquiera suena bien.</p>
     <select id="keySel" class="sel" aria-label="Nota base"></select>
@@ -857,7 +858,7 @@ function chordOf(t, val) {
 }
 
 /* ================= audio ================= */
-const AU = { ctx: null, hh: [null, null], hhT: [0, 0], wk: false };
+const AU = { ctx: null, wk: false };
 function makeNoise(ctx, crunch) {
   const len = ctx.sampleRate, b = ctx.createBuffer(1, len, ctx.sampleRate), d = b.getChannelData(0);
   let v = 0;
@@ -867,7 +868,7 @@ function makeNoise(ctx, crunch) {
 function ensureAudio() {
   if (!AU.ctx) {
     const C = window.AudioContext || window.webkitAudioContext; if (!C) return null;
-    let ctx; try { ctx = new C({ latencyHint: 'interactive' }); } catch { ctx = new C(); }
+    let ctx; try { ctx = new C({ latencyHint: TOUCH ? 'balanced' : 'interactive' }); } catch { ctx = new C(); } // en táctiles un búfer más holgado aguanta mejor los picos
     const out = ctx.createGain(); out.gain.value = S.vol;
     const comp = ctx.createDynamicsCompressor();
     comp.threshold.value = -12; comp.knee.value = 8; comp.ratio.value = 4; comp.attack.value = .003; comp.release.value = .16;
@@ -974,20 +975,21 @@ function buildFx(c) {
   const loHP = c.createBiquadFilter(); loHP.type = 'highpass'; loHP.frequency.value = 15;
   const crush = c.createWaveShaper(); crush.curve = crushCurve(0);
   const pre = c.createGain(); pre.gain.value = .25;
-  fxIn.connect(loLP); loLP.connect(loHP); loHP.connect(pre); pre.connect(crush); crush.connect(AU.out);
+  const post = c.createGain(); // con lo-fi en 0 la entrada va directo acá (sin filtros ni distorsión que procesar)
+  loLP.connect(loHP); loHP.connect(pre); pre.connect(crush); crush.connect(post); post.connect(AU.out);
   const revSend = c.createGain(); revSend.gain.value = 0;
-  const conv = c.createConvolver(); conv.buffer = makeIR(c, 2.6, 3.2);
+  const conv = c.createConvolver(); conv.buffer = irFor(c);
   const revRet = c.createGain(); revRet.gain.value = .9;
-  crush.connect(revSend); conv.connect(revRet); revRet.connect(AU.out);
+  post.connect(revSend); conv.connect(revRet); revRet.connect(AU.out);
   const dlySend = c.createGain(); dlySend.gain.value = 0;
   const dly = c.createDelay(2); dly.delayTime.value = Math.min(1.9, 60 / S.bpm * .75);
   const dlyFb = c.createGain(); dlyFb.gain.value = .35;
   const dlyLP = c.createBiquadFilter(); dlyLP.type = 'lowpass'; dlyLP.frequency.value = 3200;
-  crush.connect(dlySend); dlySend.connect(dly); dly.connect(dlyLP); dlyLP.connect(dlyFb); dlyFb.connect(dly); dlyLP.connect(AU.out); dlyLP.connect(revSend);
+  post.connect(dlySend); dlySend.connect(dly); dly.connect(dlyLP); dlyLP.connect(dlyFb); dlyFb.connect(dly); dlyLP.connect(AU.out); dlyLP.connect(revSend);
   const crk = c.createBufferSource(); crk.buffer = makeCrackle(c); crk.loop = true;
   const crHP = c.createBiquadFilter(); crHP.type = 'highpass'; crHP.frequency.value = 500;
-  const crG = c.createGain(); crG.gain.value = 0; crk.connect(crHP); crHP.connect(crG); crG.connect(AU.out); crk.start();
-  Object.assign(AU, { fxIn, loLP, loHP, crush, revSend, conv, revOn: false, dlySend, dly, dlyFb, crG });
+  const crG = c.createGain(); crG.gain.value = 0; crk.connect(crHP); crHP.connect(crG); crk.start(); // crG se conecta solo con vinilo
+  Object.assign(AU, { fxIn, loLP, loHP, crush, post, revSend, conv, revRet, revOn: false, loOn: null, crOn: false, dlySend, dly, dlyFb, crG });
   AU.decks = [0, 1].map(() => {
     const k = { in: c.createGain() };
     k.ls = c.createBiquadFilter(); k.ls.type = 'lowshelf'; k.ls.frequency.value = 220;
@@ -1001,15 +1003,15 @@ function buildFx(c) {
     return k;
   });
   AU.master = AU.decks[0].in; // todo lo de la grilla entra por la bandeja A
-  applyFx(); applyDecks();
+  routeDecks(); applyFx(); applyDecks();
   if (c.audioWorklet && window.AudioWorkletNode) {
     const url = URL.createObjectURL(new Blob([DECK_WORKLET], { type: 'application/javascript' }));
     c.audioWorklet.addModule(url).then(() => {
       AU.decks.forEach(k => {
         k.wk = new AudioWorkletNode(c, 'gp-deck', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2] });
-        k.in.disconnect(); k.in.connect(k.wk); k.wk.connect(k.ls);
+        k.wk.connect(k.ls);
       });
-      AU.wk = true;
+      AU.wk = true; routeDecks();
     }).catch(() => {});
   }
 }
@@ -1025,7 +1027,17 @@ function applyFx() {
   AU.loLP.frequency.setTargetAtTime(X.lofi > .01 ? 18000 * Math.pow(2400 / 18000, X.lofi) : 20000, T, .03);
   AU.loHP.frequency.setTargetAtTime(15 + X.lofi * 160, T, .03);
   AU.crush.curve = crushCurve(X.lofi);
+  const lo = X.lofi > .005;
+  if (lo !== AU.loOn) { try { AU.fxIn.disconnect(); } catch {} AU.fxIn.connect(lo ? AU.loLP : AU.post); AU.loOn = lo; }
+  if (!!X.vin !== AU.crOn) { AU.crOn = !!X.vin; if (AU.crOn) AU.crG.connect(AU.out); else try { AU.crG.disconnect(); } catch {} }
   AU.crG.gain.setTargetAtTime(X.vin ? .05 + X.lofi * .04 : 0, T, .08);
+}
+const irFor = (c) => PREF.lite ? makeIR(c, 1, 2.4) : makeIR(c, 1.8, 2.8);
+function swapIR() { // un convolver nuevo (Safari viejo no deja cambiarle el buffer)
+  const c = AU.ctx; if (!c || !AU.conv) return;
+  const n = c.createConvolver(); n.buffer = irFor(c); n.connect(AU.revRet);
+  if (AU.revOn) { try { AU.revSend.disconnect(); } catch {} AU.revSend.connect(n); }
+  try { AU.conv.disconnect(); } catch {} AU.conv = n;
 }
 // filtro de bandeja: -1 = solo graves (pasabajos) ... 0 = sin filtro ... 1 = solo agudos (pasaaltos)
 function applyDecks() {
@@ -1043,6 +1055,19 @@ function applyDecks() {
     k.ls.gain.setTargetAtTime(on && dk.kill[0] ? -40 : 0, T, .01);
     k.pk.gain.setTargetAtTime(on && dk.kill[1] ? -30 : 0, T, .01);
     k.hs.gain.setTargetAtTime(on && dk.kill[2] ? -40 : 0, T, .01);
+  });
+}
+// en la grilla: la bandeja A va directo al volumen (sin scratch ni filtros) y la B queda desconectada
+function routeDecks() {
+  if (!AU.decks) return;
+  AU.decks.forEach((k, d) => {
+    try { k.in.disconnect(); } catch {}
+    try { k.fhp.disconnect(); } catch {}
+    try { k.vol.disconnect(); } catch {}
+    const on = DJ.on || d === 0;
+    if (!on) return;
+    if (DJ.on) { k.in.connect(k.wk || k.ls); k.fhp.connect(k.vol); } else k.in.connect(k.vol);
+    k.vol.connect(AU.fxIn); if (DJ.on) k.vol.connect(k.meter);
   });
 }
 const deckMsg = (d, m) => { const k = AU.decks && AU.decks[d]; if (k && k.wk) k.wk.port.postMessage(m); };
@@ -1108,9 +1133,11 @@ function syn(c, o, t, { wave = 'sawtooth', f, n = 1, det = 0, cut = 2000, cenv =
 // cuerda pulsada (Karplus-Strong), con caché por nota
 const KS = new Map(), DC = {};
 function ksBuf(c, f, damp, bright) {
-  const key = f.toFixed(2) + '|' + damp + '|' + bright; let b = KS.get(key); if (b) return b;
-  if (KS.size > 180) KS.clear();
-  const sr = c.sampleRate, n = Math.floor(sr * 1.8), N = Math.max(2, Math.round(sr / f));
+  const key = f.toFixed(2) + '|' + damp + '|' + bright; let b = KS.get(key);
+  if (b) { KS.delete(key); KS.set(key, b); return b; } // la más usada queda al final
+  while (KS.size >= 48) KS.delete(KS.keys().next().value);
+  // largo de cuerda entero y frecuencia de muestreo a medida: afinación exacta con la mitad de memoria
+  const N = Math.max(4, Math.round(22050 / f)), sr = clamp(N * f, 8000, 96000), n = Math.floor(sr * 1.9);
   b = c.createBuffer(1, n, sr); const d = b.getChannelData(0), line = new Float32Array(N);
   let prev = 0; for (let i = 0; i < N; i++) { prev += bright * ((Math.random() * 2 - 1) - prev); line[i] = prev; }
   let idx = 0;
@@ -1211,21 +1238,82 @@ const hasSmp = (t) => !!(S.smp[t] && SMP.has(S.smp[t].id));
 const effSt = (t) => S.st[t] === VC(t) && !hasSmp(t) ? 0 : S.st[t];
 const styleName = (t, i) => i === VC(t) ? 'Tu voz' : VOICES[t][i].n;
 const stylesOf = (t) => { const p = effSt(t); return [p, ...bits(S.lay[t]).filter(i => i !== p && (i !== VC(t) || hasSmp(t)))]; };
+/* ---- rendimiento (iPhone / iPad) ----
+   Cada golpe entra en un "grupo" (un nodo de volumen propio). Así se puede:
+   - limitar cuántos sonidos del mismo instrumento suenan a la vez (el más viejo se apaga suave),
+   - desconectar todo el grupo cuando terminó (Safari no libera solo los nodos que siguen conectados),
+   - poner un tope general de sonidos simultáneos.
+   La batería (bombo, caja, hi-hat, percu) se pre-renderiza una vez por estilo y afinación y después
+   se toca como una grabación: un nodo por golpe en vez de 5 a 10. */
+const POLY0 = [2, 2, 1, 3, 2, 3, 2, 2], POLY = POLY0.slice();   // sonidos a la vez por instrumento y por bandeja (hi-hat 1 = se corta solo)
+const MAXV0 = /iPhone|iPad|iPod|Android/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)) ? 40 : 72;
+let MAXV = MAXV0;
+const VG = { live: [], keys: new Map() };
+let VLEN = 0; // largo máximo del último sonido de voz armado (para saber cuándo limpiar)
+function vgFade(x, t, tc) {
+  try { x.g.gain.setTargetAtTime(0, Math.max(t, AU.ctx.currentTime), tc); } catch {}
+  x.end = Math.min(x.end, Math.max(t, AU.ctx.currentTime) + tc * 8);
+}
+function sweepVoices() {
+  const c = AU.ctx; if (!c || !VG.live.length) return;
+  const now = c.currentTime;
+  VG.live = VG.live.filter(x => { if (x.end + .05 < now) { try { x.g.disconnect(); } catch {} return false; } return true; });
+  for (const [k, arr] of VG.keys) { const a = arr.filter(x => x.end + .05 >= now); if (a.length) VG.keys.set(k, a); else VG.keys.delete(k); }
+}
+const DR = new Map(); // batería pre-renderizada: clave -> [buffer, buffer] (dos variantes para que no suene a ametralladora)
+function trimBuf(c, b) {
+  const d = b.getChannelData(0); let n = d.length - 1; while (n > 0 && Math.abs(d[n]) < 2e-4) n--;
+  const len = Math.min(d.length, n + 256), o = c.createBuffer(1, len, b.sampleRate); o.getChannelData(0).set(d.subarray(0, len)); return o;
+}
+function drumBufs(tr, st, pf) {
+  const key = tr + ':' + st + ':' + pf.toFixed(4), e = DR.get(key);
+  if (e) return e === 1 || e === 2 ? null : e; // 1 = armándose, 2 = no se pudo (se sintetiza en vivo)
+  const OC = window.OfflineAudioContext || window.webkitOfflineAudioContext, c = AU.ctx;
+  if (!OC || !c) return null;
+  DR.set(key, 1);
+  const sr = c.sampleRate, len = Math.ceil(sr * 2);
+  const one = () => {
+    const oc = new OC(1, len, sr), save = PF; PF = pf;
+    try { VOICES[tr][st].f(oc, oc.destination, 0, 1, null); } finally { PF = save; }
+    return new Promise((res, rej) => { const r = oc.startRendering(); if (r && r.then) r.then(res, rej); else oc.oncomplete = (ev) => res(ev.renderedBuffer); });
+  };
+  one().then(a => one().then(b => DR.set(key, [trimBuf(c, a), trimBuf(c, b)]))).catch(() => DR.set(key, 2));
+  return null;
+}
+function warmDrums() { // deja listas las baterías de todos los patrones antes de que suenen
+  if (!AU.ctx) return;
+  for (let p = 0; p < NP; p++) { CP = p; try { for (let tr = 1; tr < 4; tr++) for (const st of stylesOf(tr)) if (st !== VC(tr)) drumBufs(tr, st, Math.pow(2, (S.tune[tr] || 0) / 12)); } finally { CP = null; } }
+}
 function playTrack(tr, t, v = 1, val = 1, dur = .3, dest) {
   const c = AU.ctx; if (!c) return;
   if (t == null) t = c.currentTime + .005;
-  const o = dest || AU.master, hk = o === AU.master ? 0 : 1; // cada bandeja corta su propio hi-hat
-  if (tr === 2 && AU.hh[hk] && AU.hhT[hk] < t) {
-    const g = AU.hh[hk].gain;
-    try { if (g.cancelAndHoldAtTime) g.cancelAndHoldAtTime(t); else g.cancelScheduledValues(t); g.setTargetAtTime(.0001, t, .01); } catch {}
-    AU.hh[hk] = null;
-  }
+  const o = dest || AU.master, hk = o === AU.master ? 0 : o === AU.fxIn ? 2 : 1;
+  // tope por instrumento: el sonido más viejo del mismo instrumento se apaga suave
+  const key = hk * 10 + tr, arr = (VG.keys.get(key) || []).filter(x => x.end > c.currentTime);
+  const older = arr.filter(x => x.t < t && x.end > t);
+  while (older.length >= POLY[tr]) vgFade(older.shift(), t, tr === 2 ? .01 : .03);
+  // tope general
+  if (VG.live.length >= MAXV) { const x = VG.live.find(y => y.end > t && y.t < t); if (x) vgFade(x, t, .02); }
+  const vg = c.createGain(); vg.connect(o); vg.__vg = true;
   const info = TR[tr].mel ? { f: mtof(midiOf(tr, val || 1)), fs: TR[tr].chord ? chordOf(tr, val || 1) : null, dur } : null;
   const list = stylesOf(tr), k = (S.lvl[tr] == null ? 1 : S.lvl[tr]) / Math.sqrt(list.length);
-  PF = Math.pow(2, (S.tune[tr] || 0) / 12);
-  let out;
-  try { for (const st of list) out = st === VC(tr) ? playSample(c, o, t, v * k, tr, info) : VOICES[tr][st].f(c, o, t, v * k, info); } finally { PF = 1; }
-  if (tr === 2) { AU.hh[hk] = out; AU.hhT[hk] = t; }
+  const pf = Math.pow(2, (S.tune[tr] || 0) / 12);
+  let end = t + .05;
+  PF = pf; VLEN = 0;
+  try {
+    for (const st of list) {
+      if (st === VC(tr)) { playSample(c, vg, t, v * k, tr, info); end = Math.max(end, t + VLEN + .1); continue; }
+      const bufs = tr > 0 && tr < 4 ? drumBufs(tr, st, pf) : null; // el bombo queda en vivo para que pegue en fase con el bajo
+      if (bufs) { // batería ya renderizada: un solo nodo
+        const s = c.createBufferSource(); s.buffer = bufs[Math.random() < .5 ? 0 : 1];
+        if (list.length === 1) { vg.gain.value = v * k; s.connect(vg); } else { const g = c.createGain(); g.gain.value = v * k; s.connect(g); g.connect(vg); }
+        s.start(t); end = Math.max(end, t + s.buffer.duration + .05);
+      } else { VOICES[tr][st].f(c, vg, t, v * k, info); end = Math.max(end, t + (info ? dur + 2.1 : tr === 0 ? 1.2 : 2.1)); }
+    }
+  } finally { PF = 1; }
+  if (vg.__echo) vg.connect(echoBus());
+  const x = { g: vg, t, end };
+  arr.push(x); VG.keys.set(key, arr); VG.live.push(x);
 }
 
 /* ================= voice samples ================= */
@@ -1283,7 +1371,10 @@ function voiceOut(c, o, t, v, sm, rates, maxLen) {
     g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(pk, t + .006); g.gain.setValueAtTime(pk, t + Math.max(.008, len - .025)); g.gain.linearRampToValueAtTime(.0001, t + len);
     let node = s;
     if (sm.robot) { const rg = c.createGain(); rg.gain.value = 0; const osc = c.createOscillator(); osc.type = 'square'; osc.frequency.value = 55; const og = c.createGain(); og.gain.value = .9; osc.connect(og); og.connect(rg.gain); s.connect(rg); node = rg; osc.start(t); osc.stop(t + len + .05); }
-    node.connect(g); g.connect(o); if (sm.echo) g.connect(echoBus());
+    node.connect(g); g.connect(o);
+    if (sm.echo && o.__vg) o.__echo = true;
+    if (!o.__vg) { if (sm.echo) g.connect(echoBus()); setTimeout(() => { try { g.disconnect(); } catch {} }, (t - c.currentTime + len) * 1000 + 3000); }
+    VLEN = Math.max(VLEN, len);
     s.start(t, off); s.stop(t + len + .02);
   }
   return g;
@@ -1614,7 +1705,8 @@ function drawMatrix() {
 }
 
 /* ================= transport ================= */
-const lookahead = () => document.hidden ? 1.2 : .12;
+const TOUCH = !FINE;
+const lookahead = () => document.hidden ? 1.2 : TOUCH ? .2 : .12; // en iPhone/iPad, más margen por si el teléfono se demora
 function stepDur(i) { const spb = 60 / S.bpm / 4, r = .5 + .25 * S.swing / 100; return i % 2 === 0 ? 2 * spb * r : 2 * spb * (1 - r); }
 function noteLen(row, s) { let n = 1; while (n < 4 && s + n < STEPS && !row[s + n]) n++; return n * (60 / S.bpm / 4) * .92; }
 function nextNonEmpty(p) { for (let i = 1; i <= NP; i++) { const q = (p + i) % NP; if (hasNotes(q)) return q; } return p; }
@@ -1665,13 +1757,33 @@ function tick() {
     P.next += stepDur(P.step);
     if (++P.step >= STEPS) { P.step = 0; barEnd(); }
   }
+  sweepVoices(); watchdog();
   P.timer = setTimeout(tick, 25);
+}
+// Modo liviano: si el reloj de audio se atrasa (el equipo no da abasto), baja la carga sola.
+const WD = { a: 0, w: 0, bad: 0 };
+function setLite(on, quiet) {
+  PREF.lite = !!on; store.set(LS_PREF, PREF);
+  MAXV = on ? 26 : MAXV0;
+  for (let i = 0; i < NT; i++) POLY[i] = on ? Math.min(POLY0[i], 2) : POLY0[i];
+  swapIR(); const el = $('#lite'); if (el) el.checked = !!on;
+  if (!quiet) toast('Modo liviano activado: el equipo no daba abasto, así que bajé la reverb y los sonidos superpuestos. Se puede desactivar en el menú, en Sonido.', 5200);
+}
+function watchdog() {
+  const c = AU.ctx, w = performance.now() / 1000;
+  if (PREF.lite || document.hidden || c.state !== 'running') { WD.a = 0; WD.bad = 0; return; }
+  if (!WD.a) { WD.a = c.currentTime; WD.w = w; return; }
+  if (w - WD.w < 2) return;
+  const r = (c.currentTime - WD.a) / (w - WD.w);
+  WD.bad = r < .95 ? WD.bad + 1 : 0; WD.a = c.currentTime; WD.w = w;
+  if (WD.bad >= 2) setLite(true);
 }
 function play() {
   const c = ensureAudio(); if (!c || P.playing) return;
+  WD.a = 0; WD.bad = 0;
   P.playing = true; P.paused = false; P.queue = []; P.pat = S.cur;
   P.next = c.currentTime + .06;
-  tick(); setLever('play'); loop(); djKick();
+  warmDrums(); tick(); setLever('play'); loop(); djKick();
 }
 function pause() {
   if (!P.playing) return;
@@ -1692,6 +1804,7 @@ function setLever(st) {
 }
 
 let raf = 0;
+let FR = 0;
 function loop() { if (!raf) raf = requestAnimationFrame(frame); }
 function frame() {
   raf = 0;
@@ -1699,7 +1812,7 @@ function frame() {
   let item = null;
   while (P.queue.length && P.queue[0].t <= now) item = P.queue.shift();
   if (item && P.playing) showStep(item);
-  drawMatrix();
+  if (!PREF.lite || (FR ^= 1)) drawMatrix();
   if (P.playing || MX.active) loop();
 }
 function showStep(it) {
@@ -1708,7 +1821,7 @@ function showStep(it) {
   P.vstep = it.s; P.vt = it.t;
   setPH(it.s); if (it.s % 4 === 0) follow(it.s);
   const pat = S.pats[S.cur];
-  for (let t = 0; t < NT; t++) if ((pat[t][it.s] || ghostVal(t, it.s)) && !S.mutes[t]) { hitVisual(t, it.s); if (t === 0) { bump(gl, 1.07, 160); bump(gr, 1.07, 160); } }
+  for (let t = 0; t < NT; t++) if ((pat[t][it.s] || (!TOUCH && ghostVal(t, it.s))) && !S.mutes[t]) { hitVisual(t, it.s); if (t === 0) { bump(gl, 1.07, 160); bump(gr, 1.07, 160); } }
 }
 
 function selectPattern(i) {
@@ -2240,6 +2353,7 @@ function syncDrawer() {
   $('#sw').value = S.swing; $('#swO').textContent = S.swing + '%';
   $('#vol').value = Math.round(S.vol * 100); $('#volO').textContent = Math.round(S.vol * 100) + '%';
   $('#chain').checked = S.chain;
+  $('#lite').checked = !!PREF.lite;
   $('#chainBtn').classList.toggle('on', S.chain);
   $('#themeSeg').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === PREF.theme));
   $('#syncHint').textContent = S.id ? 'Está en Mis beats: cada cambio se guarda solo.' : 'Borrador: se guarda en este dispositivo. Guardalo para tenerlo en tu lista.';
@@ -2305,6 +2419,7 @@ $('#pst').addEventListener('click', pastePattern);
 $('#dice').addEventListener('click', dice);
 $('#clr2').addEventListener('click', clearPattern);
 $('#helpBtn').addEventListener('click', () => openModal('#help'));
+$('#lite').addEventListener('change', (e) => { setLite(e.target.checked, true); toast(e.target.checked ? 'Modo liviano activado' : 'Modo liviano desactivado', 1400); });
 $('#themeSeg').querySelectorAll('button').forEach(b => b.addEventListener('click', () => setTheme(b.dataset.v)));
 $('#file').addEventListener('change', (e) => {
   const f = e.target.files && e.target.files[0]; if (!f) return;
@@ -2895,6 +3010,7 @@ function setView(dj) {
     repeatOff();
     S.cur = DJ.d[0].pat; P.pat = S.cur; P.pending = -1;
   }
+  routeDecks();
   app.classList.toggle('djv', dj); djEl.hidden = !dj; board.hidden = dj;
   $('#vGrid').classList.toggle('on', !dj); $('#vDj').classList.toggle('on', dj);
   applyDecks(); layout();
@@ -2920,6 +3036,7 @@ function djKeys(e) {
   return !!m && /^Key[A-Z]$/.test(c) && 'ZXC'.includes(m[1]);
 }
 buildDJ();
+setInterval(() => { if (!P.playing) sweepVoices(); }, 1500);
 $('#vGrid').addEventListener('click', () => setView(false));
 $('#vDj').addEventListener('click', () => setView(true));
 addEventListener('keyup', (e) => { if (DJ.rkey && e.code === DJ.rkey) { DJ.rkey = null; repeatOff(); } });
@@ -3030,6 +3147,7 @@ function applyAll() {
 /* ================= boot ================= */
 document.documentElement.dataset.theme = PREF.theme;
 if (PREF.theme !== 'night') document.querySelector('meta[name="theme-color"]').content = '#e7ece8';
+if (PREF.lite) setLite(true, true);
 readColors();
 setLever('stop');
 layout();
@@ -3046,7 +3164,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
-window.__greenpad = { get S() { return S; }, P, AU, DJ, toText, parseAny, encodeLink, playTrack, applyFx };
+window.__greenpad = { get S() { return S; }, P, AU, DJ, VG, DR, KS, WD, POLY, get MAXV() { return MAXV; }, setLite, toText, parseAny, encodeLink, playTrack, applyFx };
 })();
 </script>
 </body>
