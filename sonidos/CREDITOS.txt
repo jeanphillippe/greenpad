@@ -1,0 +1,25 @@
+GREENPAD BANDA: de dónde salen las grabaciones de la carpeta sonidos/
+
+Todas son bibliotecas libres. Se recortaron, se pasaron a mono y a mp3 para que pesen poco.
+
+Batería (bombo, caja, hi-hat, ride, crash, toms) y percusión de mano (conga, bongó, shaker, cencerro, claves)
+  Virtuosity Drums, por Versilian Studios / sfzinstruments. Licencia CC0 (dominio público).
+  https://github.com/sfzinstruments/virtuosity_drums
+
+Piano de cola, piano vertical, saxo tenor, vibráfono, marimba, glockenspiel, armónica, palmas, pandereta y bombo legüero
+  Versilian Community Sample Library (VCSL). Licencia CC0 (dominio público).
+  https://github.com/sgossner/VCSL
+
+Guitarras eléctricas (Hofner Club y Gretsch Anniversary: Eléctrica, Jazz, Muteada, Saturada)
+  Black And Green Guitars, Karoryfer Lecolds. Licencia CC0.
+  https://github.com/sfzinstruments/karoryfer.black-and-green-guitars
+
+Contrabajo (pizzicato)
+  Meatbass, Karoryfer Lecolds. Licencia CC0.
+  https://github.com/sfzinstruments/karoryfer.meatbass
+
+Bajo eléctrico, guitarra acústica, guitarra criolla, órgano, flauta y trompeta
+  tonejs-instruments, Nicholaus P. Brosowsky. Muestras con licencia CC BY 3.0
+  (pide nombrar la fuente, por eso este archivo). Las muestras vienen de Karoryfer,
+  University of Iowa Electronic Music Studios, VSCO 2 y Freesound.
+  https://github.com/nbrosowsky/tonejs-instruments

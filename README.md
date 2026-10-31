@@ -196,3 +196,70 @@ MELODÍA   .... .... .... ....
 - Caja, hi-hat y percu se pre-renderizan una vez por estilo y afinación, y después cada golpe es un solo nodo. El bombo sigue sintetizado en vivo para que pegue en fase con el bajo.
 - Las cuerdas (Karplus-Strong) usan búferes más chicos con afinación exacta y una caché de 48 notas.
 - Con lo-fi en 0 la señal no pasa por sus filtros, el vinilo apagado no procesa nada y en la grilla la bandeja A va directo (sin filtros ni scratch).
+
+## Greenpad Banda (`banda.html`)
+
+Versión pensada para armar canciones enteras con instrumentos grabados de verdad. Es una página aparte: tiene sus propios beats guardados (no se mezclan con los de Greenpad) y se abre en `/banda.html`.
+
+### Archivos extra
+
+| Archivo | Para qué |
+|---|---|
+| `banda.html` | La app Banda completa |
+| `banda.webmanifest` | "Agregar a pantalla de inicio" abre Banda directo |
+| `sonidos/` | 330 grabaciones mp3 (unos 7,5 MB). Solo se bajan las que usa el tema, y quedan guardadas para usar sin conexión |
+| `sonidos/CREDITOS.txt` | De dónde sale cada grabación y su licencia |
+
+Para probar en local hace falta el servidor (`python3 -m http.server 8080`): abriendo el archivo directo, el navegador no deja leer la carpeta `sonidos/` y suena el sintetizado.
+
+### Sonidos grabados
+
+SONIDO tiene cuatro familias: **Banda** (micrófono cerca), **Acústico** (la misma batería con aire de sala), **Noventa** (grabación gastada, de disco viejo) y **Electro** (los sintetizados de Greenpad).
+
+| # | Instrumento | Estilos |
+|---|---|---|
+| 1 | Bombo | Banda, Acústico, Noventa, 808, Legüero, Punch |
+| 2 | Caja | Banda, Acústico, Noventa, Caja 808, Aro, Rimshot, Palmas, Chasquido |
+| 3 | Hi-hat | Banda, Acústico, Noventa, Hat 808, Abierto, Semiabierto, Ride, Campana |
+| 4 | Percu | Pandereta, Conga, Shaker, Clap 808, Crash, Tom, Tom grave, Bongó, Cencerro, Claves, Palmas |
+| 5 | Bajo | Eléctrico, Contrabajo, Apagado, Sub 808, Acid |
+| 6 | Guitarra | Eléctrica, Acústica, Jazz, Saturada, Criolla, Muteada, Rasguido |
+| 7 | Acordes | Piano, Rasguido, Piano viejo, Pad, Órgano, Vibráfono, Stab |
+| 8 | Melodía | Saxo, Flauta, Vibráfono, Lead, Marimba, Trompeta, Campanita, Armónica |
+
+- La batería tiene varias capas de fuerza y varios golpes distintos por capa: un golpe suave suena distinto a uno fuerte, y dos golpes seguidos nunca son el mismo.
+- **Rasguido** arma el acorde como en una guitarra de 6 cuerdas y lo toca hacia abajo y hacia arriba según el paso.
+- **Saturada** toca un power chord grabado que pasa por un amplificador con distorsión.
+- Los instrumentos melódicos suenan más brillantes cuanto más fuerte se tocan.
+- Mientras una grabación no llegó, suena el sintetizado de Greenpad. Al darle Play la primera vez espera unos segundos a que lleguen ("Afinando la banda").
+
+### Toque humano
+
+El botón **HUMANO** (al lado de SONIDO) tiene 4 niveles: apagado, 35, 65 y 100%. En el menú hay un control fino. Cada golpe sale con un poco más o menos de fuerza (acentos en los tiempos, hi-hat más suave entre tiempos, caja apenas atrás) y unos milisegundos corrido, como tocado por una persona. Apagado queda exacto, como una máquina.
+
+### Canción
+
+La barra debajo de la cabecera es la línea de tiempo.
+
+- **+ A** (o tecla `G`) suma el patrón que estás editando. Si el último bloque es el mismo patrón, le suma una vuelta.
+- Tocar un bloque lo elige: aparecen botones para moverlo, tocarlo más o menos veces, duplicarlo o quitarlo. Play arranca desde el bloque elegido.
+- **AUTO** arma una estructura con intro, verso y estribillo usando los patrones que tienen notas.
+- **CANCIÓN** (tecla `L`) prende el modo canción: Play toca la línea de tiempo de principio a fin. Apagado, Play repite el patrón como en Greenpad.
+- Mientras suena, tocar un bloque salta a ese bloque al terminar el compás.
+- El botón de flechas repite la canción. Apagado, el tema cierra con platillo y bombo, y se frena.
+- El ancho de cada bloque muestra cuánto dura, y arriba a la izquierda se ve el tiempo total y por dónde va.
+
+En el `.txt` se agregan estas líneas (los .txt de Greenpad se importan igual; los estilos viejos se pasan a los nuevos por nombre):
+
+```
+CANCION: Ax2 Bx2 Ax2 Bx2 Cx2 Bx4
+MODO: cancion
+REPETIR: si
+HUMANO: 60
+```
+
+El enlace de "Copiar enlace" también lleva la canción y el toque humano.
+
+### Service worker
+
+`sw.js` ahora guarda cada página con su dirección (antes guardaba cualquier página como `index.html`) y guarda las grabaciones en una caché aparte que no se borra al subir `VERSION`.
