@@ -269,7 +269,8 @@ svg{display:block}
 @media (pointer:coarse){.vsw button{width:38px;height:29px}}
 .djv .patbox,.djv .sndbox,.djv .tone{display:none}
 .djv #board{display:none}
-.djv.v #top{grid-template-areas:"tempo lever tools"}
+.djv.v #top{grid-template-areas:"lever tempo tools" "more more more"}
+.djv #song{display:none}
 
 /* ---------- bandejas ---------- */
 #dj{display:grid;grid-template-columns:1fr minmax(230px,270px) 1fr;grid-template-areas:"a m b";gap:20px;width:100%;max-width:1360px;align-items:center;--pl:300px}
@@ -512,6 +513,104 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 #humBtn i{display:inline-flex;gap:2px;margin-left:3px}
 #humBtn i b{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.3}
 #humBtn i b.f{opacity:1}
+
+/* ---- globo de herramientas del bloque ---- */
+#song{position:relative;z-index:9}
+.v #top{z-index:10}
+.sgpop{position:absolute;top:calc(100% - 2px);left:10px;z-index:6;display:flex;align-items:center;gap:4px;padding:6px;border-radius:14px;background:var(--drawer);box-shadow:var(--shadow),inset 0 0 0 1px var(--line)}
+.sgpop[hidden]{display:none}
+.sgpop::before{content:"";position:absolute;top:-6px;left:var(--ax,50%);width:12px;height:12px;margin-left:-6px;background:var(--drawer);transform:rotate(45deg);box-shadow:-1px -1px 0 var(--line)}
+.sgpop .sgn{min-width:34px;text-align:center;font-size:12px;font-weight:800;color:var(--ink2)}
+.sgpop .sgt.x{background:var(--cy);color:var(--acc-ink);padding:0 10px;letter-spacing:.04em}
+
+/* ---- barra resumen y panel (teléfono) ---- */
+.morebar,.mpanel{display:none}
+.tlab{display:none}
+.cmp .morebar{grid-area:more;display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border:0;border-radius:9px;background:var(--chip);color:var(--ink2);font-family:var(--font);font-size:11px;font-weight:700;min-width:0;cursor:pointer;text-align:left}
+.cmp .morebar #moreSum{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cmp .morebar .k{font-size:8.5px;letter-spacing:.14em;color:var(--ink);font-weight:700;margin-right:4px}
+.cmp .morebar .k~.k{margin-left:10px}
+.cmp .morebar .mx{color:var(--or)}
+.cmp .morebar .chev{width:15px;height:15px;flex:none;transition:transform .2s}
+.cmp .morebar[aria-expanded="true"]{background:var(--cy);color:var(--acc-ink)}
+.cmp .morebar[aria-expanded="true"] .k{color:inherit;opacity:.7}
+.cmp .morebar[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.cmp .mpanel:not([hidden]){display:flex;flex-direction:column;gap:14px;position:absolute;left:0;right:0;top:100%;z-index:8;padding:14px 14px calc(16px + env(safe-area-inset-bottom));background:var(--head);border-bottom:1px solid var(--line);box-shadow:0 18px 30px rgba(0,0,0,.35);max-height:calc(var(--app-h,100vh) - 150px);overflow:auto;overscroll-behavior:contain}
+.mp-head{display:flex;align-items:center;justify-content:space-between}
+.mp-x{height:32px;padding:0 14px;border:0;border-radius:9px;background:var(--cy);color:var(--acc-ink);font-family:var(--font);font-size:12px;font-weight:800}
+.mp-sec{display:flex;flex-direction:column;gap:6px}
+.mp-sec .box{width:100%}
+.cmp .mp-sec .snds{grid-template-columns:repeat(4,1fr)}
+.cmp .mp-sec .sb,.cmp .mp-sec .sel{height:36px;font-size:11.5px}
+.cmp .mp-sec .tone{width:100%}
+.mpmix{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}
+.mpmix button{height:34px;border:0;border-radius:8px;background:var(--chip);color:var(--ink);font-family:var(--font);font-size:12px;font-weight:800;position:relative}
+.mpmix button.has::after{content:"";position:absolute;right:4px;top:4px;width:4px;height:4px;border-radius:50%;background:var(--cy)}
+.mpmix button.on{background:var(--or);color:var(--acc-ink)}
+.mpmix button.cur{box-shadow:inset 0 0 0 2px var(--cy)}
+.mp-hint{margin:0;font-size:11px;color:var(--ink)}
+.mptools{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.mptools .rb{width:auto;height:44px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:4px}
+.mptools .tlab{display:block;font-size:10px;font-weight:700;letter-spacing:.02em}
+.mptools .rb svg{width:16px;height:16px}
+.cmp.djv .mp-mix{display:none}
+
+/* ---- cabecera compacta en el teléfono vertical ---- */
+.v #top{grid-template-columns:auto auto 1fr;grid-template-areas:"lever tempo tools" "pats pats pats" "more more more";gap:6px 10px;padding:6px 10px 7px;align-items:center}
+.v .leverbox{grid-area:lever;justify-self:start}
+.v .tempo{grid-area:tempo;gap:4px}
+.v .tools{grid-area:tools;max-width:none;flex-wrap:nowrap;justify-self:end;gap:6px}
+.v .pp{width:46px;height:46px}
+.v .pp svg{width:22px;height:22px}
+.v .vsw{margin-left:6px}
+.v .vsw button{width:34px;height:21px;border-radius:6px}
+.v .vsw svg{width:14px;height:14px}
+.v #bpm{font-size:32px}
+.v .tcol .lbl{font-size:8px}
+.v .arrows .rb{width:22px;height:22px}
+.cmp .patbox .pl{display:none}
+.cmp .pats{grid-template-columns:repeat(8,1fr);gap:4px}
+.cmp .pb{height:32px;border-radius:8px}
+.cmp .pb .cz{display:none}
+.cmp .pb .pn{font-size:13px}
+.cmp .pb.has::before{right:4px;top:4px}
+.cmp #song{flex-wrap:nowrap;gap:6px;padding:5px 10px;min-height:0}
+.cmp .sgsw{position:relative;height:38px;padding:0 8px;gap:6px;font-size:9px;letter-spacing:.1em;align-items:flex-start;padding-top:7px}
+.cmp #songTime{position:absolute;left:10px;bottom:9px;width:92px;padding-left:36px;box-sizing:border-box;text-align:left;font-size:9.5px;pointer-events:none;min-width:0}
+.cmp #song.on #songTime{color:var(--acc-ink);opacity:.75}
+.cmp .sgwrap{order:0;flex:1 1 auto;flex-basis:auto;height:38px;min-width:0}
+.cmp .sgb{width:calc(var(--n) * 18px);min-width:30px;padding:0 6px;gap:3px}
+.cmp .sgtools{margin-left:0;gap:4px}
+.cmp .sgt{height:38px;min-width:34px;padding:0 6px}
+.cmp .sgt[data-a="auto"]{font-size:9.5px;padding:0 5px}
+/* teléfono acostado: todo en una fila + barra resumen */
+.cmp:not(.v) #top{display:grid;grid-template-columns:auto auto 1fr auto;grid-template-areas:"lever tempo pats tools" "more more more more";gap:5px 12px;padding:5px 12px 6px;align-items:center;z-index:10}
+.cmp:not(.v) .leverbox{grid-area:lever}
+.cmp:not(.v) .tempo{grid-area:tempo;gap:4px}
+.cmp:not(.v) .patbox{grid-area:pats;min-width:0}
+.cmp:not(.v) .tools{grid-area:tools;gap:6px}
+.cmp:not(.v) .vsw{flex-direction:row;margin-left:6px}
+.cmp:not(.v) .vsw button{width:32px;height:28px}
+.cmp:not(.v) #matrix,.cmp .grille,.cmp .logo,.cmp .spacer{display:none}
+.cmp:not(.v) .morebar{height:26px}
+.cmp:not(.v) .mpanel:not([hidden]){max-height:calc(var(--app-h,100vh) - 90px)}
+.cmp:not(.v) .mptools{grid-template-columns:repeat(3,minmax(0,160px))}
+.cmp:not(.v) #stage{padding:4px 10px}
+.cmp .pb{width:auto;min-width:0}
+.cmp .pats{width:100%}
+.cmp:not(.v) .pats{gap:4px}
+.cmp:not(.v) .pb{height:30px}
+.cmp:not(.v) .pp{width:42px;height:42px}
+.cmp:not(.v) #bpm{font-size:30px}
+.cmp:not(.v) .tcol .lbl{font-size:8px}
+.cmp:not(.v) .arrows .rb{width:20px;height:20px}
+.cmp:not(.v) .vsw button{width:30px;height:26px}
+.cmp:not(.v) #song{padding:4px 12px}
+.cmp:not(.v) .sgsw,.cmp:not(.v) .sgt,.cmp:not(.v) .sgwrap{height:34px}
+.cmp:not(.v) .sgsw{padding-top:5px}
+.cmp:not(.v) #songTime{bottom:7px}
+.cmp:not(.v) #stage{align-items:center;align-items:safe center}
+@media (max-width:350px){.v #top{gap:6px 6px}.v #bpm{font-size:26px}.v .arrows .rb{width:20px;height:20px}.v .tools{gap:4px}.v .tools .rb{width:28px;height:28px}.v .vsw{margin-left:4px}.v .vsw button{width:30px}.cmp .sgsw{padding:0 6px;padding-top:7px}.cmp #songTime{width:84px;padding-left:32px}.cmp .sgt{min-width:30px}.cmp .sgt[data-a="auto"]{font-size:8.5px}}
 </style>
 </head>
 <body>
@@ -541,16 +640,30 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     </div>
     <canvas id="matrix" aria-hidden="true"></canvas>
     <div class="tools">
-      <button id="rec" class="rb rec" aria-label="Grabar en vivo (R)" title="Grabar en vivo (R)"><i></i></button>
-      <button id="micBtn" class="rb mic" aria-label="Grabar tu voz (V)" title="Grabar tu voz y usarla como instrumento (V)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5.5" y="1.8" width="5" height="8" rx="2.5"/><path d="M3.2 7.6a4.8 4.8 0 009.6 0M8 12.4v2.2"/></svg></button>
+      <button id="rec" class="rb rec" aria-label="Grabar en vivo (R)" title="Grabar en vivo (R)"><i></i><span class="tlab">Grabar en vivo</span></button>
+      <button id="micBtn" class="rb mic" aria-label="Grabar tu voz (V)" title="Grabar tu voz y usarla como instrumento (V)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5.5" y="1.8" width="5" height="8" rx="2.5"/><path d="M3.2 7.6a4.8 4.8 0 009.6 0M8 12.4v2.2"/></svg><span class="tlab">Tu voz</span></button>
       <button id="diceBtn" class="rb" aria-label="Inventar un patrón (D)" title="Inventar un patrón que suene bien (D)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="2.5" width="11" height="11" rx="2.6"/><circle cx="5.6" cy="5.6" r="1" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="10.4" cy="10.4" r="1" fill="currentColor" stroke="none"/></svg></button>
       <button id="undo" class="rb" aria-label="Deshacer" title="Deshacer (Ctrl+Z)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4L2 7l3 3"/><path d="M2 7h7.5a4 4 0 010 8H7"/></svg></button>
-      <button id="clear" class="rb" aria-label="Borrar patrón" title="Borrar patrón (Supr)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 9h5.6l.7-9"/></svg></button>
+      <button id="clear" class="rb" aria-label="Borrar patrón" title="Borrar patrón (Supr)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 9h5.6l.7-9"/></svg><span class="tlab">Borrar patrón</span></button>
       <button id="menuBtn" class="rb" aria-label="Menú y ejemplos" title="Menú y ejemplos (M)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h10"/></svg></button>
     </div>
     <div class="leverbox">
       <button id="playBtn" class="pp" aria-label="Play (Espacio)" title="Play / pausa (Espacio)"><svg class="ip" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.2v15.6c0 .8.9 1.3 1.6.9l12.4-7.8c.6-.4.6-1.4 0-1.8L8.1 3.3c-.7-.4-1.6.1-1.6.9z"/></svg><svg class="ia" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="5" height="16" rx="1.3"/><rect x="14" y="4" width="5" height="16" rx="1.3"/></svg></button>
       <div class="vsw" role="tablist" aria-label="Pantalla"><button id="vGrid" class="on" role="tab" title="Grilla (B)" aria-label="Pantalla grilla"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></button><button id="vDj" role="tab" title="Bandejas (B)" aria-label="Pantalla bandejas"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="1.6"/><path d="M12.5 1.5l1.8 1.8-3.4 4.6" stroke-linecap="round"/></svg></button></div>
+    </div>
+    <button id="moreBtn" class="morebar" aria-expanded="false" aria-controls="morePanel" title="Sonido, ambiente, mezcla y herramientas del patrón">
+      <span id="moreSum"></span><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+    </button>
+    <div id="morePanel" class="mpanel" hidden>
+      <div class="mp-head"><span class="lbl" id="mpTitle">PATRÓN A</span><button class="mp-x" id="moreClose" aria-label="Cerrar">Listo</button></div>
+      <div class="mp-sec" id="mpSnd"></div>
+      <div class="mp-sec" id="mpTone"></div>
+      <div class="mp-sec mp-mix">
+        <div class="pl"><span class="lbl">SUMAR A LA MEZCLA</span><span id="mpChain"></span></div>
+        <div class="mpmix" id="mpMix"></div>
+        <p class="mp-hint">Los patrones tildados suenan junto con el que estás editando.</p>
+      </div>
+      <div class="mp-sec mptools" id="mpTools"></div>
     </div>
     <div class="spacer"></div>
     <div class="logo">GREEN<span>PAD</span><em>BANDA</em></div>
@@ -561,6 +674,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <span id="songTime">0:00</span>
     <div class="sgwrap"><div id="songTrk"></div></div>
     <div class="sgtools" id="songTools"></div>
+    <div class="sgpop" id="songPop" hidden></div>
   </nav>
   <main id="stage"><div id="board" role="grid" aria-label="Secuenciador de 16 pasos"><div id="fx"></div></div><section id="dj" hidden aria-label="Bandejas"></section></main>
 </div>
@@ -1822,6 +1936,8 @@ function layout() {
   app.style.height = vh + 'px'; document.documentElement.style.setProperty('--app-h', vh + 'px');
   const vert = vw < vh && vw < 760;
   if (vert !== L.vert) { L.vert = vert; app.classList.toggle('v', vert); placeItems(); }
+  const cmp = vert || (vh <= 520 && vw > vh); // teléfono parado o acostado: cabecera compacta
+  if (cmp !== MORE.on) { app.classList.toggle('cmp', cmp); compactUI(cmp); }
   const cs = getComputedStyle(stage);
   const aw = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
   const ah = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
@@ -1895,9 +2011,10 @@ function renderTracks() {
   const fam = S.st.every((x, t) => x === S.st[0] && !S.lay[t]) && S.st[0] < 4 ? S.st[0] : -1;
   sbs.forEach((b, i) => b.classList.toggle('on', i === fam));
   $('#sndMix').textContent = fam < 0 ? 'MIXTO' : '';
+  renderMoreSum();
 }
 function renderPats() {
-  renderSongTools();
+  renderSongTools(); renderMoreSum();
   pbs.forEach((b, i) => {
     b.classList.toggle('cur', i === S.cur);
     b.classList.toggle('has', hasNotes(i));
@@ -1906,7 +2023,7 @@ function renderPats() {
     b.setAttribute('aria-pressed', i === S.cur);
   });
 }
-function renderTone() { keySel.value = S.key; moodSel.value = Math.max(0, MOODS.findIndex(m => m.sc === S.scale)); }
+function renderTone() { keySel.value = S.key; moodSel.value = Math.max(0, MOODS.findIndex(m => m.sc === S.scale)); renderMoreSum(); }
 function patChanged() { renderTracks(); renderTone(); if (SH.open) renderStyles(); }
 function renderAll(anim) { renderTracks(); renderPads(anim); renderPats(); renderTone(); renderSong(); renderHum(); }
 function setCell(t, s, v) {
@@ -2080,7 +2197,7 @@ function play() {
   P.playing = true; P.queue = []; P.pat = S.cur; P.songEnd = false; clearTimeout(P.endT);
   if (songMode()) {
     if (!P.paused || P.si == null || P.si >= S.song.length) { P.si = SG.sel >= 0 && SG.sel < S.song.length ? SG.sel : 0; P.sr = 0; P.step = 0; }
-    P.pat = S.song[P.si].p; SG.pl = -1; songEl.classList.add('pl');
+    P.pat = S.song[P.si].p; SG.pl = -1; songEl.classList.add('pl'); renderSongPop();
   }
   P.paused = false;
   P.next = c.currentTime + .06;
@@ -2182,6 +2299,7 @@ function renderHum() {
   b.classList.toggle('on', S.hum > 0);
   b.querySelector('i').innerHTML = [1, 2, 3].map(k => `<b class="${k <= lv ? 'f' : ''}"></b>`).join('');
   b.setAttribute('aria-label', `Toque humano ${Math.round(S.hum * 100)}%`);
+  renderMoreSum();
 }
 
 /* ================= canción =================
@@ -2220,18 +2338,35 @@ function renderSong() {
 }
 function renderSongTools() {
   const T = $('#songTools'); if (!T) return;
-  const b = SG.sel >= 0 && S.song[SG.sel];
-  T.innerHTML = (b
-    ? `<button class="sgt" data-a="prev" title="Mover antes" aria-label="Mover antes">${sgIc('prev')}</button>`
-      + `<button class="sgt" data-a="minus" title="Una vez menos" aria-label="Una vez menos">−</button>`
-      + `<button class="sgt" data-a="plus" title="Una vez más" aria-label="Una vez más">+</button>`
-      + `<button class="sgt" data-a="next" title="Mover después" aria-label="Mover después">${sgIc('next')}</button>`
-      + `<button class="sgt" data-a="dup" title="Duplicar bloque" aria-label="Duplicar bloque">${sgIc('dup')}</button>`
-      + `<button class="sgt" data-a="del" title="Quitar bloque" aria-label="Quitar bloque">${sgIc('del')}</button>`
-    : `<button class="sgt" data-a="auto" title="Armar una canción con los patrones que tienen notas">AUTO</button>`
-      + `<button class="sgt${S.songLoop ? ' on' : ''}" data-a="loop" title="Repetir la canción al terminar" aria-label="Repetir al terminar" aria-pressed="${S.songLoop}">${sgIc('loop')}</button>`)
-    + `<button class="sgt add" data-a="add" title="Sumar el patrón ${LET[S.cur]} a la canción (G)">+ ${LET[S.cur]}</button>`;
+  T.innerHTML = `<button class="sgt" data-a="auto" title="Armar una canción con los patrones que tienen notas">AUTO</button>`
+    + `<button class="sgt${S.songLoop ? ' on' : ''}" data-a="loop" title="Repetir la canción al terminar" aria-label="Repetir al terminar" aria-pressed="${S.songLoop}">${sgIc('loop')}</button>`
+    + `<button class="sgt add" data-a="add" title="Sumar el patrón ${LET[S.cur]} a la canción (G)" aria-label="Sumar el patrón ${LET[S.cur]} a la canción">+ ${LET[S.cur]}</button>`;
+  renderSongPop();
 }
+// globo con las herramientas del bloque elegido, debajo del bloque
+function renderSongPop() {
+  const pop = $('#songPop'); if (!pop) return;
+  const b = SG.sel >= 0 && S.song[SG.sel];
+  if (!b || (P.playing && songMode())) { pop.hidden = true; return; }
+  pop.innerHTML = `<button class="sgt" data-a="prev" title="Mover antes" aria-label="Mover antes">${sgIc('prev')}</button>`
+    + `<button class="sgt" data-a="minus" title="Una vez menos" aria-label="Una vez menos">−</button>`
+    + `<span class="sgn" aria-live="polite">${LET[b.p]} ×${b.n}</span>`
+    + `<button class="sgt" data-a="plus" title="Una vez más" aria-label="Una vez más">+</button>`
+    + `<button class="sgt" data-a="next" title="Mover después" aria-label="Mover después">${sgIc('next')}</button>`
+    + `<button class="sgt" data-a="dup" title="Duplicar bloque" aria-label="Duplicar bloque">${sgIc('dup')}</button>`
+    + `<button class="sgt" data-a="del" title="Quitar bloque" aria-label="Quitar bloque">${sgIc('del')}</button>`
+    + `<button class="sgt x" data-a="done" title="Listo">OK</button>`;
+  pop.hidden = false; placePop();
+}
+function placePop() {
+  const pop = $('#songPop'); if (!pop || pop.hidden) return;
+  const el = songTrk.children[SG.sel]; if (!el || !el.classList.contains('sgb')) return;
+  const sr = songEl.getBoundingClientRect(), r = el.getBoundingClientRect(), pw = pop.offsetWidth;
+  const cx = r.left + r.width / 2 - sr.left, left = clamp(cx - pw / 2, 6, sr.width - pw - 6);
+  pop.style.left = left + 'px'; pop.style.setProperty('--ax', clamp(cx - left, 14, pw - 14) + 'px');
+}
+$('.sgwrap').addEventListener('scroll', () => requestAnimationFrame(placePop), { passive: true });
+addEventListener('resize', () => requestAnimationFrame(placePop));
 function scrollSel() {
   const el = songTrk.children[SG.sel]; if (!el || !el.classList.contains('sgb')) return;
   const w = songTrk.parentElement, x = el.offsetLeft, r = x + el.offsetWidth;
@@ -2328,9 +2463,55 @@ songEl.addEventListener('click', (e) => {
   if (!b) { if (e.target.closest('.sgwrap') && SG.sel >= 0) { SG.sel = -1; renderSong(); } return; }
   if (b.id === 'songOn') return toggleSong();
   if (b.classList.contains('sgb')) return songTap(+b.dataset.i);
+  if (b.dataset.a === 'done') { SG.sel = -1; renderSong(); return; }
   if (b.dataset.a) songAct(b.dataset.a);
 });
 $('#humBtn').addEventListener('click', () => { const i = HUM_STEPS.findIndex(x => x > S.hum + .01); setHum(i < 0 ? 0 : HUM_STEPS[i]); });
+
+
+/* ================= cabecera compacta (teléfono vertical) =================
+   En el teléfono parado, sonido, ambiente, mezcla y algunas herramientas pasan a un panel que se abre
+   desde la barra resumen. Son los mismos controles (se mueven, no se duplican), así que todo sigue igual. */
+const MORE = { on: false, ph: new Map() };
+const moreBtn = $('#moreBtn'), morePanel = $('#morePanel');
+function moveTo(el, parent) {
+  if (!MORE.ph.has(el)) { const c = document.createComment('lugar'); el.parentNode.insertBefore(c, el); MORE.ph.set(el, c); }
+  parent.appendChild(el);
+}
+function moveBack(el) { const c = MORE.ph.get(el); if (c && c.parentNode) c.parentNode.insertBefore(el, c); }
+function compactUI(on) {
+  if (on === MORE.on) return; MORE.on = on;
+  const sndbox = $('.sndbox'), tone = $('.box.tone'), parts = [[sndbox, '#mpSnd'], [tone, '#mpTone'], [$('#chainBtn'), '#mpChain'], [$('#rec'), '#mpTools'], [$('#micBtn'), '#mpTools'], [$('#clear'), '#mpTools']];
+  if (on) parts.forEach(([el, p]) => moveTo(el, $(p)));
+  else { parts.forEach(([el]) => moveBack(el)); setMore(false); }
+}
+function setMore(open) {
+  morePanel.hidden = !open; moreBtn.setAttribute('aria-expanded', open);
+  if (open) { renderMoreMix(); if (!RM) morePanel.animate([{ transform: 'translateY(-8px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 180, easing: 'ease-out' }); }
+}
+const moreOpen = () => MORE.on && !morePanel.hidden;
+function renderMoreSum() {
+  if (!moreBtn) return;
+  if (DJ.on) { $('#moreSum').innerHTML = '<span class="k">MÁS</span>Grabar en vivo · Tu voz · Borrar patrón'; return; }
+  const fam = S.st.every((x, t) => x === S.st[0] && !S.lay[t]) && S.st[0] < 4 ? FAM[S.st[0]] : 'Mixto';
+  const mx = bits(S.mix).filter(p => p !== S.cur).map(p => LET[p]).join(' ');
+  $('#moreSum').innerHTML = `<span class="k">SONIDO</span>${fam}<span class="k">AMBIENTE</span>${moodName(S.scale)}<span class="k">HUMANO</span>${Math.round(S.hum * 100)}%` + (mx ? `<span class="k mx">MEZCLA</span><span class="mx">${mx}</span>` : '');
+  $('#mpTitle').textContent = `PATRÓN ${LET[S.cur]}`;
+  if (moreOpen()) renderMoreMix();
+}
+function renderMoreMix() {
+  const box = $('#mpMix');
+  if (!box.children.length) for (let i = 0; i < NP; i++) {
+    const b = document.createElement('button'); b.textContent = LET[i]; b.setAttribute('aria-label', `Mezclar patrón ${LET[i]}`);
+    b.addEventListener('click', () => toggleMix(i)); box.appendChild(b);
+  }
+  [...box.children].forEach((b, i) => { b.classList.toggle('on', !!(S.mix & (1 << i))); b.classList.toggle('has', hasNotes(i)); b.classList.toggle('cur', i === S.cur); b.setAttribute('aria-pressed', !!(S.mix & (1 << i))); });
+}
+moreBtn.addEventListener('click', () => setMore(morePanel.hidden));
+$('#moreClose').addEventListener('click', () => setMore(false));
+// tocar la grilla o la canción cierra el panel
+['#stage', '#song'].forEach(sel => $(sel).addEventListener('pointerdown', () => { if (moreOpen()) setMore(false); }, { capture: true }));
+moodSel.addEventListener('change', renderMoreSum);
 
 /* ================= live play / record ================= */
 function live(t) {
@@ -3504,7 +3685,7 @@ function layoutDJ(aw, ah) {
 function setView(dj) {
   if (dj === DJ.on) return;
   ensureAudio();
-  DJ.on = dj;
+  DJ.on = dj; setMore(false); renderMoreSum();
   if (dj) {
     const a = S.cur, b = S.dj.b !== a && hasNotes(S.dj.b) ? S.dj.b : nextNonEmpty(a);
     DJ.d[0].pat = a; DJ.d[1].pat = b; DJ.d.forEach(dk => { dk.pend = -1; });
@@ -3555,6 +3736,7 @@ const isField = (el) => el && (el.tagName === 'INPUT' || el.tagName === 'TEXTARE
 addEventListener('keydown', (e) => {
   if (isField(document.activeElement)) { if (e.key === 'Escape') { document.activeElement.blur(); closeAll(); } return; }
   const mod = e.ctrlKey || e.metaKey, k = e.key, code = e.code;
+  if (k === 'Escape' && moreOpen() && !anyOpen()) { setMore(false); return; }
   if (k === 'Escape') { if (notesEl.classList.contains('on')) closeNotes(); else if (anyOpen()) closeAll(); else stop(); return; }
   if (SH.open && !mod && styleKeys(e)) return;
   if (!mod && $('#voice').classList.contains('on')) {

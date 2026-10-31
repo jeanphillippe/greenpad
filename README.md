@@ -260,6 +260,14 @@ HUMANO: 60
 
 El enlace de "Copiar enlace" también lleva la canción y el toque humano.
 
+### En el teléfono
+
+Parado o acostado, la cabecera se compacta para que la grilla tenga más lugar:
+
+- Arriba quedan Play, grilla/bandejas, tempo, dado, deshacer y menú, y los patrones A a H en una sola fila.
+- La barra que dice **SONIDO · AMBIENTE · HUMANO** muestra cómo está el patrón y, al tocarla, abre un panel con SONIDO, HUMANO, AMBIENTE, **Sumar a la mezcla** (las casillas de los patrones), CADENA, Grabar en vivo, Tu voz y Borrar patrón. Tocar la grilla o **Listo** lo cierra.
+- La canción ocupa una sola fila (el tiempo va dentro del botón CANCIÓN). Al tocar un bloque, sus herramientas aparecen en un globo debajo del bloque; **OK** lo cierra.
+
 ### Service worker
 
 `sw.js` ahora guarda cada página con su dirección (antes guardaba cualquier página como `index.html`) y guarda las grabaciones en una caché aparte que no se borra al subir `VERSION`.
