@@ -233,9 +233,22 @@ SONIDO tiene cuatro familias: **Banda** (micrófono cerca), **Acústico** (la mi
 - Los instrumentos melódicos suenan más brillantes cuanto más fuerte se tocan.
 - Mientras una grabación no llegó, suena el sintetizado de Greenpad. Al darle Play la primera vez espera unos segundos a que lleguen ("Afinando la banda").
 
-### Toque humano
+### Destiempo
 
-El botón **HUMANO** (al lado de SONIDO) tiene 4 niveles: apagado, 35, 65 y 100%. En el menú hay un control fino. Cada golpe sale con un poco más o menos de fuerza (acentos en los tiempos, hi-hat más suave entre tiempos, caja apenas atrás) y unos milisegundos corrido, como tocado por una persona. Apagado queda exacto, como una máquina.
+El botón **DESTIEMPO** (al lado de SONIDO) tiene 4 niveles: apagado, 35, 65 y 100%. En el menú hay un control fino. Cada golpe sale con un poco más o menos de fuerza (acentos en los tiempos, hi-hat más suave entre tiempos, caja apenas atrás) y unos milisegundos corrido, como tocado por una persona. Apagado queda exacto, como una máquina.
+
+### Mezcla por patrón
+
+Cada patrón guarda su propia mezcla: si estás editando H y tildás B y C, H suena siempre con B y C, en la grilla, en la canción y en las bandejas. Los demás patrones no se ven afectados. En las bandejas los patrones mezclados se marcan con un borde y al lado del nombre aparece "+B +C". Los `.txt` y beats viejos (una sola mezcla para todo) se pasan solos: cada patrón queda con esa mezcla.
+
+En el `.txt`, cada sección de patrón puede llevar su línea `MEZCLA: B C`.
+
+### Grabaciones
+
+- El micrófono (tecla `V`) graba un sonido en una de las 2 grabaciones y "Usar en" la pone en un instrumento **solo en el patrón que estás editando**. En los otros patrones ese instrumento sigue sonando normal, y cada patrón puede usar una grabación distinta en el mismo instrumento.
+- Si una grabación larga sigue sonando cuando pasás a un patrón donde el instrumento es normal, se apaga sola para no tapar al instrumento.
+- En el `.txt` cada patrón lleva `GRABACION: BS=g1+eco+L90` y las grabaciones van una sola vez al final, en la sección `[GRABACIONES]`. Los `.txt` viejos (con `VOZ:` y `[VOCES]`) se siguen importando.
+- **Bandejas:** en el centro hay dos botones, GRABACIONES 1 y 2. Mantenido apretado suena mientras lo tenés; con un toque corto queda sonando en loop hasta que lo volvés a tocar. Pasa por REVERB, ECO y LO-FI. En la compu, teclas `O` y `P`.
 
 ### Canción
 
@@ -255,17 +268,17 @@ En el `.txt` se agregan estas líneas (los .txt de Greenpad se importan igual; l
 CANCION: Ax2 Bx2 Ax2 Bx2 Cx2 Bx4
 MODO: cancion
 REPETIR: si
-HUMANO: 60
+DESTIEMPO: 60
 ```
 
-El enlace de "Copiar enlace" también lleva la canción y el toque humano.
+El enlace de "Copiar enlace" también lleva la canción, el destiempo y la mezcla de cada patrón (las grabaciones no, para eso está el `.txt`).
 
 ### En el teléfono
 
 Parado o acostado, la cabecera se compacta para que la grilla tenga más lugar:
 
 - Arriba quedan Play, grilla/bandejas, tempo, dado, deshacer y menú, y los patrones A a H en una sola fila.
-- La barra que dice **SONIDO · AMBIENTE · HUMANO** muestra cómo está el patrón y, al tocarla, abre un panel con SONIDO, HUMANO, AMBIENTE, **Sumar a la mezcla** (las casillas de los patrones), CADENA, Grabar en vivo, Tu voz y Borrar patrón. Tocar la grilla o **Listo** lo cierra.
+- La barra que dice **SONIDO · AMBIENTE · DESTIEMPO** muestra cómo está el patrón y, al tocarla, abre un panel con SONIDO, DESTIEMPO, AMBIENTE, **Sumar a la mezcla** (las casillas de los patrones), CADENA, Grabar en vivo, Grabar sonido y Borrar patrón. Tocar la grilla o **Listo** lo cierra.
 - La canción ocupa una sola fila (el tiempo va dentro del botón CANCIÓN). Al tocar un bloque, sus herramientas aparecen en un globo debajo del bloque; **OK** lo cierra.
 
 ### Service worker

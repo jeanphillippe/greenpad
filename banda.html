@@ -357,7 +357,7 @@ svg{display:block}
 .knob.act .kv,.knob:focus-visible .kv{opacity:1}
 .knob:focus-visible .kb{stroke:var(--cy)}
 .mxr{grid-area:m;display:flex;flex-direction:column;align-items:center;gap:12px;background:var(--head);border-radius:18px;padding:14px 12px;box-shadow:inset 0 0 0 1px var(--line);min-width:0}
-.dv .mxr{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"me kn" "me bt" "rp rp" "xf xf";gap:10px 12px;align-items:center;justify-items:center}
+.dv .mxr{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"me kn" "me bt" "gr gr" "rp rp" "xf xf";gap:10px 12px;align-items:center;justify-items:center}
 .mxh{font-size:10px;letter-spacing:.16em;font-weight:700;color:var(--ink)}
 .dv .mxh{display:none}
 .meters{grid-area:me;display:flex;gap:8px;align-items:flex-end;height:84px}
@@ -611,6 +611,22 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .cmp:not(.v) #songTime{bottom:7px}
 .cmp:not(.v) #stage{align-items:center;align-items:safe center}
 @media (max-width:350px){.v #top{gap:6px 6px}.v #bpm{font-size:26px}.v .arrows .rb{width:20px;height:20px}.v .tools{gap:4px}.v .tools .rb{width:28px;height:28px}.v .vsw{margin-left:4px}.v .vsw button{width:30px}.cmp .sgsw{padding:0 6px;padding-top:7px}.cmp #songTime{width:84px;padding-left:32px}.cmp .sgt{min-width:30px}.cmp .sgt[data-a="auto"]{font-size:8.5px}}
+
+/* ---- bandejas: grabaciones y mezcla ---- */
+.grabs{grid-area:gr;display:flex;gap:6px;align-items:center}
+.grabs .lbl{margin-right:2px}
+.gpad{position:relative;width:52px;height:40px;border:0;border-radius:10px;background:var(--chip);color:var(--ink2);font-family:var(--font);font-size:13px;font-weight:800;touch-action:none;overflow:hidden;transition:background .1s,color .1s}
+.gpad b{position:relative;z-index:1}
+.gpad i{position:absolute;left:0;bottom:0;height:3px;width:0;background:currentColor;opacity:.6}
+.gpad.empty{opacity:.45}
+.gpad.on{background:var(--red);color:#fff}
+.gpad.lock{box-shadow:inset 0 0 0 2px #fff}
+.gpad.on i{animation:gpbar var(--gd,1s) linear infinite}
+@keyframes gpbar{from{width:0}to{width:100%}}
+#dj.ds .gpad{width:42px;height:32px;font-size:11px}
+#dj.ds .grabs .lbl{display:none}
+.dpb.mx{box-shadow:inset 0 0 0 2px var(--or)}
+.dmx{font-style:normal;font-size:10px;font-weight:800;color:var(--or);margin-left:6px;letter-spacing:.04em}
 </style>
 </head>
 <body>
@@ -631,7 +647,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <div class="pats" id="pats" aria-label="Patrones"></div>
     </div>
     <div class="box sndbox">
-      <div class="pl"><span class="lbl">SONIDO</span><span id="sndMix"></span><button id="humBtn" class="chain" title="Toque humano: cada golpe sale un poco distinto, como tocado por una persona">HUMANO<i></i></button></div>
+      <div class="pl"><span class="lbl">SONIDO</span><span id="sndMix"></span><button id="humBtn" class="chain" title="Destiempo: cada golpe sale un poco corrido y con fuerza distinta, como tocado por una persona">DESTIEMPO<i></i></button></div>
       <div class="snds" id="snds" aria-label="Estilo de sonido para todos"></div>
     </div>
     <div class="box tone">
@@ -641,7 +657,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <canvas id="matrix" aria-hidden="true"></canvas>
     <div class="tools">
       <button id="rec" class="rb rec" aria-label="Grabar en vivo (R)" title="Grabar en vivo (R)"><i></i><span class="tlab">Grabar en vivo</span></button>
-      <button id="micBtn" class="rb mic" aria-label="Grabar tu voz (V)" title="Grabar tu voz y usarla como instrumento (V)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5.5" y="1.8" width="5" height="8" rx="2.5"/><path d="M3.2 7.6a4.8 4.8 0 009.6 0M8 12.4v2.2"/></svg><span class="tlab">Tu voz</span></button>
+      <button id="micBtn" class="rb mic" aria-label="Grabar un sonido (V)" title="Grabar un sonido y usarlo como instrumento (V)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5.5" y="1.8" width="5" height="8" rx="2.5"/><path d="M3.2 7.6a4.8 4.8 0 009.6 0M8 12.4v2.2"/></svg><span class="tlab">Grabar sonido</span></button>
       <button id="diceBtn" class="rb" aria-label="Inventar un patrón (D)" title="Inventar un patrón que suene bien (D)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="2.5" width="11" height="11" rx="2.6"/><circle cx="5.6" cy="5.6" r="1" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="10.4" cy="10.4" r="1" fill="currentColor" stroke="none"/></svg></button>
       <button id="undo" class="rb" aria-label="Deshacer" title="Deshacer (Ctrl+Z)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4L2 7l3 3"/><path d="M2 7h7.5a4 4 0 010 8H7"/></svg></button>
       <button id="clear" class="rb" aria-label="Borrar patrón" title="Borrar patrón (Supr)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 9h5.6l.7-9"/></svg><span class="tlab">Borrar patrón</span></button>
@@ -661,7 +677,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <div class="mp-sec mp-mix">
         <div class="pl"><span class="lbl">SUMAR A LA MEZCLA</span><span id="mpChain"></span></div>
         <div class="mpmix" id="mpMix"></div>
-        <p class="mp-hint">Los patrones tildados suenan junto con el que estás editando.</p>
+        <p class="mp-hint">Los patrones tildados suenan junto con el que estás editando, también en la canción y en las bandejas.</p>
       </div>
       <div class="mp-sec mptools" id="mpTools"></div>
     </div>
@@ -711,7 +727,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <h3>Sonido</h3>
     <label class="sl">Swing <output id="swO"></output><input type="range" id="sw" min="0" max="100" step="1"></label>
     <label class="sl">Volumen general <output id="volO"></output><input type="range" id="vol" min="0" max="100" step="1"></label>
-    <label class="sl">Toque humano <output id="humO"></output><input type="range" id="hum" min="0" max="100" step="1"></label>
+    <label class="sl">Destiempo <output id="humO"></output><input type="range" id="hum" min="0" max="100" step="1"></label>
     <label class="tg"><input type="checkbox" id="chain"> Encadenar patrones con notas (C), cuando la canción está apagada</label>
     <label class="tg"><input type="checkbox" id="lite"> Modo liviano: menos reverb y menos sonidos superpuestos, para equipos que se traban</label>
     <h4>Nota base (opcional)</h4>
@@ -738,12 +754,12 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 <div id="help" class="modal" aria-hidden="true">
   <div class="card">
     <h2>Cómo se usa</h2>
-    <p class="tips" style="margin-top:0"><b>Banda:</b> los instrumentos son grabaciones de verdad (batería, bajo, guitarras, piano, saxo, vibráfono y más). <b>HUMANO</b> hace que cada golpe salga un poco distinto, como tocado por una persona. SONIDO cambia todo el patrón a Banda, Acústico (con aire de sala), Noventa (grabación gastada) o Electro (los sintetizados).<br><br><b>Canción:</b> la barra de abajo de la cabecera es la línea de tiempo. Elegí un patrón y tocá <b>+</b> (o la tecla G) para sumarlo; cada bloque dice cuántas veces se repite. Tocá un bloque para elegirlo: aparecen botones para moverlo, repetirlo más o menos veces, duplicarlo o quitarlo, y Play arranca desde ahí. <b>AUTO</b> arma una canción con intro, verso y estribillo usando los patrones que tengan notas. Con <b>CANCIÓN</b> prendido (tecla L), Play toca el tema entero; mientras suena, tocar un bloque salta a ese bloque al terminar el compás. El botón de las flechas repite la canción; si está apagado, termina con un platillo.<br><br><b>No hace falta saber música.</b> Elegí un ejemplo del menú o tocá el dado para inventar un patrón, y después cambiá lo que quieras.<br><br>
-    <b>Instrumentos:</b> arriba la batería (bombo, caja, hi-hat, percusión) y abajo los melódicos (bajo, guitarra, acordes, melodía). Tocá un ícono para escucharlo; mantenelo apretado (o clic derecho) para elegir su estilo, volumen, inventar una línea nueva o usar tu voz. El <b>+</b> de cada estilo lo suma como capa.<br><br>
+    <p class="tips" style="margin-top:0"><b>Banda:</b> los instrumentos son grabaciones de verdad (batería, bajo, guitarras, piano, saxo, vibráfono y más). <b>DESTIEMPO</b> hace que cada golpe salga un poco corrido y con fuerza distinta, como tocado por una persona. SONIDO cambia todo el patrón a Banda, Acústico (con aire de sala), Noventa (grabación gastada) o Electro (los sintetizados).<br><br><b>Canción:</b> la barra de abajo de la cabecera es la línea de tiempo. Elegí un patrón y tocá <b>+</b> (o la tecla G) para sumarlo; cada bloque dice cuántas veces se repite. Tocá un bloque para elegirlo: aparecen botones para moverlo, repetirlo más o menos veces, duplicarlo o quitarlo, y Play arranca desde ahí. <b>AUTO</b> arma una canción con intro, verso y estribillo usando los patrones que tengan notas. Con <b>CANCIÓN</b> prendido (tecla L), Play toca el tema entero; mientras suena, tocar un bloque salta a ese bloque al terminar el compás. El botón de las flechas repite la canción; si está apagado, termina con un platillo.<br><br><b>No hace falta saber música.</b> Elegí un ejemplo del menú o tocá el dado para inventar un patrón, y después cambiá lo que quieras.<br><br>
+    <b>Instrumentos:</b> arriba la batería (bombo, caja, hi-hat, percusión) y abajo los melódicos (bajo, guitarra, acordes, melodía). Tocá un ícono para escucharlo; mantenelo apretado (o clic derecho) para elegir su estilo, volumen, inventar una línea nueva o usar una grabación. El <b>+</b> de cada estilo lo suma como capa.<br><br>
     <b>Altura:</b> en los melódicos, cuanto más lleno está el círculo, más agudo suena. Mantené apretado un paso (o clic derecho) para elegir la altura; en la compu también con la rueda del mouse o Shift + ↑ ↓. <b>AMBIENTE</b> elige qué notas usan bajo, guitarra, acordes y melodía: el mismo patrón suena oscuro, triste, alegre, etc. La batería no cambia, y todas las alturas combinan entre sí. Cada patrón (A a H) guarda su propio AMBIENTE y su propio SONIDO, igual que los estilos que elijas para cada instrumento.<br><br>
-    <b>Tu voz:</b> el botón del micrófono tiene 2 grabaciones de hasta 8 segundos. Podés recortar dónde empieza y dónde termina, hacerla más grave o más aguda, darla vuelta, ponerle eco o voz de robot, y elegir en qué instrumento usarla. Siempre suena completa; en los melódicos además sube y baja según la altura de cada paso.<br><br>
-    <b>Patrones A a H:</b> 8 grillas distintas. Tocá la letra para editarla. Tildá la casilla de una letra para que suene <b>mezclada</b> con la que estás editando; sus notas se ven como fantasmas en la grilla. Con CADENA suenan uno detrás de otro.</p>
-    <p class="tips"><b>Bandejas</b> (botón del disco al lado de Play, o tecla B): dos platos que suenan juntos, cada uno con el patrón que elijas. El crossfader pasa de uno al otro. Arrastrá un disco con el dedo o el mouse para hacer scratch; FRENO lo para como un tocadiscos y REBOBINAR lo tira para atrás. GRAVES, MEDIOS y AGUDOS cortan esa parte del sonido, FILTRO deja solo graves o solo agudos, y los íconos de abajo apagan instrumentos de esa bandeja. En el centro: REVERB, ECO, LO-FI, VINILO (ruido de disco), MODO 90 y REPETIR (mantener apretado repite el último pedacito).</p>
+    <b>Grabar:</b> el botón del micrófono tiene 2 grabaciones de hasta 8 segundos. Podés recortar dónde empieza y dónde termina, hacerla más grave o más aguda, darla vuelta, ponerle eco o efecto robot, y elegir en qué instrumento usarla. La grabación queda en ese instrumento solo en el patrón que estás editando: en los otros patrones el instrumento sigue sonando normal, y cada patrón puede usar una grabación distinta. Siempre suena completa; en los melódicos además sube y baja según la altura de cada paso. En las bandejas, los botones 1 y 2 de GRABACIONES la tocan: mantenelos apretados para que suene mientras los tenés, o tocalos una vez para dejarla sonando.<br><br>
+    <b>Patrones A a H:</b> 8 grillas distintas. Tocá la letra para editarla. Tildá la casilla de otra letra para que suene <b>mezclada</b> con la que estás editando (cada patrón guarda su propia mezcla, y se respeta en la canción y en las bandejas); sus notas se ven como fantasmas en la grilla. Con CADENA suenan uno detrás de otro.</p>
+    <p class="tips"><b>Bandejas</b> (botón del disco al lado de Play, o tecla B): dos platos que suenan juntos, cada uno con el patrón que elijas. El crossfader pasa de uno al otro. Arrastrá un disco con el dedo o el mouse para hacer scratch; FRENO lo para como un tocadiscos y REBOBINAR lo tira para atrás. GRAVES, MEDIOS y AGUDOS cortan esa parte del sonido, FILTRO deja solo graves o solo agudos, y los íconos de abajo apagan instrumentos de esa bandeja. Cada bandeja toca su patrón y los que tenga tildados en su mezcla (se ven como +B +C al lado del nombre). En el centro: REVERB, ECO, LO-FI, VINILO (ruido de disco), MODO 90, GRABACIONES (1 y 2: mantener apretado para que suene mientras lo tenés, o tocar una vez para dejarla sonando; teclas O y P) y REPETIR (mantener apretado repite el último pedacito).</p>
     <h2 style="margin-top:18px">Atajos de teclado</h2>
     <div class="keys">
       <div>Play / pausa <kbd>Espacio</kbd></div>
@@ -756,11 +772,10 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <div>Mover cursor <kbd>←</kbd><kbd>↑</kbd><kbd>→</kbd><kbd>↓</kbd></div>
       <div>Marcar paso <kbd>Enter</kbd> o <kbd>X</kbd></div>
       <div>Subir / bajar altura <kbd>Shift</kbd>+<kbd>↑</kbd> <kbd>↓</kbd></div>
-      <div>Grabar tu voz <kbd>V</kbd></div>
+      <div>Grabar un sonido <kbd>V</kbd></div>
       <div>Patrón anterior / siguiente <kbd>,</kbd> <kbd>.</kbd></div>
       <div>Ir a patrón A…H <kbd>Alt</kbd>+<kbd>1</kbd>…<kbd>8</kbd></div>
-      <div>Mezclar patrón actual <kbd>X</kbd> en la letra o <kbd>Q</kbd></div>
-      <div>Tempo ±1 / ±10 <kbd>+</kbd> <kbd>-</kbd> / <kbd>RePág</kbd> <kbd>AvPág</kbd></div>
+            <div>Tempo ±1 / ±10 <kbd>+</kbd> <kbd>-</kbd> / <kbd>RePág</kbd> <kbd>AvPág</kbd></div>
       <div>Tap tempo <kbd>T</kbd></div>
       <div>Grabar en vivo <kbd>R</kbd></div>
       <div>Encadenar patrones <kbd>C</kbd></div>
@@ -814,7 +829,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
   <div class="card sh">
     <div class="shh">
       <div class="shic" style="color:var(--red)"><svg viewBox="0 0 16 16" style="width:30px;height:30px" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5.5" y="1.8" width="5" height="8" rx="2.5"/><path d="M3.2 7.6a4.8 4.8 0 009.6 0M8 12.4v2.2"/></svg></div>
-      <div class="grow"><span class="lbl">GRABÁ UN SONIDO</span><b>Tu voz como instrumento</b></div>
+      <div class="grow"><span class="lbl">GRABÁ UN SONIDO</span><b>Una grabación como instrumento</b></div>
       <div class="shnav"><button class="rb" data-close aria-label="Cerrar"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
     </div>
     <div class="vslots" id="vSlots"><button class="vchip" data-s="0">Grabación 1</button><button class="vchip" data-s="1">Grabación 2</button></div>
@@ -918,11 +933,11 @@ function rowsToPat(rows) {
   return p;
 }
 function blank() {
-  return withPS({ v: 6, id: null, name: 'Mi tema', bpm: 120, swing: 0, chain: false, vol: .8, cur: 0, dirty: false, key: 9, mix: 0,
+  return withPS({ v: 7, id: null, name: 'Mi tema', bpm: 120, swing: 0, chain: false, vol: .8, cur: 0, dirty: false, key: 9,
     song: [], songOn: false, songLoop: true, hum: .6,
     fx: { rev: 0, eco: 0, lofi: 0, vin: 0 }, dj: { a: 0, b: 1, x: 0, va: 1, vb: 1 },
-    ps: Array.from({ length: NP }, () => ({ st: Array(NT).fill(0), lay: Array(NT).fill(0), sc: 2 })),
-    tune: Array(NT).fill(0), lvl: Array(NT).fill(1), smp: Array(NT).fill(null),
+    ps: Array.from({ length: NP }, () => ({ st: Array(NT).fill(0), lay: Array(NT).fill(0), sc: 2, mix: 0, smp: Array(NT).fill(null) })),
+    tune: Array(NT).fill(0), lvl: Array(NT).fill(1),
     mutes: Array(NT).fill(false), pats: Array.from({ length: NP }, emptyPat) });
 }
 // cada patrón guarda su sonido (estilo y capas de cada instrumento) y su ambiente en ps[p].
@@ -933,6 +948,9 @@ function withPS(d) {
     st: { get: () => q().st, set: (v) => { q().st = v; }, configurable: true },
     lay: { get: () => q().lay, set: (v) => { q().lay = v; }, configurable: true },
     scale: { get: () => q().sc, set: (v) => { q().sc = v; }, configurable: true },
+    // cada patrón tiene su mezcla (qué otros patrones suenan con él) y sus grabaciones por instrumento
+    mix: { get: () => q().mix, set: (v) => { q().mix = v; }, configurable: true },
+    smp: { get: () => q().smp, set: (v) => { q().smp = v; }, configurable: true },
   });
   return d;
 }
@@ -966,7 +984,7 @@ function normalize(o) {
   // beats viejos (un solo sonido y ambiente para todo): se copian a los 8 patrones
   const srcPS = (p) => (Array.isArray(o.ps) && o.ps[p] ? o.ps[p] : { st: o.st, lay: o.lay, sc: o.scale });
   for (let p = 0; p < NP; p++) { const sc = srcPS(p).sc; d.ps[p].sc = clamp(sc == null ? 2 : sc | 0, 0, SCALES.length - 1); }
-  d.mix = (o.mix | 0) & 255;
+  const legMix = (o.mix | 0) & 255; // beats viejos: una sola mezcla para todos los patrones
   const ofx = o.fx || {}, odj = o.dj || {};
   d.fx = { rev: clamp(+ofx.rev || 0, 0, 1), eco: clamp(+ofx.eco || 0, 0, 1), lofi: clamp(+ofx.lofi || 0, 0, 1), vin: ofx.vin ? 1 : 0 };
   d.dj = { a: clamp(odj.a | 0, 0, NP - 1), b: clamp(odj.b == null ? 1 : odj.b | 0, 0, NP - 1), x: clamp(+odj.x || 0, 0, 1), va: clamp(odj.va == null ? 1 : +odj.va, 0, 1.2), vb: clamp(odj.vb == null ? 1 : +odj.vb, 0, 1.2) };
@@ -976,18 +994,19 @@ function normalize(o) {
   d.id = typeof o.id === 'string' ? o.id : null;
   d.dirty = !!o.dirty;
   for (let t = 0; t < NT; t++) {
-    const ns = VOICES[t].length + 1; // +1: el lugar de "Tu voz"
+    const ns = VOICES[t].length + 1; // +1: el lugar de "Grabación"
     d.mutes[t] = !!(o.mutes && o.mutes[t]);
-    const sm = o.smp && o.smp[t];
-    if (sm && typeof sm.id === 'string') { const len = clamp(+sm.len || 1, .05, 1); d.smp[t] = { id: sm.id, rev: !!sm.rev, echo: !!sm.echo, robot: !!sm.robot, len, a: clamp(+sm.a || 0, 0, len - .05), pit: Math.round(clamp(+sm.pit || 0, -12, 12)) }; }
-    else d.smp[t] = null;
+    const sanSmp = (sm) => { if (!sm || typeof sm.id !== 'string') return null; const len = clamp(+sm.len || 1, .05, 1); return { id: sm.id, rev: !!sm.rev, echo: !!sm.echo, robot: !!sm.robot, len, a: clamp(+sm.a || 0, 0, len - .05), pit: Math.round(clamp(+sm.pit || 0, -12, 12)) }; };
     for (let p = 0; p < NP; p++) {
       const sp = srcPS(p), q = d.ps[p];
       let st0 = Array.isArray(sp.st) ? sp.st[t] | 0 : 0, ly0 = Array.isArray(sp.lay) ? sp.lay[t] | 0 : 0;
-      // v5 sumó la guitarra "Limpia": "Tu voz" de la guitarra pasó del lugar 5 al 6
+      // v5 sumó la guitarra "Limpia": "Grabación" de la guitarra pasó del lugar 5 al 6
       if (t === 5 && !(o.v >= 5)) { if (st0 === 5) st0 = 6; if (ly0 & 32) ly0 = (ly0 & ~32) | 64; }
       q.st[t] = clamp(st0, 0, ns - 1);
       q.lay[t] = ly0 & ((1 << ns) - 1) & ~(1 << q.st[t]);
+      const ssrc = Array.isArray(sp.smp) ? sp.smp : Array.isArray(o.smp) ? o.smp : []; // beats viejos: una grabación por instrumento para todos los patrones
+      q.smp[t] = sanSmp(ssrc[t]);
+      if (t === 0) q.mix = ((sp.mix != null ? sp.mix : legMix) | 0) & 255 & ~(1 << p);
     }
     d.tune[t] = Array.isArray(o.tune) ? Math.round(clamp(+o.tune[t] || 0, -12, 12)) : 0;
     d.lvl[t] = Array.isArray(o.lvl) && o.lvl[t] != null && isFinite(o.lvl[t]) ? clamp(+o.lvl[t], 0, 1.5) : 1;
@@ -1044,7 +1063,7 @@ function ensureAudio() {
 }
 
 /* ================= efectos y bandejas (audio) ================= */
-// Cadena: voces -> bandeja A o B (scratch/freno/repetir, cortes, filtro, volumen y crossfader)
+// Cadena: sonidos -> bandeja A o B (scratch/freno/repetir, cortes, filtro, volumen y crossfader)
 //         -> efectos (lo-fi, reverb, eco, vinilo) -> volumen general -> compresor -> salida
 const DECK_WORKLET = `
 class GPDeck extends AudioWorkletProcessor {
@@ -1610,14 +1629,14 @@ const styleIndex = (t, name) => {
   const n = norm(name); if (/^[0-7]$/.test(n)) return Math.min(+n, VOICES[t].length - 1);
   let i = VOICES[t].findIndex(x => norm(x.n) === n); if (i < 0) i = FAM.findIndex(x => norm(x) === n);
   if (i < 0 && n === 'STUDIO') i = 0; if (i < 0 && n === 'CHIP') i = 2;
-  if (i < 0 && (n === 'TUVOZ' || n === 'VOZ')) i = VC(t);
+  if (i < 0 && (n === 'GRABACION' || n === 'GRAB' || n === 'TUVOZ' || n === 'VOZ')) i = VC(t);
   if (i < 0 && ALIAS[n] != null) i = typeof ALIAS[n] === 'number' ? Math.min(ALIAS[n], VOICES[t].length - 1) : VOICES[t].findIndex(x => norm(x.n) === norm(ALIAS[n]));
   return i;
 };
-const VC = (t) => VOICES[t].length;                    // índice del estilo "Tu voz"
+const VC = (t) => VOICES[t].length;                    // índice del estilo "Grabación"
 const hasSmp = (t) => !!(S.smp[t] && SMP.has(S.smp[t].id));
 const effSt = (t) => S.st[t] === VC(t) && !hasSmp(t) ? 0 : S.st[t];
-const styleName = (t, i) => i === VC(t) ? 'Tu voz' : VOICES[t][i].n;
+const styleName = (t, i) => i === VC(t) ? 'Grabación' : VOICES[t][i].n;
 const stylesOf = (t) => { const p = effSt(t); return [p, ...bits(S.lay[t]).filter(i => i !== p && (i !== VC(t) || hasSmp(t)))]; };
 /* ---- rendimiento (iPhone / iPad) ----
    Cada golpe entra en un "grupo" (un nodo de volumen propio). Así se puede:
@@ -1630,7 +1649,7 @@ const POLY0 = [2, 2, 1, 3, 2, 3, 3, 2], POLY = POLY0.slice();   // sonidos a la 
 const MAXV0 = /iPhone|iPad|iPod|Android/.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent)) ? 40 : 72;
 let MAXV = MAXV0;
 const VG = { live: [], keys: new Map() };
-let VLEN = 0; // largo máximo del último sonido de voz armado (para saber cuándo limpiar)
+let VLEN = 0; // largo máximo del último sonido grabado armado (para saber cuándo limpiar)
 function vgFade(x, t, tc) {
   try { x.g.gain.setTargetAtTime(0, Math.max(t, AU.ctx.currentTime), tc); } catch {}
   x.end = Math.min(x.end, Math.max(t, AU.ctx.currentTime) + tc * 8);
@@ -1675,9 +1694,11 @@ function playTrack(tr, t, v = 1, val = 1, dur = .3, dest) {
   while (older.length >= POLY[tr]) vgFade(older.shift(), t, tr === 2 ? .01 : .03);
   // tope general
   if (VG.live.length >= MAXV) { const x = VG.live.find(y => y.end > t && y.t < t); if (x) vgFade(x, t, .02); }
+  const list = stylesOf(tr), isRec = list.includes(VC(tr));
+  if (!isRec) for (const y of arr) if (y.rec && y.t < t && y.end > t) vgFade(y, t, .04); // la grabación de otro patrón se apaga cuando el instrumento vuelve a lo normal
   const vg = c.createGain(); vg.connect(o); vg.__vg = true;
   const info = TR[tr].mel ? { f: mtof(midiOf(tr, val || 1)), fs: TR[tr].chord || TR[tr].id === 'GT' ? chordOf(tr, val || 1) : null, dur } : null;
-  const list = stylesOf(tr), k = (S.lvl[tr] == null ? 1 : S.lvl[tr]) / Math.sqrt(list.length);
+  const k = (S.lvl[tr] == null ? 1 : S.lvl[tr]) / Math.sqrt(list.length);
   const pf = Math.pow(2, (S.tune[tr] || 0) / 12);
   let end = t + .05;
   PF = pf; VLEN = 0;
@@ -1693,7 +1714,7 @@ function playTrack(tr, t, v = 1, val = 1, dur = .3, dest) {
     }
   } finally { PF = 1; }
   if (vg.__echo) vg.connect(echoBus());
-  const x = { g: vg, t, end };
+  const x = { g: vg, t, end, rec: isRec };
   arr.push(x); VG.keys.set(key, arr); VG.live.push(x);
 }
 
@@ -1730,7 +1751,7 @@ function sampleBuf(id, rev) {
 }
 async function ensureSamples() {
   let got = false;
-  for (const sm of S.smp) if (sm && !SMP.has(sm.id)) { const r = await IDB.get(sm.id); if (r && r.b64) { addSample(sm.id, r.b64); got = true; } }
+  for (const sm of S.ps.flatMap(q => q.smp)) if (sm && !SMP.has(sm.id)) { const r = await IDB.get(sm.id); if (r && r.b64) { addSample(sm.id, r.b64); got = true; } }
   if (got) { renderTracks(); if (SH.open) renderStyles(); }
 }
 function echoBus() {
@@ -1983,7 +2004,7 @@ function follow(s) {
 }
 
 /* ================= render ================= */
-const mixedFor = (cur) => bits(S.mix).filter(p => p !== cur);
+const mixedFor = (p) => bits(S.ps[p].mix).filter(x => x !== p);
 function ghostVal(t, s) { for (const p of mixedFor(S.cur)) { const v = S.pats[p][t][s]; if (v) return v; } return 0; }
 function paintPad(t, s) {
   const el = pads[t][s], v = S.pats[S.cur][t][s], gv = v ? 0 : ghostVal(t, s);
@@ -2019,7 +2040,7 @@ function renderPats() {
     b.classList.toggle('cur', i === S.cur);
     b.classList.toggle('has', hasNotes(i));
     b.classList.toggle('q', i === P.pending);
-    b.classList.toggle('mx', !!(S.mix & (1 << i)));
+    b.classList.toggle('mx', i !== S.cur && !!(S.mix & (1 << i)));
     b.setAttribute('aria-pressed', i === S.cur);
   });
 }
@@ -2119,10 +2140,15 @@ function djSchedule(s, t) {
     const dest = AU.decks[d].in, mute = DJ.d[d].mute;
     for (let tr = 0; tr < NT; tr++) {
       if (S.mutes[tr] || (mute & (1 << tr))) continue;
-      const v = S.pats[p][tr][s]; if (!v) continue;
-      CP = p; // cada bandeja suena con el sonido y ambiente de su patrón
-      const h = humanize(tr, s);
-      try { playTrack(tr, t + h.dt, h.v, v, TR[tr].mel ? noteLen(S.pats[p][tr], s) : .3, dest); } finally { CP = null; }
+      const done = new Set();
+      for (const pp of [p, ...mixedFor(p)]) { // la bandeja toca su patrón y los que están tildados con él
+        const v = S.pats[pp][tr][s]; if (!v) continue;
+        const q = S.ps[pp], key = (TR[tr].mel ? v + ':' + q.sc : 1) + ':' + q.st[tr] + ':' + q.lay[tr];
+        if (done.has(key)) continue; done.add(key);
+        CP = pp; // cada patrón suena con su sonido y ambiente
+        const h = humanize(tr, s);
+        try { playTrack(tr, t + h.dt, h.v, v, TR[tr].mel ? noteLen(S.pats[pp][tr], s) : .3, dest); } finally { CP = null; }
+      }
     }
   });
   P.queue.push({ s, t, p: P.pat, dj: pats });
@@ -2260,17 +2286,18 @@ function selectPattern(i) {
   renderPats(); save();
 }
 function toggleMix(i) {
-  S.mix ^= (1 << i);
+  if (i === S.cur) return toast(`Estás editando ${LET[i]}: tildá otras letras para que suenen junto con ${LET[i]}`, 2200);
+  pushUndo(); S.mix ^= (1 << i);
   const on = !!(S.mix & (1 << i));
-  renderPats(); renderPads(); save();
+  renderPats(); renderPads(); save(); if (DJ.on) renderDJ();
   if (!RM) bump(pbs[i], 1.12, 180);
   if (on && !hasNotes(i)) toast(`Patrón ${LET[i]} tildado, pero todavía está vacío`, 1800);
-  else if (on) toast(i === S.cur ? `${LET[i]} queda en la mezcla cuando pases a otro patrón` : `${LET[i]} suena mezclado con el que estás editando`, 1800);
-  else toast(`${LET[i]} fuera de la mezcla`, 1100);
+  else if (on) toast(`${LET[i]} suena junto con ${LET[S.cur]} (también en la canción y en las bandejas)`, 2000);
+  else toast(`${LET[i]} ya no suena con ${LET[S.cur]}`, 1200);
 }
 
 
-/* ================= toque humano =================
+/* ================= destiempo (toque humano) =================
    Un baterista no pega todos los golpes igual ni exactamente en la grilla: acá se le da a cada golpe
    un poco de fuerza distinta (acentos en los tiempos, semicorcheas más suaves) y unos milisegundos de diferencia. */
 const HZ0 = { dt: 0, v: 1 };
@@ -2291,14 +2318,14 @@ function humanize(tr, s) {
 const HUM_STEPS = [0, .35, .65, 1];
 function setHum(v, quiet) {
   S.hum = clamp(v, 0, 1); save(); renderHum(); syncDrawer();
-  if (!quiet) toast(S.hum ? `Toque humano ${Math.round(S.hum * 100)}%: cada golpe sale un poco distinto, como tocado a mano` : 'Toque humano apagado: todo exacto, como una máquina', 2000);
+  if (!quiet) toast(S.hum ? `Destiempo ${Math.round(S.hum * 100)}%: cada golpe sale un poco corrido y con fuerza distinta, como tocado a mano` : 'Destiempo apagado: todo exacto, como una máquina', 2000);
 }
 function renderHum() {
   const b = $('#humBtn'); if (!b) return;
   const lv = HUM_STEPS.reduce((a, x, i) => (S.hum >= x - .01 ? i : a), 0);
   b.classList.toggle('on', S.hum > 0);
   b.querySelector('i').innerHTML = [1, 2, 3].map(k => `<b class="${k <= lv ? 'f' : ''}"></b>`).join('');
-  b.setAttribute('aria-label', `Toque humano ${Math.round(S.hum * 100)}%`);
+  b.setAttribute('aria-label', `Destiempo ${Math.round(S.hum * 100)}%`);
   renderMoreSum();
 }
 
@@ -2492,10 +2519,10 @@ function setMore(open) {
 const moreOpen = () => MORE.on && !morePanel.hidden;
 function renderMoreSum() {
   if (!moreBtn) return;
-  if (DJ.on) { $('#moreSum').innerHTML = '<span class="k">MÁS</span>Grabar en vivo · Tu voz · Borrar patrón'; return; }
+  if (DJ.on) { $('#moreSum').innerHTML = '<span class="k">MÁS</span>Grabar en vivo · Grabar sonido · Borrar patrón'; return; }
   const fam = S.st.every((x, t) => x === S.st[0] && !S.lay[t]) && S.st[0] < 4 ? FAM[S.st[0]] : 'Mixto';
   const mx = bits(S.mix).filter(p => p !== S.cur).map(p => LET[p]).join(' ');
-  $('#moreSum').innerHTML = `<span class="k">SONIDO</span>${fam}<span class="k">AMBIENTE</span>${moodName(S.scale)}<span class="k">HUMANO</span>${Math.round(S.hum * 100)}%` + (mx ? `<span class="k mx">MEZCLA</span><span class="mx">${mx}</span>` : '');
+  $('#moreSum').innerHTML = `<span class="k">SONIDO</span>${fam}<span class="k">AMBIENTE</span>${moodName(S.scale)}<span class="k">DESTIEMPO</span>${Math.round(S.hum * 100)}%` + (mx ? `<span class="k mx">MEZCLA</span><span class="mx">${mx}</span>` : '');
   $('#mpTitle').textContent = `PATRÓN ${LET[S.cur]}`;
   if (moreOpen()) renderMoreMix();
 }
@@ -2807,10 +2834,15 @@ function setAllStyles(i) {
 /* ================= text format ================= */
 const tok = (s) => s.replace(/\s+/g, '_');
 const moodName = (sc) => (MOODS.find(m => m.sc === sc) || SCALES[sc] || SCALES[0]).n;
-function patLines(p) {
+const grabTok = (ref, sm) => [ref, sm.rev && 'reves', sm.echo && 'eco', sm.robot && 'robot', `L${Math.round(sm.len * 100)}`, sm.a > 0 && `I${Math.round(sm.a * 100)}`, sm.pit && `T${sm.pit}`].filter(Boolean).join('+');
+function patLines(p, refs) {
   CP = p;
-  try { return [`AMBIENTE: ${moodName(S.scale)}`, `ESTILOS: ${TR.map((x, t) => `${x.id}=${stylesOf(t).map(i => tok(styleName(t, i))).join('+')}`).join(' ')}`]; }
-  finally { CP = null; }
+  try {
+    const L = [`AMBIENTE: ${moodName(S.scale)}`, `ESTILOS: ${TR.map((x, t) => `${x.id}=${stylesOf(t).map(i => tok(styleName(t, i))).join('+')}`).join(' ')}`];
+    const mx = mixedFor(p); if (mx.length) L.push(`MEZCLA: ${mx.map(i => LET[i]).join(' ')}`);
+    if (refs) { const g = TR.map((x, t) => { const sm = S.smp[t]; return sm && refs.has(sm.id) ? `${x.id}=${grabTok(refs.get(sm.id), sm)}` : ''; }).filter(Boolean); if (g.length) L.push(`GRABACION: ${g.join(' ')}`); }
+    return L;
+  } finally { CP = null; }
 }
 const stInto = (q) => (t, x) => {
   const parts = x.split('+').map(y => styleIndex(t, y)).filter(i => i >= 0);
@@ -2820,23 +2852,23 @@ const scaleOf = (v) => { const n = norm(v); let i = MOODS.findIndex(m => norm(m.
 function toText() {
   const L2 = ['# GREENPAD BANDA beat v3', '# Batería: x = golpe, . = silencio. Melódicos: 1 a 8 = nota de la escala.', '# Podés editarlo a mano y volver a importarlo. Cada patrón lleva su AMBIENTE y sus ESTILOS.', '',
     `NOMBRE: ${S.name}`, `BPM: ${S.bpm}`, `SWING: ${S.swing}`, `TONO: ${NOTES[S.key]} ${SCALES[S.scale].n}`,
-    `CANCION: ${S.song.map(b => LET[b.p] + 'x' + b.n).join(' ') || '-'}`, `MODO: ${S.songOn ? 'cancion' : 'patron'}`, `REPETIR: ${S.songLoop ? 'si' : 'no'}`, `HUMANO: ${Math.round(S.hum * 100)}`,
-    `CADENA: ${S.chain ? 'si' : 'no'}`, `MEZCLA: ${bits(S.mix).map(i => LET[i]).join(' ') || '-'}`,
+    `CANCION: ${S.song.map(b => LET[b.p] + 'x' + b.n).join(' ') || '-'}`, `MODO: ${S.songOn ? 'cancion' : 'patron'}`, `REPETIR: ${S.songLoop ? 'si' : 'no'}`, `DESTIEMPO: ${Math.round(S.hum * 100)}`,
+    `CADENA: ${S.chain ? 'si' : 'no'}`,
     `EFECTOS: reverb=${Math.round(S.fx.rev * 100)} eco=${Math.round(S.fx.eco * 100)} lofi=${Math.round(S.fx.lofi * 100)} vinilo=${S.fx.vin ? 'si' : 'no'}`,
     `ESTILOS: ${TR.map((x, t) => `${x.id}=${stylesOf(t).map(i => tok(styleName(t, i))).join('+')}`).join(' ')}`,
     `AFINACION: ${TR.map((x, t) => S.tune[t] ? `${x.id}=${S.tune[t] > 0 ? '+' : ''}${S.tune[t]}` : '').filter(Boolean).join(' ') || '-'}`,
     `VOLUMEN: ${TR.map((x, t) => S.lvl[t] !== 1 ? `${x.id}=${Math.round(S.lvl[t] * 100)}` : '').filter(Boolean).join(' ') || '-'}`,
     `MUTE: ${S.mutes.map((m, i) => m ? TR[i].id : '').filter(Boolean).join(' ') || '-'}`, `ACTUAL: ${LET[S.cur]}`];
-  const vz = TR.map((x, t) => { const sm = S.smp[t]; return sm && SMP.has(sm.id) ? `${x.id}=${['voz', sm.rev && 'reves', sm.echo && 'eco', sm.robot && 'robot', `L${Math.round(sm.len * 100)}`, sm.a > 0 && `I${Math.round(sm.a * 100)}`, sm.pit && `T${sm.pit}`].filter(Boolean).join('+')}` : ''; }).filter(Boolean);
-  if (vz.length) L2.push(`VOZ: ${vz.join(' ')}`);
+  const refs = new Map(); // cada grabación usada va una sola vez al final, con un nombre corto (g1, g2...)
+  S.ps.forEach(q => q.smp.forEach(sm => { if (sm && SMP.has(sm.id) && !refs.has(sm.id)) refs.set(sm.id, 'g' + (refs.size + 1)); }));
   S.pats.forEach((p, i) => {
     if (!patHas(p) && i !== S.cur) return;
-    L2.push('', `[${LET[i]}]`, ...patLines(i));
+    L2.push('', `[${LET[i]}]`, ...patLines(i, refs));
     p.forEach((r, t) => L2.push(TR[t].name.padEnd(10) + r.map(v => v ? (TR[t].mel ? String(v) : 'x') : '.').join('').match(/.{4}/g).join(' ')));
   });
-  if (vz.length) {
-    L2.push('', '[VOCES]', '# grabaciones de voz: 16 kHz, mu-law, base64');
-    TR.forEach((x, t) => { const sm = S.smp[t]; if (sm && SMP.has(sm.id)) L2.push(`${x.name} ${SR} ${SMP.get(sm.id).b64}`); });
+  if (refs.size) {
+    L2.push('', '[GRABACIONES]', '# grabaciones: 16 kHz, mu-law, base64');
+    refs.forEach((ref, id) => L2.push(`${ref} ${SR} ${SMP.get(id).b64}`));
   }
   return L2.join('\n') + '\n';
 }
@@ -2851,12 +2883,13 @@ function parseTone(v, o) {
 }
 function parseText(txt) {
   const o = blank(); let p = -1, ti = 0, found = false, legacy = /DRUMPA|beat v1/i.test(txt) && !/beat v3/i.test(txt);
-  const vfx = {}, H0 = { st: Array(NT).fill(0), lay: Array(NT).fill(0), sc: null }, PP = [];
+  const vfx = {}, H0 = { st: Array(NT).fill(0), lay: Array(NT).fill(0), sc: null, mix: 0 }, PP = [], REF = {}, LEG = {};
   for (const raw of txt.split(/\r?\n/)) {
     const line = raw.trim(); if (!line || line[0] === '#') continue;
-    if (/^\[\s*VOCES\s*\]$/i.test(line)) { p = -2; continue; }
+    if (/^\[\s*(VOCES|GRABACIONES)\s*\]$/i.test(line)) { p = -2; continue; }
     if (p === -2) {
       const vm = line.match(/^(.+?)\s+(\d{4,6})\s+([A-Za-z0-9+/=]{8,})$/);
+      if (vm && +vm[2] === SR) { const id = uid(); try { addSample(id, vm[3]); IDB.put(id, { b64: vm[3], t: Date.now() }); if (/^g\d+$/i.test(vm[1])) REF[vm[1].toLowerCase()] = id; else { const t = trackIndex(vm[1]); if (t >= 0) LEG[t] = id; } } catch {} }
       if (vm && +vm[2] === SR) { const t = trackIndex(vm[1]); if (t >= 0) { const id = uid(); try { addSample(id, vm[3]); IDB.put(id, { b64: vm[3], t: Date.now() }); o.smp[t] = Object.assign({ id, rev: false, echo: false, robot: false, len: 1 }, vfx[t] || {}); } catch {} } }
       continue;
     }
@@ -2874,23 +2907,25 @@ function parseText(txt) {
       else if (k === 'ESTILOS' || k === 'ESTILO') pairs(v, stInto(H0));
       else if (k === 'AFINACION') pairs(v, (t, x) => { o.tune[t] = parseInt(x, 10) || 0; });
       else if (k === 'VOLUMEN' || k === 'NIVEL') pairs(v, (t, x) => { const n = parseFloat(x); if (isFinite(n)) o.lvl[t] = n / 100; });
-      else if (k === 'VOZ') pairs(v, (t, x) => { const f = x.toLowerCase().split('+'), lm = f.find(y => /^l\d+$/.test(y)), im = f.find(y => /^i\d+$/.test(y)), tm = f.find(y => /^t-?\d+$/.test(y)); vfx[t] = { rev: f.includes('reves'), echo: f.includes('eco'), robot: f.includes('robot'), len: lm ? +lm.slice(1) / 100 : 1, a: im ? +im.slice(1) / 100 : 0, pit: tm ? +tm.slice(1) : 0 }; })
+      else if (k === 'VOZ' || k === 'GRABACION') pairs(v, (t, x) => { const f = x.toLowerCase().split('+'), lm = f.find(y => /^l\d+$/.test(y)), im = f.find(y => /^i\d+$/.test(y)), tm = f.find(y => /^t-?\d+$/.test(y)); vfx[t] = { rev: f.includes('reves'), echo: f.includes('eco'), robot: f.includes('robot'), len: lm ? +lm.slice(1) / 100 : 1, a: im ? +im.slice(1) / 100 : 0, pit: tm ? +tm.slice(1) : 0 }; })
       else if (k === 'EFECTOS' || k === 'FX') v.split(/[\s,]+/).forEach(x => { const [a, b] = x.split(/[=:]/); const n = norm(a), val = b || ''; const pc = clamp((parseFloat(val) || 0) / 100, 0, 1);
         if (n === 'REVERB') o.fx.rev = pc; else if (n === 'ECO' || n === 'DELAY') o.fx.eco = pc; else if (n === 'LOFI') o.fx.lofi = pc; else if (n === 'VINILO') o.fx.vin = /^(si|sí|1|yes|on)/i.test(val) ? 1 : 0; })
       else if (k === 'CADENA' || k === 'CHAIN') o.chain = /^(si|sí|yes|1|true)/i.test(v);
       else if (k === 'CANCION' || k === 'SONG') { o.song = []; const rx = /([A-Ha-h])\s*(?:[x×*]\s*(\d+))?/g; let mm; while ((mm = rx.exec(v))) o.song.push({ p: LET.indexOf(mm[1].toUpperCase()), n: +(mm[2] || 1) }); }
       else if (k === 'MODO') o.songOn = /canc|song/i.test(v);
       else if (k === 'REPETIR' || k === 'LOOP') o.songLoop = /^(si|sí|yes|1|true)/i.test(v);
-      else if (k === 'HUMANO' || k === 'HUMAN') o.hum = clamp((parseFloat(v) || 0) / 100, 0, 1);
-      else if (k === 'MEZCLA' || k === 'MIX') v.toUpperCase().split(/[\s,]+/).forEach(x => { const i = LET.indexOf(x); if (i >= 0) o.mix |= 1 << i; });
+      else if (k === 'DESTIEMPO' || k === 'HUMANO' || k === 'HUMAN') o.hum = clamp((parseFloat(v) || 0) / 100, 0, 1);
+      else if (k === 'MEZCLA' || k === 'MIX') v.toUpperCase().split(/[\s,]+/).forEach(x => { const i = LET.indexOf(x); if (i >= 0) H0.mix |= 1 << i; });
       else if (k === 'MUTE' || k === 'SILENCIO') v.split(/[\s,]+/).forEach(x => { const i = trackIndex(x); if (i >= 0) o.mutes[i] = true; });
       else if (k === 'ACTUAL') { const i = LET.indexOf(v.toUpperCase()); if (i >= 0) o.cur = i; }
       continue;
     }
     if (m && p >= 0) { // sonido y ambiente propios del patrón
-      const k = norm(m[1]), v = m[2].trim(), q = PP[p] || (PP[p] = { st: H0.st.slice(), lay: H0.lay.slice(), sc: null });
+      const k = norm(m[1]), v = m[2].trim(), q = PP[p] || (PP[p] = { st: H0.st.slice(), lay: H0.lay.slice(), sc: null, mix: null, gr: {} });
       if (k === 'ESTILOS' || k === 'ESTILO' || k === 'SONIDO') pairs(v, stInto(q));
       else if (k === 'AMBIENTE' || k === 'ESCALA') q.sc = scaleOf(v);
+      else if (k === 'MEZCLA' || k === 'MIX') { q.mix = 0; v.toUpperCase().split(/[\s,]+/).forEach(x => { const i = LET.indexOf(x); if (i >= 0) q.mix |= 1 << i; }); }
+      else if (k === 'GRABACION') pairs(v, (t, x) => { const f = x.toLowerCase().split('+'), lm = f.find(y => /^l\d+$/.test(y)), im = f.find(y => /^i\d+$/.test(y)), tm = f.find(y => /^t-?\d+$/.test(y)); q.gr[t] = { ref: f[0], rev: f.includes('reves'), echo: f.includes('eco'), robot: f.includes('robot'), len: lm ? +lm.slice(1) / 100 : 1, a: im ? +im.slice(1) / 100 : 0, pit: tm ? +tm.slice(1) : 0 }; });
       continue;
     }
     if (p < 0) continue;
@@ -2906,7 +2941,14 @@ function parseText(txt) {
   }
   if (legacy) for (let t = 0; t < NT; t++) if (H0.st[t] >= VOICES[t].length) H0.st[t] = 0;
   if (o.songOn == null || !/MODO\s*:/i.test(txt)) o.songOn = o.song.length > 0;
-  o.ps = o.ps.map((_, i) => { const q = PP[i]; return { st: (q ? q.st : H0.st).slice(), lay: (q ? q.lay : H0.lay).slice(), sc: q && q.sc != null ? q.sc : H0.sc != null ? H0.sc : 2 }; });
+  o.ps = o.ps.map((_, i) => {
+    const q = PP[i], smp = TR.map((x, t) => {
+      const g = q && q.gr && q.gr[t];
+      if (g && REF[g.ref]) { const { ref, ...fx } = g; return Object.assign({ id: REF[g.ref] }, fx); }
+      return LEG[t] ? Object.assign({ id: LEG[t], rev: false, echo: false, robot: false, len: 1 }, vfx[t] || {}) : null; // .txt viejo: la misma grabación en todos los patrones
+    });
+    return { st: (q ? q.st : H0.st).slice(), lay: (q ? q.lay : H0.lay).slice(), sc: q && q.sc != null ? q.sc : H0.sc != null ? H0.sc : 2, mix: (q && q.mix != null ? q.mix : H0.mix) & ~(1 << i), smp };
+  });
   return found ? normalize(o) : null;
 }
 function encodeData() {
@@ -2925,7 +2967,7 @@ function encodeLink() {
   const pst = S.ps.map(q => B64[q.sc] + q.st.map(x => B64[x]).join('') + q.lay.map(x => B64[(x >> 6) & 63] + B64[x & 63]).join('')).join('');
   const fxt = [S.fx.rev, S.fx.eco, S.fx.lofi].map(x => B64[Math.round(x * 63)]).join('') + (S.fx.vin ? '1' : '0');
   const sg = S.song.map(b => LET[b.p].toLowerCase() + B64[b.n]).join('') || '-', fl = B64[(S.songOn ? 1 : 0) | (S.songLoop ? 2 : 0)] + B64[Math.round(S.hum * 63)];
-  return `${location.origin}${location.pathname}#b=6.${S.bpm}.${S.swing}.${S.key}.${S.scale}.${st}.${ly}.${tu}.${lv}.${S.chain ? 1 : 0}.${S.mix.toString(16)}.${S.cur}.${encodeData()}.${pst}.${fxt}.${sg}.${fl}.${encodeURIComponent(S.name)}`;
+  return `${location.origin}${location.pathname}#b=6.${S.bpm}.${S.swing}.${S.key}.${S.scale}.${st}.${ly}.${tu}.${lv}.${S.chain ? 1 : 0}.${S.ps.map(q => q.mix.toString(16).padStart(2, '0')).join('')}.${S.cur}.${encodeData()}.${pst}.${fxt}.${sg}.${fl}.${encodeURIComponent(S.name)}`;
 }
 function decodeLink(str) {
   const i = str.indexOf('b='); if (i < 0) return null;
@@ -2939,12 +2981,13 @@ function decodeLink(str) {
       o.st[t] = Math.max(0, B64.indexOf(parts[5][t])); o.lay[t] = parseInt(parts[6].substr(t * lw, lw), 16) || 0;
       o.tune[t] = Math.max(0, B64.indexOf(parts[7][t] || 'c')) - 12; o.lvl[t] = Math.max(0, B64.indexOf(parts[8][t] || 'k')) / 20;
     }
-    o.chain = parts[9] === '1'; o.mix = parseInt(parts[10], 16) || 0; o.cur = +parts[11]; decodeData(parts[12], o); rest = 13;
+    o.chain = parts[9] === '1'; const mixStr = parts[10] || ''; o.cur = +parts[11]; decodeData(parts[12], o); rest = 13;
     if (parts[0] >= '5') { const f = parts[14] || ''; o.fx = { rev: Math.max(0, B64.indexOf(f[0])) / 63, eco: Math.max(0, B64.indexOf(f[1])) / 63, lofi: Math.max(0, B64.indexOf(f[2])) / 63, vin: f[3] === '1' ? 1 : 0 }; }
     if (parts[0] >= '4') {
       const x = parts[13], at = (i) => Math.max(0, B64.indexOf(x[i])); rest = parts[0] === '6' ? 17 : parts[0] === '5' ? 15 : 14;
       o.ps = o.ps.map((_, p) => { const b = p * 25, q = { sc: at(b), st: [], lay: [] }; for (let t = 0; t < NT; t++) { q.st[t] = at(b + 1 + t); q.lay[t] = at(b + 9 + t * 2) * 64 + at(b + 10 + t * 2); } return q; });
     } else o.ps = o.ps.map(() => clone(o.ps[0]));
+    o.ps.forEach((q, p) => { q.mix = mixStr.length === 16 ? parseInt(mixStr.substr(p * 2, 2), 16) || 0 : (parseInt(mixStr, 16) || 0) & ~(1 << p); });
     if (parts[0] === '6') {
       const sg = parts[15] === '-' ? '' : parts[15], fl = parts[16] || '';
       o.song = []; for (let i = 0; i + 1 < sg.length; i += 2) o.song.push({ p: LET.indexOf(sg[i].toUpperCase()), n: Math.max(1, B64.indexOf(sg[i + 1])) });
@@ -3089,7 +3132,7 @@ $('#pasteTxt').addEventListener('click', async () => {
   setTimeout(() => ta.focus(), 50);
 });
 $('#pasteGo').addEventListener('click', () => importText($('#pasteArea').value));
-$('#link').addEventListener('click', () => copyText(encodeLink(), S.smp.some(Boolean) ? 'Enlace copiado. Las voces grabadas no viajan en el enlace: para eso usá Exportar .txt.' : 'Enlace copiado. Abrilo en otro dispositivo para cargar el beat.'));
+$('#link').addEventListener('click', () => copyText(encodeLink(), S.ps.some(q => q.smp.some(Boolean)) ? 'Enlace copiado. Las grabaciones no viajan en el enlace: para eso usá Exportar .txt.' : 'Enlace copiado. Abrilo en otro dispositivo para cargar el beat.'));
 $('#share').addEventListener('click', shareBeat);
 $('#sw').addEventListener('input', (e) => { S.swing = +e.target.value; $('#swO').textContent = S.swing + '%'; save(); });
 $('#vol').addEventListener('input', (e) => { S.vol = +e.target.value / 100; $('#volO').textContent = e.target.value + '%'; if (AU.out) AU.out.gain.setTargetAtTime(S.vol, AU.ctx.currentTime, .02); save(); });
@@ -3153,8 +3196,8 @@ function renderStyles(anim) {
   shSts.innerHTML = '';
   const cards = VOICES[t].map((vo, i) => ({ i, n: vo.n, d: vo.d, bars: WAVES[i], c: `var(--s${i})` }));
   const sm = S.smp[t], e = sm && SMP.get(sm.id);
-  cards.push(e ? { i: VC(t), n: 'Tu voz', d: [sm.rev && 'al revés', sm.echo && 'eco', sm.robot && 'robot'].filter(Boolean).join(', ') || 'Tu grabación', bars: pcmBars(e.pcm, 12), c: 'var(--red)' }
-               : { i: VC(t), rec: true, n: 'Grabar voz', d: 'Tocá para grabar', bars: [20, 45, 80, 55, 95, 40, 70, 30, 60, 25, 40, 15], c: 'var(--red)' });
+  cards.push(e ? { i: VC(t), n: 'Grabación', d: [sm.rev && 'al revés', sm.echo && 'eco', sm.robot && 'robot'].filter(Boolean).join(', ') || 'Tu grabación', bars: pcmBars(e.pcm, 12), c: 'var(--red)' }
+               : { i: VC(t), rec: true, n: 'Grabar', d: 'Tocá para grabar un sonido', bars: [20, 45, 80, 55, 95, 40, 70, 30, 60, 25, 40, 15], c: 'var(--red)' });
   cards.forEach((cd, k) => {
     const i = cd.i, b = document.createElement('button');
     b.className = 'st' + (cd.rec ? ' rec' : '');
@@ -3259,7 +3302,7 @@ function loadSlots() {
   })().catch(() => {});
   return VE.ready;
 }
-// al abrir desde un instrumento que ya usa una voz, la muestra en una de las 2 grabaciones (nunca pisa una toma sin usar)
+// al abrir desde un instrumento que ya usa una grabación, la muestra en una de las 2 grabaciones (nunca pisa una toma sin usar)
 function loadDestVoice() {
   const sm = S.smp[VE.dest]; if (!sm || !SMP.has(sm.id)) return;
   storeSlot();
@@ -3384,7 +3427,7 @@ async function finishRec(r) {
   const k = VE.slot, b64 = pcmToB64(pcm);
   addSample(tmpKey(k), b64); IDB.put('vslot' + k, { b64, t: Date.now() });
   VE.pcm = SMP.get(tmpKey(k)).pcm; VE.id = null; VE.a = 0; VE.len = 1; VE.pit = 0;
-  storeSlot(); syncVoice(); drawVoice(); previewVoice();
+  storeSlot(); syncVoice(); drawVoice(); previewVoice(); renderGpads();
   if (!RM) bump(vCanvas, 1.04, 220);
 }
 function previewVoice() {
@@ -3436,7 +3479,7 @@ function useVoice() {
   S.st[t] = VC(t); S.lay[t] &= ~(1 << VC(t));
   renderTracks(); markEdit(); closeAll(); live(t);
   if (!RM) bump(trks[t], 1.15, 260);
-  toast(`Tu voz ahora suena en ${TR[t].name.toLowerCase()}. Mantené el ícono para cambiar de estilo.`, 2600);
+  toast(`La grabación suena en ${TR[t].name.toLowerCase()} del patrón ${LET[S.cur]}. En los otros patrones ${TR[t].name.toLowerCase()} sigue igual.`, 3000);
 }
 // recorte, tono y efectos se aplican en vivo al instrumento elegido si ya usa esta grabación
 function bindVoice() {
@@ -3495,7 +3538,7 @@ function knob(host, { label, min = 0, max = 1, val = 0, def = 0, bip = false, fm
 }
 function buildDJ() {
   const deckHTML = (d) => `
-    <div class="dkh"><span class="dn">BANDEJA <b>${'AB'[d]}</b></span><div class="dkp" aria-label="Patrón de la bandeja ${'AB'[d]}"></div></div>
+    <div class="dkh"><span class="dn">BANDEJA <b>${'AB'[d]}</b><em class="dmx"></em></span><div class="dkp" aria-label="Patrón de la bandeja ${'AB'[d]}"></div></div>
     <div class="plat" aria-label="Disco: arrastralo para hacer scratch">
       <div class="base"></div>
       <div class="disc"><div class="lab"><small>GREENPAD</small><b>A</b><i></i></div></div>
@@ -3515,12 +3558,13 @@ function buildDJ() {
       <div class="meters"><div class="mtr"><i></i><b>A</b></div><div class="mtr"><i></i><b>B</b></div></div>
       <div class="knobs"></div>
       <div class="mbts"><button class="mbt" id="vinBtn" title="Ruido de disco viejo">VINILO</button><button class="mbt" id="m90Btn" title="Polvo, vinilo, un poco de reverb y swing">MODO 90</button></div>
+      <div class="grabs"><span class="lbl">GRABACIONES</span><button class="gpad" data-k="0" title="Grabación 1: mantené apretado para que suene mientras lo tenés, o tocá una vez para dejarla sonando (O)"><b>1</b><i></i></button><button class="gpad" data-k="1" title="Grabación 2: mantené apretado para que suene mientras lo tenés, o tocá una vez para dejarla sonando (P)"><b>2</b><i></i></button></div>
       <div class="reps"><span class="lbl">REPETIR</span><button class="rep" data-f="1" title="Mantené apretado (Z)">1/4</button><button class="rep" data-f=".5" title="Mantené apretado (X)">1/8</button><button class="rep" data-f=".25" title="Mantené apretado (C)">1/16</button></div>
       <div class="xfw"><button id="xfA" title="Solo bandeja A">A</button><input type="range" class="xf" id="xf" min="0" max="1000" step="1" aria-label="Crossfader"><button id="xfB" title="Solo bandeja B">B</button></div>
     </div>
     <div class="dk" data-d="1">${deckHTML(1)}</div>`;
   DJ.els = [...djEl.querySelectorAll('.dk')].map((el, d) => {
-    const E = { el, plat: el.querySelector('.plat'), disc: el.querySelector('.disc'), lab: el.querySelector('.lab b'), leds: [...el.querySelectorAll('.led')], pbs: [], mts: [], brk: el.querySelector('.brk'), rew: el.querySelector('.rew'), kills: [...el.querySelectorAll('.kill')], meter: djEl.querySelectorAll('.mtr i')[d], lvl: 0 };
+    const E = { el, mxl: el.querySelector('.dmx'), plat: el.querySelector('.plat'), disc: el.querySelector('.disc'), lab: el.querySelector('.lab b'), leds: [...el.querySelectorAll('.led')], pbs: [], mts: [], brk: el.querySelector('.brk'), rew: el.querySelector('.rew'), kills: [...el.querySelectorAll('.kill')], meter: djEl.querySelectorAll('.mtr i')[d], lvl: 0 };
     const pw = el.querySelector('.dkp');
     for (let i = 0; i < NP; i++) {
       const b = document.createElement('button'); b.className = 'dpb'; b.textContent = LET[i]; b.style.setProperty('--c', `var(--s${i})`);
@@ -3628,12 +3672,14 @@ function renderDJ() {
     const dk = DJ.d[d], p = dk.pat;
     E.el.style.setProperty('--dc', `var(--s${p})`);
     E.lab.textContent = LET[p];
-    E.pbs.forEach((b, i) => { b.classList.toggle('on', i === p); b.classList.toggle('q', i === dk.pend); b.classList.toggle('has', hasNotes(i)); });
+    const mx = S.ps[p].mix;
+    E.pbs.forEach((b, i) => { b.classList.toggle('on', i === p); b.classList.toggle('q', i === dk.pend); b.classList.toggle('has', hasNotes(i)); b.classList.toggle('mx', i !== p && !!(mx & (1 << i))); });
+    E.mxl.textContent = bits(mx).filter(i => i !== p).map(i => '+' + LET[i]).join(' ');
     E.mts.forEach((b, t) => b.classList.toggle('off', !!(dk.mute & (1 << t))));
     E.brk.classList.toggle('on', dk.brake); E.rew.classList.toggle('on', dk.rew);
     E.kills.forEach(b => b.classList.toggle('on', !!dk.kill[+b.dataset.k]));
-    const pat = S.pats[p];
-    E.leds.forEach((l, s) => l.classList.toggle('n', pat.some(r => r[s])));
+    const pl = [p, ...mixedFor(p)];
+    E.leds.forEach((l, s) => l.classList.toggle('n', pl.some(pp => S.pats[pp].some(r => r[s]))));
     E.el.classList.toggle('spin', P.playing && !dk.brake);
   });
   $('#xf').value = Math.round(S.dj.x * 1000);
@@ -3686,6 +3732,7 @@ function setView(dj) {
   if (dj === DJ.on) return;
   ensureAudio();
   DJ.on = dj; setMore(false); renderMoreSum();
+  if (dj) loadSlots().then(renderGpads); else [0, 1].forEach(gpadStop);
   if (dj) {
     const a = S.cur, b = S.dj.b !== a && hasNotes(S.dj.b) ? S.dj.b : nextNonEmpty(a);
     DJ.d[0].pat = a; DJ.d[1].pat = b; DJ.d.forEach(dk => { dk.pend = -1; });
@@ -3722,6 +3769,55 @@ function djKeys(e) {
   return !!m && /^Key[A-Z]$/.test(c) && 'ZXC'.includes(m[1]);
 }
 buildDJ();
+
+/* ================= bandejas: tocar las grabaciones =================
+   Mantener apretado: suena mientras se mantiene. Tocar una vez (soltar rápido): queda sonando en loop
+   hasta volver a tocarlo. Pasa por los efectos de las bandejas (reverb, eco, lo-fi). */
+const GP = [null, null];
+function gpadSlot(k) { const s = VE.sl[k]; return s && s.pcm ? s : null; }
+function gpadStart(k) {
+  const c = ensureAudio(), sl = gpadSlot(k); if (!c || !sl) return false;
+  const id = sl.id && SMP.has(sl.id) ? sl.id : tmpKey(k), buf = sampleBuf(id, sl.fx.rev); if (!buf) return false;
+  const t = c.currentTime + .005, pf = Math.pow(2, (sl.pit || 0) / 12);
+  const s = c.createBufferSource(); s.buffer = buf; s.playbackRate.value = pf;
+  s.loop = true; s.loopStart = buf.duration * (sl.a || 0); s.loopEnd = Math.max(s.loopStart + .03, buf.duration * sl.len);
+  const g = c.createGain(); g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(sl.fx.robot ? 1.3 : .95, t + .008);
+  let node = s, osc = null;
+  if (sl.fx.robot) { const rg = c.createGain(); rg.gain.value = 0; osc = c.createOscillator(); osc.type = 'square'; osc.frequency.value = 55; const og = c.createGain(); og.gain.value = .9; osc.connect(og); og.connect(rg.gain); s.connect(rg); node = rg; osc.start(t); }
+  node.connect(g); g.connect(AU.fxIn); if (sl.fx.echo) g.connect(echoBus());
+  s.start(t, s.loopStart);
+  GP[k] = { s, g, osc };
+  const b = djEl.querySelector(`.gpad[data-k="${k}"]`); b.classList.add('on'); b.style.setProperty('--gd', ((s.loopEnd - s.loopStart) / pf).toFixed(3) + 's');
+  MX.active = true; loop();
+  return true;
+}
+function gpadStop(k) {
+  const x = GP[k]; GP[k] = null;
+  const b = djEl.querySelector(`.gpad[data-k="${k}"]`); if (b) b.classList.remove('on', 'lock');
+  if (!x || !AU.ctx) return;
+  const t = AU.ctx.currentTime; x.g.gain.cancelScheduledValues(t); x.g.gain.setValueAtTime(x.g.gain.value, t); x.g.gain.linearRampToValueAtTime(.0001, t + .03);
+  try { x.s.stop(t + .05); if (x.osc) x.osc.stop(t + .05); } catch {}
+  setTimeout(() => { try { x.g.disconnect(); } catch {} }, 200);
+}
+function gpadDown(k) {
+  if (GP[k]) { gpadStop(k); return 'stop'; } // estaba sonando sola: se apaga
+  if (!gpadSlot(k)) { toast(`La grabación ${k + 1} está vacía. Grabala con el botón del micrófono (tecla V).`, 2600); return 'none'; }
+  return gpadStart(k) ? 'play' : 'none';
+}
+function gpadUp(k, held) { if (GP[k] && held > 260) gpadStop(k); else if (GP[k]) djEl.querySelector(`.gpad[data-k="${k}"]`).classList.add('lock'); }
+function renderGpads() { djEl.querySelectorAll('.gpad').forEach(b => b.classList.toggle('empty', !gpadSlot(+b.dataset.k))); }
+djEl.querySelectorAll('.gpad').forEach(b => {
+  const k = +b.dataset.k; let t0 = 0, st = 'none';
+  b.addEventListener('pointerdown', (e) => { e.preventDefault(); b.setPointerCapture(e.pointerId); t0 = performance.now(); loadSlots().then(() => { st = gpadDown(k); if (st !== 'play') t0 = 0; }); });
+  const up = () => { if (st === 'play' && t0) gpadUp(k, performance.now() - t0); st = 'none'; t0 = 0; };
+  b.addEventListener('pointerup', up); b.addEventListener('pointercancel', up);
+});
+const GPK = { KeyO: 0, KeyP: 1 }, gpKeyT = {};
+addEventListener('keydown', (e) => {
+  if (!DJ.on || !(e.code in GPK) || e.repeat || isField(document.activeElement) || anyOpen()) return;
+  const k = GPK[e.code]; loadSlots().then(() => { if (gpadDown(k) === 'play') gpKeyT[k] = performance.now(); });
+});
+addEventListener('keyup', (e) => { if (!(e.code in GPK)) return; const k = GPK[e.code]; if (gpKeyT[k]) { gpadUp(k, performance.now() - gpKeyT[k]); gpKeyT[k] = 0; } });
 setInterval(() => { if (!P.playing) sweepVoices(); }, 1500);
 $('#vGrid').addEventListener('click', () => setView(false));
 $('#vDj').addEventListener('click', () => setView(true));
@@ -3790,7 +3886,7 @@ addEventListener('keydown', (e) => {
     }
     case 'PageUp': e.preventDefault(); setBpm(S.bpm + 10); return;
     case 'PageDown': e.preventDefault(); setBpm(S.bpm - 10); return;
-    case 'KeyQ': toggleMix(S.cur); return;
+    case 'KeyQ': toast('Para mezclar, tildá la casilla de otra letra: suena junto con el patrón que estás editando', 2400); return;
     case 'KeyV': openVoice(); return;
     case 'KeyT': tapTempo(); return;
     case 'KeyR': toggleRec(); return;
