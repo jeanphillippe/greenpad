@@ -282,11 +282,12 @@ El botón verde de la flecha (al lado del dado; en la compu, en la fila de herra
 - **Qué:** la canción completa (como suena en modo canción, con el cierre de platillo al final) o el patrón que estás editando, de 1 a 8 vueltas, con su mezcla.
 - **Audio MP3:** liviano (192 kbps), para mandar o subir. Usa `lame.min.js` (lamejs, licencia LGPL 3.0), que se carga solo cuando hace falta.
 - **Audio WAV:** calidad máxima, 44,1 kHz estéreo.
-- **Video vertical 9:16** (720 × 1280): casi sin texto (título, BPM y el logo de Greenpad). En el centro, la grilla de 3 × 3 del logo se prende con lo que suena, rodeada por la onda del audio, rayos que siguen las frecuencias, anillos que giran con el pulso marcando los 16 pasos, chispas que salen con cada bombo y manchas de color que flotan según la parte de la canción. Abajo, una línea de progreso con los colores de cada parte. En iPhone sale en MP4; en la compu, MP4 o WebM según el navegador. Tarda lo mismo que dura la canción: hay que dejar la pantalla prendida.
-- **Calidad del video** (se recuerda en cada equipo):
-  - **Liviana:** 540 × 960, 24 cuadros por segundo, menos rayos y chispas, sin brillo en la onda. Para teléfonos viejos o si el video sale entrecortado.
-  - **Normal:** 720 × 1280, 30 cuadros por segundo, todos los efectos.
-  - **Alta:** 1080 × 1920, más rayos y chispas, estrellas de fondo, brillo doble y un eco de la onda girando al revés. Pesa más y pide un equipo rápido.
+- **Video vertical 9:16** (720 × 1280, 30 cuadros): casi sin texto (título, BPM y el logo de Greenpad). Tres estilos, que quedan recordados en cada equipo:
+  - **Caracol:** una espiral de barras que sigue las frecuencias (graves al centro, agudos afuera) con la onda del sonido enroscada encima, girando con el pulso. Va con cualquier tema.
+  - **Revista:** papel con grano, tinta negra y un color de imprenta por parte de la canción. El tempo en números grandes que se llenan con el bombo, un círculo de semitono con ondas que salen del centro, la onda impresa en dos pasadas y el título en serif itálica. Ideal para temas con guitarras y banda.
+  - **Neón:** brillos, chispas, anillos que giran y la grilla del logo que se prende. Para trap y electrónica.
+  - **Liviano** (casilla): 540 × 960 a 24 cuadros y menos elementos, para teléfonos viejos o si el video sale entrecortado.
+  - En iPhone sale en MP4; en la compu, MP4 o WebM según el navegador. Tarda lo mismo que dura la canción: hay que dejar la pantalla prendida.
 - El audio se mezcla sin tocar en tiempo real (más rápido) con los mismos sonidos, efectos, mezclas y destiempo, y se ajusta el volumen para que quede fuerte sin recortar.
 - Al terminar aparece para escucharlo, **Descargar** y, en el teléfono, **Compartir** (en iPhone, Compartir > Guardar video lo deja en Fotos).
 - **Grabar en vivo** pasó al panel de la barra resumen (teléfono) y al menú, en Patrón (compu). La tecla `R` sigue igual.
