@@ -282,9 +282,9 @@ El botón verde de la flecha (al lado del dado; en la compu, en la fila de herra
 - **Qué:** la canción completa (como suena en modo canción, con el cierre de platillo al final) o el patrón que estás editando, de 1 a 8 vueltas, con su mezcla.
 - **Audio MP3:** liviano (192 kbps), para mandar o subir. Usa `lame.min.js` (lamejs, licencia LGPL 3.0), que se carga solo cuando hace falta.
 - **Audio WAV:** calidad máxima, 44,1 kHz estéreo.
-- **Video vertical 9:16** (720 × 1280, 30 cuadros): casi sin texto (título, BPM y el logo de Greenpad). Tres estilos, que quedan recordados en cada equipo:
-  - **Caracol:** una espiral de barras que sigue las frecuencias (graves al centro, agudos afuera) con la onda del sonido enroscada encima, girando con el pulso. Va con cualquier tema.
-  - **Revista:** papel con grano, tinta negra y un color de imprenta por parte de la canción. El tempo en números grandes que se llenan con el bombo, un círculo de semitono con ondas que salen del centro, la onda impresa en dos pasadas y el título en serif itálica. Ideal para temas con guitarras y banda.
+- **Video vertical 9:16** (720 × 1280, 30 cuadros): casi sin texto (solo título, BPM y el logo de Greenpad). Tres estilos, que quedan recordados en cada equipo:
+  - **Caracol:** arriba el logo, el título y los BPM. En el centro, un anillo de barras que crecen con las frecuencias como un caracol (graves arriba, girando en sentido horario), los 16 pasos marcados alrededor y un círculo que late con el bombo. Abajo, los íconos de los instrumentos se prenden con su color cuando suenan, y una barra muestra las partes de la canción en color y por dónde va. Va con cualquier tema.
+  - **Revista:** papel con grano, tinta negra y un color de imprenta por parte de la canción. El tempo en números grandes que se llenan con el bombo, un círculo de semitono con ondas que salen del centro y la onda del sonido en tinta, recta, cruzando el centro del círculo. Título en serif itálica. Ideal para temas con guitarras y banda.
   - **Neón:** brillos, chispas, anillos que giran y la grilla del logo que se prende. Para trap y electrónica.
   - **Liviano** (casilla): 540 × 960 a 24 cuadros y menos elementos, para teléfonos viejos o si el video sale entrecortado.
   - En iPhone sale en MP4; en la compu, MP4 o WebM según el navegador. Tarda lo mismo que dura la canción: hay que dejar la pantalla prendida.

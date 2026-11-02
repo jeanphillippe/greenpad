@@ -2755,7 +2755,7 @@ function drawVideoFrame(g, W0, H0, R, now, st) {
   else if (st.style === 1) drawRevista(g, R, st, V);
   else drawNeon(g, R, st, V);
   g.setTransform(1, 0, 0, 1, 0, 0);
-  if (st.logo) g.drawImage(st.logo, 0, H0 - st.logo.height);
+  if (st.logo && st.style !== 0) g.drawImage(st.logo, 0, H0 - st.logo.height); // en Caracol el logo va arriba
 }
 // barra de progreso con el color de cada parte de la canción
 function vProgress(g, R, now, x0, y, w, h, colors, dim) {
@@ -2766,63 +2766,70 @@ function vProgress(g, R, now, x0, y, w, h, colors, dim) {
   g.restore();
 }
 
-/* ---- Caracol: espiral de barras que sigue las frecuencias, con la onda enroscada ---- */
+/* ---- Caracol: anillo de barras que crecen en espiral, pasos alrededor y los instrumentos con su ícono ---- */
+// íconos de los instrumentos (los mismos de la grilla), apagado y encendido con su color
+function iconImgs(scale) {
+  const mk = (k, color) => new Promise((res) => {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="${64 * scale}" height="${64 * scale}" fill="none" stroke="${color}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICONS[k]}</svg>`;
+    const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  });
+  return Promise.all(TR.map((tr, t) => Promise.all([mk(tr.ic, '#557566'), mk(tr.ic, VCOL[t])])));
+}
 function drawCaracol(g, R, st, V) {
-  const { W, H, TAU, beats, col, bass, mid } = V, q = st.q;
-  if (!st.bg) { // fondo hecho una sola vez: verde muy oscuro con luz en el centro y grano
-    const b = document.createElement('canvas'); b.width = W; b.height = H; const x = b.getContext('2d');
-    x.fillStyle = '#0a0f0c'; x.fillRect(0, 0, W, H);
-    const gr = x.createRadialGradient(W / 2, H * .46, 20, W / 2, H * .46, W * .95); gr.addColorStop(0, '#16231b'); gr.addColorStop(1, '#0a0f0c'); x.fillStyle = gr; x.fillRect(0, 0, W, H);
-    for (let i = 0; i < 9000; i++) { x.fillStyle = `rgba(255,255,255,${Math.random() * .035})`; x.fillRect(Math.random() * W, Math.random() * H, 1.5, 1.5); }
-    st.bg = b;
-  }
-  g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
-  g.drawImage(st.bg, 0, 0, W, H);
-  const cx = W / 2, cy = H * .48, N = q.lite ? 110 : 170, turns = 4.6, TH = turns * TAU, a0 = 28, bb = 268 / TH;
-  const rot = -beats * TAU / 32, zoom = 1 + st.k * .035;
-  g.save(); g.translate(cx, cy); g.scale(zoom, zoom); g.rotate(rot);
-  // barras: graves al centro, agudos hacia afuera; el color pasa del color de la parte a lima y ámbar
-  if (st.cp !== V.p) { st.cp = V.p; st.pal = Array.from({ length: N }, (_, i) => { const k = i / (N - 1); return k < .5 ? mixHex(col, '#c6f43a', k * 2) : mixHex('#c6f43a', '#ffae5c', (k - .5) * 2); }); }
+  const { W, H, TAU, now, cur, col, bass } = V, lite = st.q.lite;
+  // fondo: oscuro con una luz del color de la parte de la canción
+  const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#0f1a14'); bg.addColorStop(1, '#050906');
+  g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  const glow = g.createRadialGradient(W / 2, H * .5, 10, W / 2, H * .5, W * .78); glow.addColorStop(0, col + '30'); glow.addColorStop(1, '#00000000');
+  g.fillStyle = glow; g.fillRect(0, 0, W, H);
+  // arriba: logo, título y BPM
+  if (st.logo) g.drawImage(st.logo, 0, -2, W, 150);
+  g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+  g.fillStyle = '#e8f3ec'; g.font = `800 62px ${VFONT}`;
+  const lines = wrapLines(g, S.name || 'Mi tema', W - 100, 2);
+  lines.forEach((l, i) => g.fillText(l, W / 2, 178 + i * 66));
+  const ty = 178 + lines.length * 66;
+  g.fillStyle = col; g.font = `800 24px ${VFONT}`; if ('letterSpacing' in g) g.letterSpacing = '3px';
+  g.fillText(`${S.bpm} BPM`, W / 2, ty - 10); if ('letterSpacing' in g) g.letterSpacing = '0px';
+  // caracol: barras alrededor que crecen con las frecuencias (graves arriba, girando en sentido horario)
+  const cx = W / 2, cy = H * .5 + (lines.length > 1 ? 30 : 0), r0 = 168 + st.k * 8, nb = lite ? 48 : 72, fr = st.fd;
   g.lineCap = 'round';
-  for (let i = 0; i < N; i++) {
-    const th = i / N * TH, r = a0 + bb * th, bin = 2 + Math.floor(Math.pow(i / N, 1.25) * 220), v = st.fd[bin] / 255;
-    const len = 3 + Math.pow(v, 1.3) * (34 + i / N * 40), ca = Math.cos(th), sa = Math.sin(th), w = 3 + (1 - i / N) * 4;
-    g.strokeStyle = st.pal[i]; g.globalAlpha = .45 + v * .55; g.lineWidth = w;
-    g.beginPath(); g.moveTo(ca * r, sa * r); g.lineTo(ca * (r + len), sa * (r + len)); g.stroke();
+  for (let i = 0; i < nb; i++) {
+    const idx = 2 + Math.floor(Math.pow(i / nb, 1.5) * (fr.length * .7)), v = fr[idx] / 255, a = i / nb * TAU - Math.PI / 2, len = 10 + v * v * (Math.sin(a) > .3 ? 115 : 160); // abajo más cortas para no tocar los íconos
+    g.strokeStyle = i % 2 ? col : col + 'aa'; g.lineWidth = lite ? 9 : 7;
+    g.beginPath(); g.moveTo(cx + Math.cos(a) * (r0 + 14), cy + Math.sin(a) * (r0 + 14)); g.lineTo(cx + Math.cos(a) * (r0 + 14 + len), cy + Math.sin(a) * (r0 + 14 + len)); g.stroke();
   }
-  g.globalAlpha = 1;
-  // la onda del audio enroscada sobre la espiral (cada vuelta un poco más adentro que las barras)
-  const td = st.td, M = q.lite ? 260 : 420, step = td.length / M;
-  for (const [cs, lw, al] of (q.lite ? [['#ffffff', 2, .85]] : [[col, 7, .25], ['#ffffff', 2, .9]])) {
-    g.beginPath();
-    for (let i = 0; i <= M; i++) {
-      const th = i / M * TH, v = (td[Math.floor(i * step) % td.length] - 128) / 128, r = a0 - 12 + bb * th + v * (16 + mid * 40);
-      const x = Math.cos(th) * r, y = Math.sin(th) * r; i ? g.lineTo(x, y) : g.moveTo(x, y);
-    }
-    g.strokeStyle = cs; g.lineWidth = lw; g.globalAlpha = al; g.stroke();
-  }
-  g.globalAlpha = 1;
-  // punta del caracol: un punto que late con el bombo
-  g.fillStyle = '#ffffff'; g.beginPath(); g.arc(0, 0, 9 + st.k * 12, 0, TAU); g.fill();
-  g.fillStyle = col; g.beginPath(); g.arc(0, 0, 4 + bass * 6, 0, TAU); g.fill();
-  g.restore();
-  // marcas de los 16 pasos sobre un arco fino alrededor
-  const s = V.cur && !V.cur.end ? V.cur.s : -1;
+  // los 16 pasos
+  const s = cur && !cur.end ? cur.s : -1;
   for (let k = 0; k < STEPS; k++) {
-    const a = -Math.PI / 2 + k / STEPS * TAU, r = 342;
-    g.fillStyle = k === s ? '#ffffff' : k % 4 === 0 ? '#4d6b5c' : '#2c3d34';
-    g.beginPath(); g.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r, k === s ? 6 : 3.5, 0, TAU); g.fill();
+    const a = k / STEPS * TAU - Math.PI / 2, on = k === s;
+    g.fillStyle = on ? '#ffffff' : k % 4 === 0 ? '#3a5246' : '#22322a';
+    g.beginPath(); g.arc(cx + Math.cos(a) * (r0 - 26), cy + Math.sin(a) * (r0 - 26), on ? 11 : 7, 0, TAU); g.fill();
   }
-  // texto mínimo, alineado a la izquierda como una portada
-  g.textAlign = 'left'; g.textBaseline = 'alphabetic';
-  g.fillStyle = col; g.font = `800 22px ${VFONT}`; if ('letterSpacing' in g) g.letterSpacing = '3px';
-  g.fillText(`${S.bpm} BPM`, 60, 104);
-  if ('letterSpacing' in g) g.letterSpacing = '-1px';
-  g.fillStyle = '#eef6f0'; g.font = `800 54px ${VFONT}`;
-  wrapLines(g, S.name || 'Mi tema', W - 120, 2).forEach((l, i) => g.fillText(l, 58, 166 + i * 60));
-  if ('letterSpacing' in g) g.letterSpacing = '0px';
-  vProgress(g, R, V.now, 60, H - 176, W - 120, 4, VCOL, (c) => c + '40');
-  g.textAlign = 'center';
+  // centro: un círculo que late con el bombo, con un aro que se abre en cada golpe
+  const pulse = 1 + st.k * .08;
+  if (st.k > .05) { g.strokeStyle = col; g.globalAlpha = st.k * .7; g.lineWidth = 3; g.beginPath(); g.arc(cx, cy, 92 + (1 - st.k) * 50, 0, TAU); g.stroke(); g.globalAlpha = 1; }
+  g.fillStyle = col; g.beginPath(); g.arc(cx, cy, (88 + bass * 10) * pulse, 0, TAU); g.fill();
+  g.fillStyle = 'rgba(6,32,18,.22)'; g.beginPath(); g.arc(cx, cy, (88 + bass * 10) * pulse * .55, 0, TAU); g.fill();
+  // instrumentos: solo el ícono, que se prende con su color cuando suena
+  const top = 1000, cw = (W - 80) / 4;
+  for (let t = 0; t < NT; t++) {
+    const x = 40 + (t % 4) * cw + cw / 2, y = top + Math.floor(t / 4) * 96, v = st.lv[t];
+    g.fillStyle = `rgba(255,255,255,${.05 + v * .1})`; rrect(g, x - cw / 2 + 8, y - 38, cw - 16, 78, 18); g.fill();
+    const ic = st.icons && st.icons[t], sz = 50 * (1 + v * .12);
+    if (ic && ic[0]) { g.globalAlpha = 1; g.drawImage(ic[0], x - sz / 2, y - sz / 2, sz, sz); }
+    if (ic && ic[1] && v > .03) { g.globalAlpha = Math.min(1, v * 1.3); g.drawImage(ic[1], x - sz / 2, y - sz / 2, sz, sz); }
+    g.globalAlpha = 1; st.lv[t] *= .86;
+  }
+  // abajo: las partes de la canción en color y por dónde va
+  const bx = 50, bw = W - 100, by = H - 84, tot = R.blocks.reduce((a, b) => a + b.n, 0) || 1, cb = cur ? cur.bi : -1; let x = bx;
+  R.blocks.forEach((b, i) => {
+    const w = bw * b.n / tot - 4;
+    g.fillStyle = VCOL[b.p % 8] + (i === cb ? 'ff' : '66'); rrect(g, x, by, Math.max(4, w), 22, 8); g.fill();
+    x += bw * b.n / tot;
+  });
+  const kk = clamp(now / R.dur, 0, 1);
+  g.fillStyle = '#ffffff'; g.fillRect(bx + bw * kk - 2, by - 8, 4, 38);
 }
 
 /* ---- Revista: papel, tinta, semitono y tipografía grande ---- */
@@ -2868,9 +2875,9 @@ function drawRevista(g, R, st, V) {
     g.lineWidth = k === s ? 5 : 2; g.strokeStyle = k === s ? acc2 : ink;
     g.beginPath(); g.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1); g.lineTo(cx + Math.cos(a) * r2, cy + Math.sin(a) * r2); g.stroke();
   }
-  // onda en tinta con el color corrido, como una impresión en dos pasadas
-  const td = st.td, N = q.lite ? 120 : 200, y0 = 925, amp = 48 + mid * 44, stp = td.length / N;
-  for (const [c, dx, dy, lw] of [[acc2, 7, 5, 9], [ink, 0, 0, 5]]) {
+  // onda en tinta, recta, cruzando el centro del círculo
+  const td = st.td, N = q.lite ? 120 : 200, y0 = cy, amp = 48 + mid * 44, stp = td.length / N;
+  for (const [c, dx, dy, lw] of [[ink, 0, 0, 5]]) {
     g.beginPath();
     for (let i = 0; i <= N; i++) { const v = (td[Math.floor(i * stp) % td.length] - 128) / 128, x = M + (W - 2 * M) * i / N + dx, y = y0 + v * amp + dy; i ? g.lineTo(x, y) : g.moveTo(x, y); }
     g.strokeStyle = c; g.lineWidth = lw; g.lineJoin = 'round'; g.lineCap = 'round'; g.globalAlpha = c === ink ? 1 : .85; g.stroke();
@@ -2997,6 +3004,7 @@ async function makeVideo(R) {
   const mon = c.createGain(); mon.gain.value = .9; src.connect(mon); mon.connect(c.destination); // se escucha mientras se graba
   const st = { si: 0, ei: 0, lv: new Float32Array(NT), an, fd: new Uint8Array(an.frequencyBinCount), td: new Uint8Array(an.fftSize).fill(128), k: 0, kick: 0, snare: 0, burst: 0, pt: [], q, lastT: -1, style: vstyle() };
   const lc = document.createElement('canvas'); lc.width = W; lc.height = Math.round(150 * sc); const lg = lc.getContext('2d'); lg.scale(sc, sc); drawLogo(lg, 720, 150, await loadImg('icon-512.png'), st.style === 1); st.logo = lc;
+  if (st.style === 0) st.icons = await iconImgs(sc);
   g.fillStyle = '#050907'; g.fillRect(0, 0, W, H);
   drawVideoFrame(g, W, H, R, 0, st);
   const vs = cv.captureStream(q.fps), stream = new MediaStream([...vs.getVideoTracks(), ...dest.stream.getAudioTracks()]);
