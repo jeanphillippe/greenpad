@@ -3,7 +3,7 @@
   "short_name": "Banda",
   "description": "Armá canciones con batería, bajo, guitarras, piano y vientos grabados de verdad. Funciona offline y guarda en el dispositivo.",
   "lang": "es",
-  "start_url": "./banda.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",

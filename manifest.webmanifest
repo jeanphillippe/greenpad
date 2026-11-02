@@ -3,7 +3,7 @@
   "short_name": "Greenpad",
   "description": "Caja de ritmos y secuenciador con batería, bajo, guitarra, acordes y melodía. Funciona offline y guarda en el dispositivo.",
   "lang": "es",
-  "start_url": "./",
+  "start_url": "./mini.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",

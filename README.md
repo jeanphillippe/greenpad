@@ -1,16 +1,18 @@
 # GREENPAD
 
+La página principal (`index.html`) es **Greenpad Banda** (ver más abajo). La caja de ritmos original quedó en `mini.html` y se describe primero.
+
 Caja de ritmos y secuenciador de 16 pasos, inspirada en el drumpad de la consola. Tiene 4 pistas de batería y 4 melódicas (bajo, guitarra, acordes y melodía). Tema oscuro verde por defecto (hay tema claro en el menú). Corre en el navegador del teléfono y de la compu, funciona offline y guarda todo en el dispositivo (localStorage), sin base de datos.
 
 ## Archivos
 
 | Archivo | Para qué |
 |---|---|
-| `index.html` | Toda la app: estilos, motor de audio (Web Audio, sonidos sintetizados, sin samples) y lógica |
+| `mini.html` | Greenpad Mini, toda la app: estilos, motor de audio (Web Audio, sonidos sintetizados, sin samples) y lógica |
 | `sw.js` | Service worker para uso offline. Subí `VERSION` en cada release |
-| `manifest.webmanifest` | Permite "Agregar a pantalla de inicio" como app |
+| `manifest.webmanifest` | Permite "Agregar a pantalla de inicio" a Greenpad Mini como app |
 | `icon.svg`, `icon-*.png` | Íconos |
-| `_headers` | Cabeceras para Cloudflare Pages (sin caché para `index.html` y `sw.js`) |
+| `_headers` | Cabeceras para Cloudflare Pages (sin caché para `index.html`, `mini.html` y `sw.js`) |
 
 No hay build, ni dependencias, ni `package.json`.
 
@@ -27,7 +29,7 @@ No hay build, ni dependencias, ni `package.json`.
 
 Cuando cambies algo, subí `VERSION` en `sw.js` (por ejemplo `greenpad-v1.2.1`) para que los teléfonos que ya la tienen instalada bajen la versión nueva.
 
-Para probar en local: `python3 -m http.server 8080` dentro de la carpeta y abrir `http://localhost:8080`. El service worker solo se registra en https.
+Para probar en local: `python3 -m http.server 8080` dentro de la carpeta y abrir `http://localhost:8080` (Banda) o `http://localhost:8080/mini.html`. El service worker solo se registra en https.
 
 ## Instrumentos y estilos
 
@@ -197,15 +199,15 @@ MELODÍA   .... .... .... ....
 - Las cuerdas (Karplus-Strong) usan búferes más chicos con afinación exacta y una caché de 48 notas.
 - Con lo-fi en 0 la señal no pasa por sus filtros, el vinilo apagado no procesa nada y en la grilla la bandeja A va directo (sin filtros ni scratch).
 
-## Greenpad Banda (`banda.html`)
+## Greenpad Banda (`index.html`, la página principal)
 
-Versión pensada para armar canciones enteras con instrumentos grabados de verdad. Es una página aparte: tiene sus propios beats guardados (no se mezclan con los de Greenpad) y se abre en `/banda.html`.
+Versión pensada para armar canciones enteras con instrumentos grabados de verdad. Tiene sus propios beats guardados (no se mezclan con los de Greenpad Mini) y se abre en la dirección principal (`/`). Antes se llamaba `banda.html`.
 
 ### Archivos extra
 
 | Archivo | Para qué |
 |---|---|
-| `banda.html` | La app Banda completa |
+| `index.html` | La app Banda completa |
 | `banda.webmanifest` | "Agregar a pantalla de inicio" abre Banda directo |
 | `sonidos/` | 330 grabaciones mp3 (unos 7,5 MB). Solo se bajan las que usa el tema, y quedan guardadas para usar sin conexión |
 | `sonidos/CREDITOS.txt` | De dónde sale cada grabación y su licencia |
@@ -282,11 +284,12 @@ El botón verde de la flecha (al lado del dado; en la compu, en la fila de herra
 - **Qué:** la canción completa (como suena en modo canción, con el cierre de platillo al final) o el patrón que estás editando, de 1 a 8 vueltas, con su mezcla.
 - **Audio MP3:** liviano (192 kbps), para mandar o subir. Usa `lame.min.js` (lamejs, licencia LGPL 3.0), que se carga solo cuando hace falta.
 - **Audio WAV:** calidad máxima, 44,1 kHz estéreo.
-- **Video vertical 9:16** (720 × 1280, 30 cuadros): casi sin texto (solo título, BPM y el logo de Greenpad). Cuatro estilos, que quedan recordados en cada equipo:
+- **Video vertical 9:16** (720 × 1280, 30 cuadros): casi sin texto (solo título, BPM y el logo de Greenpad). Cinco estilos, que quedan recordados en cada equipo:
   - **Caracol:** arriba el logo, el título y los BPM. En el centro, un anillo de barras que crecen con las frecuencias como un caracol (graves arriba, girando en sentido horario; cada barra ajusta su propio nivel, así los agudos de la izquierda se mueven tanto como los graves), los 16 pasos marcados alrededor y un círculo que late con el bombo. Abajo, los íconos de los instrumentos se prenden con su color cuando suenan, y una barra muestra las partes de la canción en color y por dónde va. Va con cualquier tema.
-  - **Revista:** papel con grano, tinta negra y un color de imprenta por parte de la canción. El tempo en números grandes que se llenan con el bombo, un círculo de semitono con ondas que salen del centro, barras verticales de fondo, suaves y de lado a lado de la pantalla, que suben desde abajo con el sonido hasta el alto completo (graves a la izquierda, agudos a la derecha), con un degradado blanco detrás del círculo y una franja de papel detrás del título y la onda del sonido en tinta, recta, cruzando el centro del círculo. Título en serif itálica y, debajo, solo la barra de avance de la canción. Ideal para temas con guitarras y banda.
+  - **Revista:** papel con grano, tinta negra y un color de imprenta por parte de la canción. El tempo en números grandes que se llenan con el bombo, un círculo de semitono con ondas que salen del centro, con un degradado blanco detrás, y la onda del sonido en tinta, recta, cruzando el centro del círculo. De fondo, 7 barras verticales naranjas y suaves, de lado a lado de la pantalla (cada una junta varias frecuencias), que suben desde abajo con el sonido hasta el alto completo (graves a la izquierda, agudos a la derecha). Título en serif itálica sobre una franja de papel y, debajo, solo la barra de avance de la canción. Ideal para temas con guitarras y banda.
   - **Neón:** brillos, chispas, anillos que giran y la grilla del logo que se prende. Para trap y electrónica.
   - **Flor:** una flor de bordes bien marcados (contorno oscuro y borde claro, tipo sticker) sobre un fondo oscuro en degradado que gira despacio, con círculos que suben. Hojas que se balancean con el pulso; tres capas de pétalos: los de afuera se mueven con medios y agudos, los del medio con los medios y los de adentro con los graves. Con cada bombo la flor se abre, sale una onda y vuela polen. En el centro, los 16 pasos como semillas.
+  - **Flor 3D:** un loto en perspectiva, dibujado como a lápiz (contorno marcado, sombra gris en la base y en los bordes de cada pétalo), sobre agua de noche con luciérnagas. Se balancea girando de un lado al otro y tiene un lado abierto que deja ver el centro, con las semillas que marcan los 16 pasos y los estambres que se mueven con los agudos. Cada pétalo sigue su banda de frecuencias: se abre y la punta se tiñe del color de la parte. Con el bombo florece un poco y se abre una onda en el agua. En la versión liviana no dibuja la sombra de los bordes ni los nervios.
   - **Liviano** (casilla): 540 × 960 a 24 cuadros y menos elementos, para teléfonos viejos o si el video sale entrecortado.
   - En iPhone sale en MP4; en la compu, MP4 o WebM según el navegador. Tarda lo mismo que dura la canción: hay que dejar la pantalla prendida.
 - El audio se mezcla sin tocar en tiempo real (más rápido) con los mismos sonidos, efectos, mezclas y destiempo, y se ajusta el volumen para que quede fuerte sin recortar.
@@ -303,4 +306,4 @@ Parado o acostado, la cabecera se compacta para que la grilla tenga más lugar:
 
 ### Service worker
 
-`sw.js` ahora guarda cada página con su dirección (antes guardaba cualquier página como `index.html`) y guarda las grabaciones en una caché aparte que no se borra al subir `VERSION`.
+`sw.js` guarda cada página con su dirección (`index.html` y `mini.html` no se pisan; antes guardaba cualquier página como `index.html`) y guarda las grabaciones en una caché aparte que no se borra al subir `VERSION`.

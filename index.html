@@ -446,6 +446,8 @@ input.xf::-moz-range-thumb{width:30px;height:40px;border:0;border-radius:8px;bac
 .seg{display:flex;background:var(--chip);border-radius:10px;padding:3px;gap:3px}
 .seg button{flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;color:var(--ink)}
 .seg button.on{background:var(--pad);color:var(--ink2);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+#xQual button{padding:8px 3px;white-space:nowrap;min-width:0}
+@media (max-width:350px){#xQual button{font-size:11.5px}}
 .sl{display:grid;grid-template-columns:1fr auto;align-items:center;font-size:13px;margin-top:14px;gap:4px 8px}
 .sl output{font-variant-numeric:tabular-nums;color:var(--ink)}
 .sl input{grid-column:1/-1;width:100%;accent-color:var(--cy)}
@@ -898,7 +900,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <button class="xfo" data-f="vid"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="4" y="1.5" width="8" height="13" rx="1.8"/><path d="M7 6v4l3-2z" fill="currentColor"/></svg><span><b>Video vertical 9:16</b><small>Para historias y reels, con visualización</small></span></button>
     </div>
     <h4>ESTILO DEL VIDEO</h4>
-    <div class="seg" id="xQual"><button data-q="0">Caracol</button><button data-q="1">Revista</button><button data-q="2">Neón</button><button data-q="3">Flor</button></div>
+    <div class="seg" id="xQual"><button data-q="0">Caracol</button><button data-q="1">Revista</button><button data-q="2">Neón</button><button data-q="3">Flor</button><button data-q="4">Flor 3D</button></div>
     <p class="hint" id="xQualH"></p>
     <label class="tg" style="margin-top:8px"><input type="checkbox" id="xLite"> Liviano: 540 × 960, para teléfonos viejos o si sale entrecortado</label>
     <div class="xprog" id="xProg" hidden><div class="xbar"><i></i></div><p></p></div>
@@ -2711,12 +2713,13 @@ async function toMp3(buf) {
   return new Blob(parts, { type: 'audio/mpeg' });
 }
 /* ---- video 9:16 ---- */
-// cuatro estilos de video, cada uno con su versión liviana (540 × 960, 24 cuadros) para teléfonos viejos
+// cinco estilos de video, cada uno con su versión liviana (540 × 960, 24 cuadros) para teléfonos viejos
 const VSTY = [
   { n: 'Caracol', d: 'Una espiral que sigue la música, con la onda del sonido enroscada. Va con cualquier tema.' },
   { n: 'Revista', d: 'Papel, tinta y tipografía grande, como una tapa de revista. Ideal para temas con guitarras y banda.' },
   { n: 'Neón', d: 'Brillos, chispas y anillos que giran. Para trap y electrónica.' },
   { n: 'Flor', d: 'Una flor de bordes bien marcados que se abre con el bombo y mueve cada pétalo con el sonido, sobre un fondo oscuro que cambia despacio.' },
+  { n: 'Flor 3D', d: 'Un loto en perspectiva, dibujado como a lápiz, que se balancea girando sobre el agua. Cada pétalo se abre y se tiñe de color con su parte del sonido; el bombo lo hace florecer y abre ondas.' },
 ];
 const vstyle = () => clamp(PREF.vsty == null ? 0 : PREF.vsty, 0, VSTY.length - 1);
 const vq = () => PREF.vlite ? { n: 'liviano', w: 540, h: 960, fps: 24, br: 2.5e6, lite: true } : { n: 'normal', w: 720, h: 1280, fps: 30, br: 5e6, lite: false };
@@ -2757,6 +2760,7 @@ function drawVideoFrame(g, W0, H0, R, now, st) {
   if (st.style === 0) drawCaracol(g, R, st, V);
   else if (st.style === 1) drawRevista(g, R, st, V);
   else if (st.style === 3) drawFlor(g, R, st, V);
+  else if (st.style === 4) drawFlor3D(g, R, st, V);
   else drawNeon(g, R, st, V);
   g.setTransform(1, 0, 0, 1, 0, 0);
   if (st.logo && st.style !== 0) g.drawImage(st.logo, 0, H0 - st.logo.height); // en Caracol el logo va arriba
@@ -2874,12 +2878,12 @@ function drawRevista(g, R, st, V) {
   g.drawImage(st.bg, 0, 0, W, H);
   const M = 48;
   // fondo: barras verticales de lado a lado que suben desde abajo con el sonido (graves a la izquierda, agudos a la derecha).
-  // Al máximo llegan al alto de la pantalla; van suaves, como tinta clara, para dar movimiento sin tapar nada.
-  { const nb = q.lite ? 24 : 32, bv = vBands(st, nb), bw = W / nb;
+  // Son 7 (cada una junta varias frecuencias), en naranja suave; al máximo llegan al alto de la pantalla.
+  { const nb = 7, bv = vBands(st, nb), bw = W / nb;
     g.globalCompositeOperation = 'multiply';
-    for (const [c, ox, al] of [[ink, 4, .035], [acc2, 0, .17]]) {
+    for (const [c, ox, al] of [[ink, 4, .03], ['#f28a30', 0, .24]]) {
       g.fillStyle = c; g.globalAlpha = al; g.beginPath();
-      for (let i = 0; i < nb; i++) { const h = 24 + bv[i] * (H - 24); g.rect(i * bw + bw * .14 + ox, H - h - ox * .6, bw * .72, h); }
+      for (let i = 0; i < nb; i++) { const h = 24 + bv[i] * (H - 24); g.rect(i * bw + bw * .17 + ox, H - h - ox * .6, bw * .66, h); }
       g.fill();
     }
     g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
@@ -3119,6 +3123,137 @@ function drawFlor(g, R, st, V) {
   R.blocks.forEach((b) => { const w = bw * b.n / tot; g.fillStyle = FCOL[b.p % 8][0]; g.fillRect(x, by, w - 2, 12); x += w; });
   g.restore();
   g.strokeStyle = HALO; g.globalAlpha = .35; g.lineWidth = 2; rrect(g, bx, by, bw, 12, 6); g.stroke(); g.globalAlpha = 1;
+}
+/* ---- Flor 3D: un loto en perspectiva, dibujado como a lápiz, que se balancea girando y se abre con la música ----
+   Cada pétalo es una superficie curva (se ahueca a lo ancho y se levanta hacia la punta), proyectada con perspectiva
+   y dibujada de atrás hacia adelante. Cada pétalo sigue su banda de frecuencias: se abre y la punta se tiñe del color de la parte. */
+const LCOL = ['#ff8fab', '#ffb86b', '#ffd86b', '#b9a2ff', '#7fd8ff', '#ff9e8a', '#8fb3ff', '#ff7ac6'];
+function lotusModel() {
+  let sd = 7; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647, D = Math.PI / 180, P = [], OPEN = -Math.PI / 2 - .7; // el lado abierto, adelante a la izquierda
+  // anillos: cantidad, largo, ancho, radio y altura de la base, ángulo en la base y en la punta (desde la vertical), cuánto más se abre del lado abierto, hueco, giro, primera banda, cuánto se abre con el sonido
+  [[8, 230, 100, 18, 0, 80, 64, 6, .2, .2, 14, 10], [8, 210, 92, 14, 8, 44, 22, 8, .28, .2 + Math.PI / 8, 6, 12], [6, 170, 78, 10, 16, 22, -6, 26, .3, .5, 0, 16]]
+    .forEach(([n, L, w, r0, y0, a0, a1, ao, cup, off, b0, op], ring) => {
+      for (let i = 0; i < n; i++) {
+        const phi = off + i / n * Math.PI * 2 + (rnd() - .5) * .14, o = Math.pow(.5 + .5 * Math.cos(phi - OPEN), 2) * ao;
+        P.push({ ring, phi, L: L * (.92 + rnd() * .16), w: w * (.9 + rnd() * .2), r0, y0, a0: (a0 + o + (rnd() - .5) * 8) * D, a1: (a1 + o * .8 + (rnd() - .5) * 8) * D, cup, band: b0 + i % 8, op: op * D, ph: rnd() * 6.28 });
+      }
+    });
+  return P;
+}
+function drawFlor3D(g, R, st, V) {
+  const { W, H, TAU, now, beats, p, bass } = V, lite = st.q.lite, OUT = '#2a2433';
+  const tint = LCOL[p % 8], tint2 = LCOL[(p + 3) % 8], tRGB = hexRgb(tint), LIGHT = [250, 247, 252], SHADE = [112, 106, 136];
+  if (!st.lotus) st.lotus = lotusModel();
+  const bv = vBands(st, 24), hi = (bv[18] + bv[19] + bv[20] + bv[21] + bv[22] + bv[23]) / 6;
+  g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; g.lineJoin = 'round'; g.lineCap = 'round';
+  // fondo: noche en degradado que respira con el color de la parte
+  const bg = g.createLinearGradient(0, 0, 0, H);
+  bg.addColorStop(0, mixHex('#0d0b22', tint2, .1 + .06 * Math.sin(beats * TAU / 32))); bg.addColorStop(.55, '#080c19'); bg.addColorStop(1, mixHex('#04151b', tint, .14));
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  // cámara: mira desde arriba y adelante, con perspectiva; la flor se balancea girando y se acerca un poco con el bombo
+  const cx = W / 2, cy = 745, F = 1100, el = (24 + 3 * Math.sin(beats * TAU / 32)) * Math.PI / 180, ce = Math.cos(el), se = Math.sin(el);
+  const yaw = Math.sin(beats * TAU / 64) * .55, SC = 1.3 * (1 + st.k * .035); // gira de un lado al otro, sin perder el lado abierto
+  const cam = (x, y, z) => { const up = y * ce + z * se, d = z * ce - y * se, k = F / (F + d * SC) * SC; return [cx + x * k, cy - up * k, d]; };
+  const rot = (x, y, z) => [x, y * ce + z * se, z * ce - y * se]; // un vector visto desde la cámara (x, arriba, profundidad)
+  const LV = (() => { const l = [-.45, .75, -.55], m = Math.hypot(...l); return l.map(v => v / m); })();
+  const poly = (pts) => { g.beginPath(); pts.forEach((q, i) => i ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1])); };
+  // luciérnagas que titilan con los agudos
+  if (!st.ff) { let sd = 3; const r = () => (sd = (sd * 16807) % 2147483647) / 2147483647; st.ff = Array.from({ length: lite ? 12 : 26 }, () => ({ x: r() * W, y: r() * H, v: .2 + r() * .5, ph: r() * 6.28 })); }
+  for (const f of st.ff) {
+    f.y -= f.v; f.x += Math.sin(beats + f.ph) * .4; if (f.y < -10) { f.y = H + 10; }
+    const a = .2 + .7 * Math.abs(Math.sin(beats * 1.5 + f.ph)) * (.4 + hi);
+    g.fillStyle = '#ffe39a'; g.globalAlpha = a * .22; g.beginPath(); g.arc(f.x, f.y, 10, 0, TAU); g.fill();
+    g.globalAlpha = a; g.beginPath(); g.arc(f.x, f.y, 2.4, 0, TAU); g.fill();
+  }
+  g.globalAlpha = 1;
+  // agua: el reflejo del color y ondas que se abren con cada bombo
+  const ring = (r, y) => { const pts = []; for (let i = 0; i <= 56; i++) { const t = i / 56 * TAU; pts.push(cam(Math.cos(t) * r, y, Math.sin(t) * r)); } return pts; };
+  const [wx, wy] = cam(0, -12, 0);
+  g.save(); g.translate(wx, wy); g.scale(1, se); const wg = g.createRadialGradient(0, 0, 10, 0, 0, 430); wg.addColorStop(0, tint); wg.addColorStop(1, tint + '00');
+  g.globalAlpha = .1 + bass * .22 + st.k * .06; g.fillStyle = wg; g.beginPath(); g.arc(0, 0, 430, 0, TAU); g.fill(); g.restore();
+  st.rip = st.rip || [];
+  if (st.burst > 0) st.rip.push({ r: 170, a: 1 });
+  st.burst = 0;
+  g.lineWidth = 3;
+  st.rip = st.rip.filter(o => { o.r += 5; o.a -= .017; if (o.a <= 0) return false; g.strokeStyle = mixHex(tint, '#ffffff', .4); g.globalAlpha = o.a * .4; poly(ring(o.r, -12)); g.stroke(); return true; });
+  g.globalAlpha = 1;
+  // pétalos
+  const items = [], n = lite ? 8 : 12, bloom = st.k * 7 * Math.PI / 180, colA = (b) => SHADE.map((s, i) => s + (LIGHT[i] - s) * clamp(b, 0, 1)), rgbS = (c) => `rgb(${c.map(Math.round).join(',')})`, col = (b) => rgbS(colA(b));
+  for (const pt of st.lotus) {
+    const v = bv[pt.band], phi = pt.phi + yaw, cR = Math.cos(phi), sR = Math.sin(phi);
+    const open = v * pt.op + bloom + Math.sin(beats * TAU / 16 + pt.ph) * .025, a0 = pt.a0 + open, a1 = pt.a1 + open * 1.25;
+    const sp = []; let x = pt.r0 * cR, y = pt.y0, z = pt.r0 * sR;
+    for (let j = 0; j <= n; j++) { const u = j / n, a = a0 + (a1 - a0) * u, ca = Math.cos(a), sa = Math.sin(a); sp.push([x, y, z, u, ca, sa]); x += sa * cR * pt.L / n; y += ca * pt.L / n; z += sa * sR * pt.L / n; }
+    // punto del pétalo: j a lo largo, vv de -1 (un borde) a 1 (el otro); los bordes se levantan hacia adentro
+    const Pw = (j, vv) => { const [sx, sy, sz, u, ca, sa] = sp[j], w = pt.w * Math.pow(Math.sin(Math.PI * Math.pow(u, .85)), .95), c = pt.cup * vv * vv * w; return [sx - vv * w * sR - c * ca * cR, sy + c * sa, sz + vv * w * cR - c * ca * sR]; };
+    const P2 = (j, vv) => cam(...Pw(j, vv)), jm = n >> 1, mid = P2(jm, 0);
+    const half = (s) => {
+      const a = Pw(jm, s * .5), b = Pw(jm + 1, s * .5), c = Pw(jm, s * .8), d = Pw(jm, s * .2);
+      const du = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], dv = [c[0] - d[0], c[1] - d[1], c[2] - d[2]];
+      let nn = [du[1] * dv[2] - du[2] * dv[1], du[2] * dv[0] - du[0] * dv[2], du[0] * dv[1] - du[1] * dv[0]]; const m = Math.hypot(...nn) || 1; nn = rot(...nn.map(q => q / m));
+      let back = false; if (nn[2] > 0) { nn = nn.map(q => -q); back = true; }
+      const lb = .58 + .42 * Math.max(0, nn[0] * LV[0] + nn[1] * LV[1] + nn[2] * LV[2]);
+      const pts = []; for (let j = 0; j <= n; j++) pts.push(P2(j, s)); for (let j = n; j >= 0; j--) pts.push(P2(j, 0));
+      return { s, b: back ? lb * .88 : lb, d: cam(...a)[2], pts };
+    };
+    items.push({ d: mid[2], draw: () => {
+      const base = P2(1, 0), tip = P2(n, 0);
+      for (const h of [half(-1), half(1)].sort((A, B) => B.d - A.d)) {
+        const gr = g.createLinearGradient(base[0], base[1], tip[0], tip[1]);
+        gr.addColorStop(0, col(h.b * .5)); gr.addColorStop(.5, col(h.b));
+        gr.addColorStop(1, rgbS(colA(h.b * 1.04).map((q, i) => q + (tRGB[i] - q) * (.1 + v * .65)))); // la punta toma el color cuando suena su banda
+        poly(h.pts); g.fillStyle = gr; g.fill();
+      }
+      const edge = []; for (let j = 0; j <= n; j++) edge.push(P2(j, -1)); for (let j = n; j >= 0; j--) edge.push(P2(j, 1));
+      // sombra de lápiz por dentro del borde
+      if (!lite) { g.save(); poly(edge); g.closePath(); g.clip(); g.strokeStyle = 'rgba(86,80,112,.3)'; g.lineWidth = 18; g.stroke(); g.restore(); }
+      poly(edge); g.closePath(); g.strokeStyle = OUT; g.lineWidth = 3; g.stroke();
+      g.globalAlpha = .45; g.lineWidth = 1.6; const cr = []; for (let j = 1; j < n; j++) cr.push(P2(j, 0)); poly(cr); g.stroke();
+      if (!lite) { g.globalAlpha = .22; g.lineWidth = 1.1; for (const s of [-.55, .55]) { const vn = []; for (let j = 1; j <= Math.round(n * .75); j++) vn.push(P2(j, s)); poly(vn); g.stroke(); } } // nervios (en liviano no)
+      g.globalAlpha = 1;
+    } });
+  }
+  // centro: el cono del loto con sus semillas (los 16 pasos) y los estambres alrededor
+  const podR = 38, podY0 = 70, podY1 = 94, stp = V.cur && !V.cur.end ? V.cur.s : -1, ns = lite ? 22 : 34;
+  const stam = (front) => {
+    for (let k = 0; k < ns; k++) {
+      const t = k / ns * TAU + yaw * 1.3, e = bv[16 + k % 8], b = cam(Math.cos(t) * 26, podY0 - 4, Math.sin(t) * 26);
+      const rr = 50 + e * 16 + st.snare * 6, tp = cam(Math.cos(t + .15) * rr, podY0 + 14 + e * 12 + st.snare * 8, Math.sin(t + .15) * rr);
+      if ((tp[2] < cam(0, podY0, 0)[2]) !== front) continue;
+      g.strokeStyle = '#e6c35c'; g.globalAlpha = .9; g.lineWidth = 2; g.beginPath(); g.moveTo(b[0], b[1]); g.lineTo(tp[0], tp[1]); g.stroke();
+      g.globalAlpha = 1; g.fillStyle = mixHex('#ffcf4a', '#ffffff', e * .5); g.beginPath(); g.arc(tp[0], tp[1], 3.6, 0, TAU); g.fill(); g.strokeStyle = OUT; g.lineWidth = 1.2; g.stroke();
+    }
+  };
+  items.push({ d: cam(0, podY1, 0)[2] + 2, draw: () => {
+    stam(false);
+    const top = ring(podR, podY1), bot = ring(podR * .62, podY0), side = [];
+    for (let i = 28; i <= 56; i++) side.push(top[i]); for (let i = 56; i >= 28; i--) side.push(bot[i]);
+    const sg = g.createLinearGradient(top[28][0], 0, top[0][0], 0); sg.addColorStop(0, '#d8cd66'); sg.addColorStop(1, '#7e7c34');
+    poly(side); g.closePath(); g.fillStyle = sg; g.fill(); g.strokeStyle = OUT; g.lineWidth = 2.6; g.stroke();
+    const [tx, ty] = cam(0, podY1, 0), tg = g.createRadialGradient(tx - 10, ty - 6, 4, tx, ty, podR * 1.2); tg.addColorStop(0, '#f2e68a'); tg.addColorStop(1, '#c4b24a');
+    poly(top); g.closePath(); g.fillStyle = tg; g.fill(); g.stroke();
+    const seed = (r, t, on) => { const [sx, sy] = cam(Math.cos(t) * r, podY1, Math.sin(t) * r); g.save(); g.translate(sx, sy); g.scale(1, se); g.beginPath(); g.arc(0, 0, on ? 7 : 4.6, 0, TAU); g.restore();
+      if (on) { g.fillStyle = '#ffffff'; g.fill(); g.strokeStyle = tint; g.lineWidth = 3; g.stroke(); } else { g.fillStyle = '#6a6224'; g.fill(); } };
+    for (let k = 0; k < STEPS; k++) seed(podR * .68, k / STEPS * TAU + yaw, k === stp);
+    for (let k = 0; k < 5; k++) seed(podR * .3, k / 5 * TAU + yaw, false);
+    seed(0, 0, false);
+    stam(true);
+  } });
+  items.sort((A, B) => B.d - A.d).forEach(it => it.draw());
+  // título y BPM arriba
+  g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+  g.font = `800 52px ${VFONT}`; g.fillStyle = '#f6f2ff';
+  const lines = wrapLines(g, S.name || 'Mi tema', W - 120, 2);
+  lines.forEach((l, i) => g.fillText(l, W / 2, 128 + i * 60));
+  g.font = `800 24px ${VFONT}`; if ('letterSpacing' in g) g.letterSpacing = '3px';
+  g.fillStyle = tint; g.fillText(`${S.bpm} BPM`, W / 2, 128 + lines.length * 60 - 8); if ('letterSpacing' in g) g.letterSpacing = '0px';
+  // abajo: las partes de la canción en color y por dónde va
+  const bx = 70, bw = W - 140, by = H - 176, tot = R.blocks.reduce((a, b) => a + b.n, 0) || 1, kk = clamp(now / R.dur, 0, 1); let x = bx;
+  g.save(); rrect(g, bx, by, bw, 10, 5); g.clip();
+  R.blocks.forEach((b) => { const w = bw * b.n / tot; g.fillStyle = LCOL[b.p % 8] + '40'; g.fillRect(x, by, w - 2, 10); x += w; });
+  g.beginPath(); g.rect(bx, by - 2, bw * kk, 14); g.clip(); x = bx;
+  R.blocks.forEach((b) => { const w = bw * b.n / tot; g.fillStyle = LCOL[b.p % 8]; g.fillRect(x, by, w - 2, 10); x += w; });
+  g.restore();
 }
 function rrect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
 // logo de Greenpad (ícono + GREENPAD), dibujado una vez en una capa aparte
