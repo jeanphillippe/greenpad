@@ -896,6 +896,9 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <button class="xfo" data-f="wav"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1.5 8h1.5M4.5 5v6M7 3v10M9.5 5.5v5M12 4v8M14.5 7v2"/></svg><span><b>Audio WAV</b><small>Calidad máxima, pesa más</small></span></button>
       <button class="xfo" data-f="vid"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="4" y="1.5" width="8" height="13" rx="1.8"/><path d="M7 6v4l3-2z" fill="currentColor"/></svg><span><b>Video vertical 9:16</b><small>Para historias y reels, con visualización</small></span></button>
     </div>
+    <h4>CALIDAD DEL VIDEO</h4>
+    <div class="seg" id="xQual"><button data-q="0">Liviana</button><button data-q="1">Normal</button><button data-q="2">Alta</button></div>
+    <p class="hint" id="xQualH"></p>
     <div class="xprog" id="xProg" hidden><div class="xbar"><i></i></div><p></p></div>
     <div class="xout" id="xOut" hidden></div>
     <div class="mrow"><button class="btn" id="xClose">Cerrar</button></div>
@@ -2618,6 +2621,7 @@ function xRender() {
   xEl('xWhat').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === XP.what));
   xEl('xLoops').hidden = XP.what !== 'pat';
   xEl('xLoops').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.n === XP.loops));
+  const qi = clamp(PREF.vq == null ? 1 : PREF.vq, 0, 2); xEl('xQual').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.q === qi)); xEl('xQualH').textContent = VQ[qi].d;
   xEl('xSaved').textContent = S.id ? 'Está en Mis beats: el título se guarda ahí.' : 'Al descargar se guarda en Mis beats con este título.';
   document.querySelectorAll('#export .xfo').forEach(b => { b.disabled = XP.busy; });
   const vb = document.querySelector('#export .xfo[data-f="vid"]');
@@ -2705,6 +2709,13 @@ async function toMp3(buf) {
   return new Blob(parts, { type: 'audio/mpeg' });
 }
 /* ---- video 9:16 ---- */
+// calidades del video: qué tan grande y cuántas cosas se dibujan
+const VQ = [
+  { n: 'Liviana', w: 540, h: 960, fps: 24, br: 2.5e6, blobs: 1, rays: 32, glow: 1, pts: 50, arc: false, stars: 0, echo: false, trail: .4, d: '540 × 960 y menos efectos. Para teléfonos viejos o si el video sale entrecortado.' },
+  { n: 'Normal', w: 720, h: 1280, fps: 30, br: 5e6, blobs: 3, rays: 64, glow: 2, pts: 160, arc: true, stars: 0, echo: false, trail: .3, d: '720 × 1280 con todos los efectos.' },
+  { n: 'Alta', w: 1080, h: 1920, fps: 30, br: 10e6, blobs: 2, rays: 96, glow: 3, pts: 260, arc: true, stars: 70, echo: true, trail: .26, d: '1080 × 1920 con más rayos, chispas, estrellas de fondo y un eco de la onda. Pesa más y pide un equipo rápido.' },
+];
+const vq = () => VQ[clamp(PREF.vq == null ? 1 : PREF.vq, 0, 2)];
 const VCOL = ['#3ee08a', '#2ee6d6', '#c6f43a', '#ffae5c', '#9be7c4', '#6fc3ff', '#ff8fb1', '#b49cff'];
 const VFONT = '"Avenir Next","Avenir","Segoe UI",Roboto,"Helvetica Neue",system-ui,sans-serif';
 function wrapLines(g, text, maxW, maxL) {
@@ -2714,74 +2725,138 @@ function wrapLines(g, text, maxW, maxL) {
   if (lines.length > maxL) { lines.length = maxL; lines[maxL - 1] = lines[maxL - 1].replace(/\s*\S*$/, '') + '…'; }
   return lines;
 }
-function drawVideoFrame(g, W, H, R, now, st) {
-  const steps = R.steps, ev = R.ev;
+function drawVideoFrame(g, W0, H0, R, now, st) {
+  const q = st.q, W = 720, H = 1280, sc = W0 / W;
+  g.setTransform(sc, 0, 0, sc, 0, 0);
+  const steps = R.steps, ev = R.ev, TAU = Math.PI * 2;
   while (st.si + 1 < steps.length && steps[st.si + 1].t <= now) st.si++;
-  while (st.ei < ev.length && ev[st.ei].t <= now) { st.lv[ev[st.ei].tr] = 1; st.ei++; }
-  const cur = steps[st.si], p = cur && cur.p != null ? cur.p : (R.blocks[R.blocks.length - 1] || { p: 0 }).p, col = VCOL[p % 8];
-  // fondo
-  const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#0f1a14'); bg.addColorStop(1, '#050906');
-  g.fillStyle = bg; g.fillRect(0, 0, W, H);
-  const glow = g.createRadialGradient(W / 2, H * .47, 10, W / 2, H * .47, W * .75); glow.addColorStop(0, col + '33'); glow.addColorStop(1, '#00000000');
-  g.fillStyle = glow; g.fillRect(0, 0, W, H);
-  // título
-  g.textAlign = 'center'; g.textBaseline = 'alphabetic';
-  g.fillStyle = '#6f8277'; g.font = `700 22px ${VFONT}`; g.fillText('G R E E N P A D   B A N D A', W / 2, 92);
-  g.fillStyle = '#e8f3ec'; g.font = `800 64px ${VFONT}`;
-  const lines = wrapLines(g, S.name || 'Mi tema', W - 100, 2);
-  lines.forEach((l, i) => g.fillText(l, W / 2, 180 + i * 72));
-  g.fillStyle = '#9fb3a7'; g.font = `600 26px ${VFONT}`;
-  g.fillText(`${S.bpm} BPM · ${moodName(S.ps[p].sc)}`, W / 2, 180 + lines.length * 72 + 8);
-  // círculo: espectro + 16 pasos
-  const cx = W / 2, cy = H * .5, r0 = 170;
-  const fr = st.fd; if (st.an) st.an.getByteFrequencyData(fr);
-  const nb = 72;
-  for (let i = 0; i < nb; i++) {
-    const idx = 2 + Math.floor(Math.pow(i / nb, 1.5) * (fr.length * .7)), v = fr[idx] / 255, a = i / nb * Math.PI * 2 - Math.PI / 2, len = 10 + v * v * 170;
-    g.strokeStyle = i % 2 ? col : col + 'aa'; g.lineWidth = 7; g.lineCap = 'round';
-    g.beginPath(); g.moveTo(cx + Math.cos(a) * (r0 + 14), cy + Math.sin(a) * (r0 + 14)); g.lineTo(cx + Math.cos(a) * (r0 + 14 + len), cy + Math.sin(a) * (r0 + 14 + len)); g.stroke();
+  while (st.ei < ev.length && ev[st.ei].t <= now) {
+    const tr = ev[st.ei].tr; st.lv[tr] = 1;
+    if (tr === 0) { st.kick = 1; st.burst += 14; }
+    else if (tr === 1) st.snare = 1;
+    st.ei++;
   }
+  const cur = steps[st.si] || steps[0], p = cur && cur.p != null ? cur.p : (R.blocks[R.blocks.length - 1] || { p: 0 }).p;
+  const col = VCOL[p % 8], col2 = VCOL[(p + 3) % 8];
+  const beats = Math.max(0, now) * S.bpm / 60; // tiempo en negras: todo se mueve con el pulso
+  // audio
+  if (st.an) { st.an.getByteFrequencyData(st.fd); st.an.getByteTimeDomainData(st.td); }
+  let bass = 0, mid = 0; for (let i = 1; i < 6; i++) bass += st.fd[i]; for (let i = 8; i < 40; i++) mid += st.fd[i];
+  bass = bass / (5 * 255); mid = mid / (32 * 255);
+  st.k = Math.max(st.kick, st.k * .9); st.kick *= .82; st.snare *= .84;
+  // fondo con estela (lo de antes se va apagando de a poco)
+  g.globalCompositeOperation = 'source-over';
+  g.fillStyle = `rgba(5,9,7,${q.trail})`; g.fillRect(0, 0, W, H);
+  // manchas de color que flotan
+  g.globalCompositeOperation = 'lighter';
+  for (let i = 0; i < q.blobs; i++) {
+    const a = beats * .11 + i * 2.1, x = W / 2 + Math.cos(a * (1 + i * .3)) * W * .38, y = H * .48 + Math.sin(a * .8 + i) * H * .3, r = W * (.55 + .12 * Math.sin(beats * .5 + i)) * (1 + bass * .25);
+    const gr = g.createRadialGradient(x, y, 0, x, y, r); gr.addColorStop(0, (i === 1 ? col2 : col) + '1c'); gr.addColorStop(1, '#00000000');
+    g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  }
+  if (q.stars) { // estrellas de fondo que titilan y se acercan despacio (solo en Alta)
+    if (!st.sky) st.sky = Array.from({ length: q.stars }, () => ({ a: Math.random() * TAU, r: 60 + Math.random() * 620, z: Math.random() }));
+    for (const o of st.sky) {
+      o.r += .4 + o.z * 1.2 + bass * 3; if (o.r > 720) { o.r = 60; o.a = Math.random() * TAU; }
+      g.fillStyle = col2; g.globalAlpha = .25 + .5 * Math.abs(Math.sin(beats * 2 + o.a * 5)) * o.z;
+      const sz = 1.5 + o.z * 2.5; g.fillRect(W / 2 + Math.cos(o.a) * o.r - sz / 2, H * .47 + Math.sin(o.a) * o.r - sz / 2, sz, sz);
+    }
+    g.globalAlpha = 1;
+  }
+  const cx = W / 2, cy = H * .47, zoom = 1 + st.k * .045;
+  g.save(); g.translate(cx, cy); g.scale(zoom, zoom);
+  // anillos de pasos que giran con el pulso
+  const rot = beats * TAU / 16;
   for (let k = 0; k < STEPS; k++) {
-    const a = k / STEPS * Math.PI * 2 - Math.PI / 2, on = cur && !cur.end && cur.s === k;
-    g.fillStyle = on ? '#ffffff' : k % 4 === 0 ? '#3a5246' : '#22322a';
-    g.beginPath(); g.arc(cx + Math.cos(a) * (r0 - 26), cy + Math.sin(a) * (r0 - 26), on ? 11 : 7, 0, Math.PI * 2); g.fill();
+    const a0 = rot + k / STEPS * TAU + .04, a1 = a0 + TAU / STEPS - .08, on = cur && !cur.end && cur.s === k;
+    g.strokeStyle = on ? '#ffffff' : (k % 4 === 0 ? col + '88' : col + '33'); g.lineWidth = on ? 14 : 8; g.lineCap = 'round';
+    g.beginPath(); g.arc(0, 0, 300, a0, a1); g.stroke();
   }
-  const pulse = 1 + st.lv[0] * .06;
-  g.fillStyle = col; g.beginPath(); g.arc(cx, cy, 92 * pulse, 0, Math.PI * 2); g.fill();
-  g.fillStyle = '#062012'; g.font = `800 112px ${VFONT}`; g.textBaseline = 'middle'; g.fillText(LET[p], cx, cy + 6); g.textBaseline = 'alphabetic';
-  // instrumentos que suenan
-  const names = ['BOMBO', 'CAJA', 'HI-HAT', 'PERCU', 'BAJO', 'GUITARRA', 'ACORDES', 'MELODÍA'], top = H * .74, cw = (W - 80) / 4;
-  for (let t = 0; t < NT; t++) {
-    const x = 40 + (t % 4) * cw + cw / 2, y = top + Math.floor(t / 4) * 92, v = st.lv[t];
-    g.fillStyle = `rgba(255,255,255,${.05 + v * .1})`; g.beginPath(); g.roundRect ? g.roundRect(x - cw / 2 + 8, y - 34, cw - 16, 70, 18) : g.rect(x - cw / 2 + 8, y - 34, cw - 16, 70); g.fill();
-    g.fillStyle = v > .05 ? VCOL[t] : '#3a5246'; g.beginPath(); g.arc(x, y - 6, 9 + v * 7, 0, Math.PI * 2); g.fill();
-    g.fillStyle = v > .05 ? '#e8f3ec' : '#6f8277'; g.font = `700 17px ${VFONT}`; g.fillText(names[t], x, y + 24);
-    st.lv[t] *= .86;
+  if (q.arc) { g.strokeStyle = col2 + '55'; g.lineWidth = 3; g.beginPath(); g.arc(0, 0, 330 + st.snare * 30, -rot * 1.7, -rot * 1.7 + TAU * .7); g.stroke(); }
+  // espectro en rayos
+  const nb = q.rays;
+  for (let i = 0; i < nb; i++) {
+    const v = st.fd[2 + Math.floor(Math.pow(i / nb, 1.4) * 150)] / 255, a = -rot * .5 + i / nb * TAU, len = 6 + v * v * 120;
+    g.strokeStyle = (i % 2 ? col : col2) + 'cc'; g.lineWidth = 5;
+    g.beginPath(); g.moveTo(Math.cos(a) * 196, Math.sin(a) * 196); g.lineTo(Math.cos(a) * (196 + len), Math.sin(a) * (196 + len)); g.stroke();
   }
-  // estructura de la canción y tiempo
-  const bx = 50, bw = W - 100, by = H - 150, tot = R.blocks.reduce((a, b) => a + b.n, 0) || 1; let x = bx;
-  R.blocks.forEach((b, i) => {
-    const w = bw * b.n / tot - 4;
-    g.fillStyle = VCOL[b.p % 8] + (cur && cur.bi === i ? 'ff' : '66'); g.beginPath(); g.roundRect ? g.roundRect(x, by, Math.max(4, w), 26, 8) : g.rect(x, by, Math.max(4, w), 26); g.fill();
-    if (w > 26) { g.fillStyle = '#062012'; g.font = `800 16px ${VFONT}`; g.fillText(LET[b.p], x + w / 2, by + 19); }
-    x += bw * b.n / tot;
-  });
-  const k = clamp(now / R.dur, 0, 1);
-  g.fillStyle = '#ffffff'; g.fillRect(bx + bw * k - 2, by - 8, 4, 42);
-  g.fillStyle = '#9fb3a7'; g.font = `600 24px ${VFONT}`; g.fillText(`${fmtT(Math.min(now, R.dur))} / ${fmtT(R.dur)}`, W / 2, by + 74);
+  // onda del audio cerrada en círculo
+  const np = 150, rr = 160 + bass * 26, td = st.td, step = Math.floor(td.length / np);
+  // pasadas: 1 = solo la línea; 2 = con brillo; 3 = brillo doble
+  const PASS = q.glow === 1 ? [['#ffffff', .9, 3]] : q.glow === 2 ? [[col, .35, 14], ['#ffffff', .9, 3]] : [[col, .22, 24], [col2, .4, 9], ['#ffffff', .95, 3]];
+  if (q.echo) { // eco de la onda, más grande y girando al revés (solo en Alta)
+    g.beginPath();
+    for (let i = 0; i <= np; i++) { const v = (td[((i + 40) % np) * step] - 128) / 128, a = i / np * TAU - rot * .5, r = rr + 210 + v * 50; const x = Math.cos(a) * r, y = Math.sin(a) * r; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.strokeStyle = col2; g.globalAlpha = .28; g.lineWidth = 2; g.stroke(); g.globalAlpha = 1;
+  }
+  for (const [pc, pa, pw] of PASS) {
+    g.beginPath();
+    for (let i = 0; i <= np; i++) {
+      const v = (td[(i % np) * step] - 128) / 128, a = i / np * TAU + rot * .3, r = rr + v * (70 + mid * 60);
+      const x = Math.cos(a) * r, y = Math.sin(a) * r; i ? g.lineTo(x, y) : g.moveTo(x, y);
+    }
+    g.strokeStyle = pc; g.globalAlpha = pa; g.lineWidth = pw; g.stroke();
+  }
+  g.globalAlpha = 1;
+  // chispas que salen con el bombo
+  while (st.burst > 0 && st.pt.length < q.pts) { const a = Math.random() * TAU, sp = 3 + Math.random() * 7; st.pt.push({ x: Math.cos(a) * 170, y: Math.sin(a) * 170, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp, l: 1, c: Math.random() < .5 ? col : col2 }); st.burst--; }
+  st.burst = 0;
+  if (st.pt.length < q.pts && Math.random() < .5 + mid) { const a = Math.random() * TAU; st.pt.push({ x: Math.cos(a) * 200, y: Math.sin(a) * 200, vx: Math.cos(a) * 1.2, vy: Math.sin(a) * 1.2, l: .7, c: col2 }); }
+  st.pt = st.pt.filter(q => { q.x += q.vx; q.y += q.vy; q.vx *= .985; q.vy *= .985; q.l -= .018; if (q.l <= 0) return false; g.fillStyle = q.c; g.globalAlpha = q.l; g.fillRect(q.x - 3, q.y - 3, 6, 6); return true; });
+  g.globalAlpha = 1;
+  // centro: la grilla de 3 x 3 del logo, que se prende con lo que suena
+  g.globalCompositeOperation = 'source-over';
+  const cell = 46, gap = 12, PADS = [0, 1, 2, 3, -1, 4, 5, 6, 7];
+  g.save(); g.rotate(Math.sin(beats * TAU / 8) * .06);
+  for (let i = 0; i < 9; i++) {
+    const t = PADS[i], x = (i % 3 - 1) * (cell + gap), y = (Math.floor(i / 3) - 1) * (cell + gap);
+    const v = t < 0 ? st.k : st.lv[t], s = cell * (1 + v * .18);
+    g.fillStyle = v > .08 ? (i % 2 ? '#c6f43a' : '#3ee08a') : '#1b2620'; g.globalAlpha = v > .08 ? .35 + v * .65 : 1;
+    rrect(g, x - s / 2, y - s / 2, s, s, 10); g.fill();
+    if (t >= 0) st.lv[t] *= .86;
+  }
+  g.globalAlpha = 1; g.restore();
+  g.restore();
+  g.globalCompositeOperation = 'source-over';
+  // texto mínimo: título y BPM arriba
+  g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+  g.fillStyle = '#eef6f0'; g.font = `800 50px ${VFONT}`;
+  const lines = wrapLines(g, S.name || 'Mi tema', W - 120, 2);
+  lines.forEach((l, i) => g.fillText(l, W / 2, 120 + i * 58));
+  g.fillStyle = col; g.font = `800 24px ${VFONT}`; g.fillText(`${S.bpm} BPM`, W / 2, 120 + lines.length * 58 + 4);
+  // abajo: progreso con los colores de cada parte y el logo
+  const bx = 70, bw = W - 140, by = H - 170, tot = R.blocks.reduce((a, b) => a + b.n, 0) || 1, kk = clamp(now / R.dur, 0, 1); let x = bx;
+  R.blocks.forEach((b) => { const w = bw * b.n / tot; g.fillStyle = VCOL[b.p % 8] + '55'; g.fillRect(x + 1, by, w - 2, 6); x += w; });
+  g.save(); g.beginPath(); g.rect(bx, by - 2, bw * kk, 10); g.clip(); x = bx;
+  R.blocks.forEach((b) => { const w = bw * b.n / tot; g.fillStyle = VCOL[b.p % 8]; g.fillRect(x + 1, by, w - 2, 6); x += w; });
+  g.restore();
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  if (st.logo) g.drawImage(st.logo, 0, H0 - st.logo.height);
 }
+function rrect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
+// logo de Greenpad (ícono + GREENPAD), dibujado una vez en una capa aparte
+function drawLogo(g, W, H, img) {
+  g.textBaseline = 'middle'; g.font = `800 40px ${VFONT}`; if ('letterSpacing' in g) g.letterSpacing = '-1px';
+  const a = 'GREEN', b = 'PAD', wa = g.measureText(a).width, wb = g.measureText(b).width, is = img ? 52 : 0, gap = img ? 14 : 0, tw = is + gap + wa + wb, x0 = (W - tw) / 2, y = H - 92;
+  if (img) g.drawImage(img, x0, y - is / 2, is, is);
+  g.textAlign = 'left'; g.fillStyle = '#8fa398'; g.fillText(a, x0 + is + gap, y); g.fillStyle = '#3ee08a'; g.fillText(b, x0 + is + gap + wa, y);
+  g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+}
+function loadImg(src) { return new Promise((res) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; }); }
 async function makeVideo(R) {
   const c = ensureAudio(); try { await c.resume(); } catch {}
   const mime = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find(m => !MediaRecorder.isTypeSupported || MediaRecorder.isTypeSupported(m));
-  const W = 720, H = 1280, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const q = vq(), W = q.w, H = q.h, sc = W / 720, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const g = cv.getContext('2d');
-  const dest = c.createMediaStreamDestination(), an = c.createAnalyser(); an.fftSize = 512; an.smoothingTimeConstant = .7;
+  const dest = c.createMediaStreamDestination(), an = c.createAnalyser(); an.fftSize = 1024; an.smoothingTimeConstant = .6;
   const src = c.createBufferSource(); src.buffer = R.buf; src.connect(dest); src.connect(an);
   const mon = c.createGain(); mon.gain.value = .9; src.connect(mon); mon.connect(c.destination); // se escucha mientras se graba
-  const st = { si: 0, ei: 0, lv: new Float32Array(NT), an, fd: new Uint8Array(an.frequencyBinCount) };
+  const st = { si: 0, ei: 0, lv: new Float32Array(NT), an, fd: new Uint8Array(an.frequencyBinCount), td: new Uint8Array(an.fftSize).fill(128), k: 0, kick: 0, snare: 0, burst: 0, pt: [], q, lastT: -1 };
+  const lc = document.createElement('canvas'); lc.width = W; lc.height = Math.round(150 * sc); const lg = lc.getContext('2d'); lg.scale(sc, sc); drawLogo(lg, 720, 150, await loadImg('icon-512.png')); st.logo = lc;
+  g.fillStyle = '#050907'; g.fillRect(0, 0, W, H);
   drawVideoFrame(g, W, H, R, 0, st);
-  const vs = cv.captureStream(30), stream = new MediaStream([...vs.getVideoTracks(), ...dest.stream.getAudioTracks()]);
-  const rec = new MediaRecorder(stream, Object.assign({ videoBitsPerSecond: 5e6, audioBitsPerSecond: 192000 }, mime ? { mimeType: mime } : {}));
+  const vs = cv.captureStream(q.fps), stream = new MediaStream([...vs.getVideoTracks(), ...dest.stream.getAudioTracks()]);
+  const rec = new MediaRecorder(stream, Object.assign({ videoBitsPerSecond: q.br, audioBitsPerSecond: 192000 }, mime ? { mimeType: mime } : {}));
   const chunks = []; rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
   rec.start(500);
   const t0 = c.currentTime + .25, total = R.buf.duration; src.start(t0);
@@ -2789,8 +2864,8 @@ async function makeVideo(R) {
     const tick = () => {
       if (XP.cancel) return res();
       const now = c.currentTime - t0;
-      drawVideoFrame(g, W, H, R, Math.max(0, now), st);
-      xProgress(.2 + .8 * clamp(now / total, 0, 1), `Grabando el video… ${fmtT(Math.max(0, now))} / ${fmtT(total)}. Dejá la pantalla prendida.`);
+      if (now - st.lastT >= 1 / q.fps - .006) { st.lastT = now; drawVideoFrame(g, W, H, R, Math.max(0, now), st); } // solo los cuadros que se graban
+      xProgress(.2 + .8 * clamp(now / total, 0, 1), `Grabando el video (${q.n.toLowerCase()})… ${fmtT(Math.max(0, now))} / ${fmtT(total)}. Dejá la pantalla prendida.`);
       if (now >= total) return res();
       requestAnimationFrame(tick);
     };
@@ -2836,6 +2911,7 @@ function showOut(blob, name, f) {
   out.hidden = false;
 }
 xEl('xWhat').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b || b.disabled || XP.busy) return; XP.what = b.dataset.v; clearOut(); xRender(); });
+xEl('xQual').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b || XP.busy) return; PREF.vq = +b.dataset.q; store.set(LS_PREF, PREF); xRender(); });
 xEl('xLoops').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b || XP.busy) return; XP.loops = +b.dataset.n; clearOut(); xRender(); });
 document.querySelectorAll('#export .xfo').forEach(b => b.addEventListener('click', () => doExport(b.dataset.f)));
 xEl('xName').addEventListener('change', () => { if (!XP.busy) keepTitle(); });
