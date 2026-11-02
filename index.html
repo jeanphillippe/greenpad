@@ -2719,7 +2719,7 @@ const VSTY = [
   { n: 'Revista', d: 'Papel, tinta y tipografía grande, como una tapa de revista. Ideal para temas con guitarras y banda.' },
   { n: 'Neón', d: 'Brillos, chispas y anillos que giran. Para trap y electrónica.' },
   { n: 'Flor', d: 'Una flor de bordes bien marcados que se abre con el bombo y mueve cada pétalo con el sonido, sobre un fondo oscuro que cambia despacio.' },
-  { n: 'Flor 3D', d: 'Un loto en 3D armado con Fibonacci y la proporción áurea: 21 pétalos panzones en tres capas que se abren con la música, con sombras y colores vivos que van cambiando. Barras de fondo como en Revista.' },
+  { n: 'Flor 3D', d: 'Un loto en 3D armado con Fibonacci y la proporción áurea: 21 pétalos en tres capas. Con poco sonido queda cerrado como un capullo y con mucho sonido se abre del todo. Colores en anillos desde el centro, como una remera teñida, y un tallo largo. Barras de fondo como en Revista.' },
 ];
 const vstyle = () => clamp(PREF.vsty == null ? 0 : PREF.vsty, 0, VSTY.length - 1);
 const vq = () => PREF.vlite ? { n: 'liviano', w: 540, h: 960, fps: 24, br: 2.5e6, lite: true } : { n: 'normal', w: 720, h: 1280, fps: 30, br: 5e6, lite: false };
@@ -3170,8 +3170,9 @@ function drawFlor3D2d(g, R, st, V) {
   // luz detrás de la flor, que late con los graves
   { const [gx, gy] = cam(0, 90, 0), gl = g.createRadialGradient(gx, gy, 20, gx, gy, 400); gl.addColorStop(0, tint); gl.addColorStop(1, tint + '00');
     g.globalAlpha = .14 + bass * .2 + st.k * .08; g.fillStyle = gl; g.beginPath(); g.arc(gx, gy, 400, 0, Math.PI * 2); g.fill(); g.globalAlpha = 1; }
-  // tallo: baja desde la flor y sale de la pantalla abajo a la derecha
-  { const pts = []; for (let t = 0; t <= 1400; t += 70) pts.push(cam(Math.sin(t / 900) * 60, -t, 30 - t * .05));
+  // tallo largo: baja desde la flor y se corta en el borde de la pantalla, abajo a la derecha
+  { const a = cam(0, 0, 0), b = cam(0, -200, 0), dl = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1, dx = (b[0] - a[0]) / dl, dy = (b[1] - a[1]) / dl, pts = [];
+    for (let i = 0; i <= 40; i++) { const t = i / 40, bend = 80 * t * Math.sin(Math.min(1, t * 2.2) * Math.PI / 2); pts.push([a[0] + dx * 2200 * t - dy * bend, a[1] + dy * 2200 * t + dx * bend]); }
     poly(pts); g.strokeStyle = OUT; g.lineWidth = 22; g.stroke(); g.strokeStyle = '#6f9a5a'; g.lineWidth = 15; g.stroke();
     g.strokeStyle = 'rgba(190,230,160,.45)'; g.lineWidth = 3; g.save(); g.translate(-3, 0); g.stroke(); g.restore(); }
   // pétalos
@@ -3238,20 +3239,10 @@ function drawFlor3D2d(g, R, st, V) {
       g.globalAlpha = 1; g.lineWidth = 2.6; poly(edge); g.closePath(); g.stroke();
     } });
   }
-  // centro: el cono del loto con sus semillas (los 16 pasos) y los estambres alrededor
-  const podR = 40, podY0 = 50, podY1 = 74, stp = V.cur && !V.cur.end ? V.cur.s : -1, ns = lite ? 22 : 34;
+  // centro: el cono del loto con sus semillas (los 16 pasos)
+  const podR = 40, podY0 = 50, podY1 = 74, stp = V.cur && !V.cur.end ? V.cur.s : -1;
   const ring = (r, y) => { const pts = []; for (let i = 0; i <= 56; i++) { const t = i / 56 * TAU; pts.push(cam(Math.cos(t) * r, y, Math.sin(t) * r)); } return pts; };
-  const stam = (front) => {
-    for (let k = 0; k < ns; k++) {
-      const t = k / ns * TAU + yaw * 1.3, e = bv[16 + k % 8], b = cam(Math.cos(t) * 26, podY0 - 4, Math.sin(t) * 26);
-      const rr = 52 + e * 16 + st.snare * 6, tp = cam(Math.cos(t + .15) * rr, podY0 + 16 + e * 12 + st.snare * 8, Math.sin(t + .15) * rr);
-      if ((tp[2] < cam(0, podY0, 0)[2]) !== front) continue;
-      g.strokeStyle = '#f2cf6a'; g.globalAlpha = .9; g.lineWidth = 2; g.beginPath(); g.moveTo(b[0], b[1]); g.lineTo(tp[0], tp[1]); g.stroke();
-      g.globalAlpha = 1; g.fillStyle = mixHex('#ffcf4a', '#ffffff', e * .5); g.beginPath(); g.arc(tp[0], tp[1], 3.8, 0, TAU); g.fill(); g.strokeStyle = OUT; g.lineWidth = 1.2; g.stroke();
-    }
-  };
   items.push({ d: cam(0, podY1, 0)[2] + 2, draw: () => {
-    stam(false);
     const top = ring(podR, podY1), bot = ring(podR * .62, podY0), side = [];
     for (let i = 28; i <= 56; i++) side.push(top[i]); for (let i = 56; i >= 28; i--) side.push(bot[i]);
     const sg = g.createLinearGradient(top[28][0], 0, top[0][0], 0); sg.addColorStop(0, '#e2d36a'); sg.addColorStop(1, '#8b8434');
@@ -3263,7 +3254,6 @@ function drawFlor3D2d(g, R, st, V) {
     for (let k = 0; k < STEPS; k++) seed(podR * .68, k / STEPS * TAU + yaw, k === stp);
     for (let k = 0; k < 5; k++) seed(podR * .3, k / 5 * TAU + yaw, false);
     seed(0, 0, false);
-    stam(true);
   } });
   items.sort((A, B) => B.d - A.d).forEach(it => it.draw());
   g.restore();
@@ -3286,34 +3276,53 @@ function drawFlor3D2d(g, R, st, V) {
 /* ---- Flor 3D en WebGL: un loto armado con la sucesión de Fibonacci y la proporción áurea ----
    21 pétalos (Fibonacci) en tres capas de 5, 8 y 8, cada capa girada el ángulo áureo (137,5°) respecto de la anterior.
    El largo crece en proporción φ de adentro hacia afuera y el ancho sale del largo dividido φ, así quedan panzones.
-   Cada capa se apoya sobre su propia superficie (anidadas, una dentro de la otra); los pétalos de una capa se solapan
-   apenas uno encima del otro y una capa de adentro nunca se abre más que la de afuera: así no se atraviesan.
-   La música abre zonas de la flor (8 direcciones por capa, ubicadas con el ángulo áureo, cada una con su banda) en vez
-   de pétalos sueltos, así los vecinos se mueven juntos y la flor ondula. Todo son resortes: las capas tienen distinto peso
-   (se mueven con desfase), la punta de cada pétalo llega después que la base y la flor cabecea con el bombo.
-   Los pétalos se doblan en la vena del medio, los de afuera caen y levantan la punta y el capullo se cierra arriba.
-   Luz con sombras entre pétalos (mapa de sombras), difuminado hacia el borde y la base, trazo de grosor variable y
-   colores vivos que cambian con la música. Si el equipo no tiene WebGL, se dibuja la versión 2D. */
+   Con poco sonido la flor queda cerrada como un capullo y con mucho sonido se abre del todo: el nivel sale de la mezcla
+   misma, comparado con las partes más fuertes del tema. Cada capa tiene su forma cerrada y su forma abierta y va de una
+   a la otra con resortes de distinto peso, así las capas se mueven con desfase. La música además abre zonas de la flor
+   (8 direcciones por capa, cada una con su banda), así ondula, y la flor cabecea con el bombo.
+   Para que no se atraviesen: todos los pétalos de una capa se apoyan sobre la misma superficie y cada pétalo se levanta
+   de a poco de un borde al otro (como las hojas del diafragma de una cámara), así donde dos vecinos se solapan uno queda
+   siempre encima del otro. Una capa de adentro nunca se abre más que la de afuera y las formas están medidas para que
+   entre capa y capa siempre quede lugar.
+   Colores en anillos que salen del centro hacia afuera, como una remera teñida, y corren más rápido cuanto más suena.
+   El tallo es largo y se corta en el borde del video. Si el equipo no tiene WebGL, se dibuja la versión 2D. */
+const TIE = ['#ff2e88', '#ff7a1a', '#ffd23f', '#2ee6a8', '#2fa8ff', '#7b4dff'].map(h => hexRgb(h).map(v => v / 255)); // colores de remera teñida
 const PHI = (1 + Math.sqrt(5)) / 2, GA = Math.PI * (3 - Math.sqrt(5)); // proporción áurea y ángulo áureo
 function lotusFib() {
-  let sd = 5; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647, D = Math.PI / 180, L0 = 170, LONG = 2.7, P = [];
+  let sd = 5; const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647, D = Math.PI / 180, L0 = 160, LONG = 2.7, P = [];
   // capas de 5, 8 y 8 pétalos (5 + 8 + 8 = 21, todos de Fibonacci); cada capa girada el ángulo áureo respecto de la anterior.
-  // n: cantidad, sp: separación, ph: giro, L: largo (crece con φ), base (radio y altura), a: ángulo en base/mitad/punta (desde el eje),
-  // cup: hueco, keel: pliegue en la vena, side: cuánto más se abre del lado que deja ver el centro, sh/amp: apertura con la música, k: rigidez
+  // n: cantidad, ph: giro, L: largo (crece con φ), r0/y0: dónde nace, c/o: ángulo desde el eje en la base, la mitad y la punta
+  // con la flor cerrada y abierta, fm: cuánto se levanta un pétalo de un borde al otro, k: rigidez del resorte, b0/bs: bandas
   const WH = [
-    { n: 5, sp: 56, ph: -69, L: L0, r0: 16, y0: 22, a: [24, 4, -14], cup: .05, keel: .16, side: 0, sh: 14, amp: 12, k: 100, b0: 1, bs: 1 },
-    { n: 8, sp: 45, ph: -69 + 137.508, L: L0 * Math.sqrt(PHI), r0: 26, y0: 10, a: [38, 24, 46], cup: .14, keel: .14, side: 16, sh: 14, amp: 12, k: 75, b0: 6, bs: 1 },
-    { n: 8, sp: 45, ph: -69 + 2 * 137.508, L: L0 * PHI, r0: 36, y0: 0, a: [68, 86, 70], cup: .34, keel: .12, side: 6, sh: 10, amp: 9, k: 55, b0: 12, bs: 1.5 },
-  ].map(w => Object.assign(w, { sp: w.sp * D, a: w.a.map(x => x * D), side: w.side * D, sh: w.sh * D, amp: w.amp * D }));
+    { n: 5, ph: -69, L: L0, r0: 12, y0: 26, c: [8, 0, -12], o: [38, 50, 44], fm: 5, k: 70, b0: 1, bs: 1 },
+    { n: 8, ph: -69 + 137.508, L: L0 * Math.sqrt(PHI), r0: 22, y0: 13, c: [16, 6, -8], o: [60, 76, 66], fm: 7, k: 50, b0: 6, bs: 1 },
+    { n: 8, ph: -69 + 2 * 137.508, L: L0 * PHI, r0: 32, y0: 0, c: [24, 12, -4], o: [80, 94, 82], fm: 7, k: 36, b0: 12, bs: 1.5 },
+  ].map(w => Object.assign(w, { sp: Math.PI * 2 / w.n, c: w.c.map(x => x * D), o: w.o.map(x => x * D) }));
   WH.forEach((w, wi) => {
     for (let i = 0; i < w.n; i++) {
-      const phi = (w.ph * D) + i * w.sp, lg = Math.pow(.5 + .5 * Math.cos(phi - LONG), 2), L = w.L * (.94 + rnd() * .12) * (wi === 2 ? 1 + .26 * lg : 1);
-      P.push({ wi, idx: i, phi, L, hw: L / PHI / 2 * 1.15, tip: (rnd() - .5) * 8 * D, tw: (rnd() - .5) * .18, wv: rnd() * 6.28, band: Math.min(23, 2 + i * 3 + wi * 2), c: 0, cv: 0, e: 0 });
+      const phi = w.ph * D + i * w.sp + (rnd() - .5) * .05, lg = Math.pow(.5 + .5 * Math.cos(phi - LONG), 2), L = w.L * (.95 + rnd() * .1) * (wi === 2 ? 1 + .26 * lg : 1);
+      P.push({ wi, idx: i, phi, L, hw: L / PHI / 2 * 1.15, wv: rnd() * 6.28, band: Math.min(23, 2 + i * 3 + wi * 2), e: 0 });
     }
   });
   // 8 direcciones (ubicadas con el ángulo áureo) por capa: cada una sigue una banda y abre esa zona de la flor
-  const E = WH.map((w, wi) => Array.from({ length: 8 }, (_, j) => ({ psi: j * GA, band: Math.min(23, Math.round(w.b0 + j * w.bs)), x: 0, v: 0 })));
-  return { P, WH, E, S: [0, 0, 0], Sv: [0, 0, 0], T: WH.map(() => new Float32Array(73)) };
+  const E = WH.map((w) => Array.from({ length: 8 }, (_, j) => ({ psi: j * GA, band: Math.min(23, Math.round(w.b0 + j * w.bs)), x: 0, v: 0 })));
+  return { P, WH, E, S: [0, 0, 0], Sv: [0, 0, 0], tp: [0, 0, 0], tpv: [0, 0, 0], T: WH.map(() => new Float32Array(73)) };
+}
+// nivel de la mezcla, 30 veces por segundo, comparado con las partes más fuertes del tema (0 = silencio, 1 = de lo más fuerte)
+function lotusEnv(R) {
+  if (R.env) return R.env;
+  const b = R.buf, fps = 30;
+  if (!b) return (R.env = { fps, v: new Float32Array([.6]) });
+  const win = Math.max(1, Math.round(b.sampleRate / fps)), n = Math.max(1, Math.ceil(b.length / win)), v = new Float32Array(n), ch = [];
+  for (let c = 0; c < b.numberOfChannels; c++) ch.push(b.getChannelData(c));
+  for (let i = 0; i < n; i++) {
+    let s = 0, m = 0;
+    for (let k = i * win, e = Math.min(b.length, k + win); k < e; k += 2) { for (const d of ch) s += d[k] * d[k]; m += ch.length; }
+    v[i] = Math.sqrt(s / Math.max(1, m));
+  }
+  const so = Array.from(v).filter(x => x > .004).sort((a, c) => a - c), ref = so.length ? so[Math.floor(so.length * .9)] : 1;
+  for (let i = 0; i < n; i++) v[i] = clamp(v[i] / (ref || 1), 0, 1.15);
+  return (R.env = { fps, v });
 }
 const F3 = { bad: false };
 const F3VS = 'attribute vec3 a_p;attribute vec3 a_n;attribute vec3 a_c;attribute vec2 a_uv;attribute float a_k;attribute vec3 a_s;varying vec3 v_n;varying vec3 v_c;varying vec2 v_uv;varying float v_k;varying vec3 v_s;void main(){v_n=a_n;v_c=a_c;v_uv=a_uv;v_k=a_k;v_s=a_s;gl_Position=vec4(a_p,1.);}';
@@ -3379,38 +3388,67 @@ const hexHue = (hex) => { const [r, g, b] = hexRgb(hex).map(v => v / 255), mx = 
 function drawFlor3D(g, R, st, V) {
   const lite = st.q.lite, GL = f3gl(g.canvas.width, g.canvas.height, lite);
   if (!GL) return drawFlor3D2d(g, R, st, V);
-  const { W, H, TAU, now, beats, p, bass, mid } = V, D = Math.PI / 180, tint = LOT[p % 8];
-  const f = st.f3 || (st.f3 = Object.assign(lotusFib(), { sta: Array.from({ length: 34 }, (_, k) => ({ x: 0, v: 0, k: 90 + (k * 37) % 80 })), nod: 0, nodv: 0, t: now, ph: 0, sh: 0 }));
+  const { W, H, TAU, now, beats, p } = V, D = Math.PI / 180, tint = LOT[p % 8];
+  const f = st.f3 || (st.f3 = Object.assign(lotusFib(), { nod: 0, nodv: 0, t: now, ph: 0, lev: 0 }));
   const dt = clamp(now - f.t, 0, 1 / 15); f.t = now;
   const bv = vBands(st, 24), b7 = vBands(st, 7), hi = (bv[17] + bv[19] + bv[21] + bv[23]) / 4, OPEN = -2.4;
-  // movimiento: la apertura de cada capa es un campo alrededor de la flor (resortes), y las puntas, el cabeceo y los estambres también son resortes
+  // nivel de la mezcla: sube rápido con cada golpe y baja más despacio, así la flor respira
+  const env = lotusEnv(R), ef = Math.max(0, now) * env.fps, e0 = Math.min(env.v.length - 1, ef | 0), e1 = Math.min(env.v.length - 1, e0 + 1);
+  const lvl = env.v[e0] + (env.v[e1] - env.v[e0]) * (ef - (ef | 0));
+  f.lev += (lvl - f.lev) * (1 - Math.exp(-dt * (lvl > f.lev ? 16 : 2.6)));
+  const lev = Math.pow(clamp(f.lev, 0, 1.15), .85);
   if (st.burst > 0) f.nodv += 2.4;
   st.burst = 0;
-  f.sh += ((bass * .6 + mid * .4) - f.sh) * .25;                 // energía compartida: abre toda la flor
+  // movimiento con resortes: cada capa va de cerrada a abierta con su propio peso; zonas que abre la música; puntas con los agudos; cabeceo
   for (let ss = 0; ss < 3; ss++) {
     const h = dt / 3;
     f.WH.forEach((w, wi) => {
-      const tg = f.sh * w.sh + st.k * 9 * D + Math.sin(beats * TAU / 8 + wi) * 2 * D;
-      f.Sv[wi] += (w.k * (tg - f.S[wi]) - 7 * f.Sv[wi]) * h; f.S[wi] += f.Sv[wi] * h;
-      for (const z of f.E[wi]) { z.v += (w.k * (bv[z.band] * w.amp - z.x) - 7 * z.v) * h; z.x += z.v * h; }
+      const tg = lev + st.k * .1 + Math.sin(beats * TAU / 8 + wi) * .02, dmp = 2 * Math.sqrt(w.k) * .55;
+      f.Sv[wi] += (w.k * (tg - f.S[wi]) - dmp * f.Sv[wi]) * h; f.S[wi] += f.Sv[wi] * h;
+      for (const z of f.E[wi]) { z.v += (w.k * ((bv[z.band] - .45) * .32 * (.25 + .75 * lev) - z.x) - dmp * z.v) * h; z.x += z.v * h; }
+      f.tpv[wi] += (120 * (hi * 5 * D * lev - f.tp[wi]) - 12 * f.tpv[wi]) * h; f.tp[wi] += f.tpv[wi] * h;
     });
-    for (const pt of f.P) { // la punta de cada pétalo sigue su banda y llega después
-      pt.e += (bv[pt.band] - pt.e) * .3;
-      pt.cv += (170 * (pt.e * 12 * D + hi * .05 * Math.sin(beats * TAU / 2 + pt.wv) - pt.c) - 10 * pt.cv) * h; pt.c += pt.cv * h;
-    }
-    f.sta.forEach((s, k) => { s.v += (s.k * (bv[16 + k % 8] * .8 + st.snare * .6 - s.x) - 6 * s.v) * h; s.x += s.v * h; });
     f.nodv += (-30 * f.nod - 4 * f.nodv) * h; f.nod += f.nodv * h;
   }
-  // tabla de apertura cada 5° alrededor de la flor; una capa de adentro nunca se abre más que la de afuera (así no se atraviesan)
+  for (const pt of f.P) pt.e += (bv[pt.band] - pt.e) * .3;
+  // apertura cada 5° alrededor de la flor (0 cerrada, 1 abierta); una capa de adentro nunca se abre más que la de afuera
   for (let k = 0; k <= 72; k++) {
-    const az = k / 72 * TAU, o = [0, 1, 2].map(wi => { let s = f.S[wi]; for (const z of f.E[wi]) { let d = az - z.psi; d = Math.atan2(Math.sin(d), Math.cos(d)); s += z.x * Math.exp(-d * d / .44); } return s + f.WH[wi].side * Math.pow(.5 + .5 * Math.cos(az - OPEN), 2); });
-    o[1] = Math.min(o[1], o[2] + 4 * D); o[0] = Math.min(o[0], o[1] + 16 * D);
+    const az = k / 72 * TAU, o = [0, 1, 2].map(wi => { let s = f.S[wi]; for (const z of f.E[wi]) { let d = az - z.psi; d = Math.atan2(Math.sin(d), Math.cos(d)); s += z.x * Math.exp(-d * d / .44); } return s + .08 * lev * Math.pow(.5 + .5 * Math.cos(az - OPEN), 2); });
+    o[2] = clamp(o[2], 0, 1.2); o[1] = clamp(Math.min(o[1], o[2]), 0, 1.2); o[0] = clamp(Math.min(o[0], o[1]), 0, 1.2);
     f.T[0][k] = o[0]; f.T[1][k] = o[1]; f.T[2][k] = o[2];
   }
-  const openAt = (wi, az) => { let x = (az / TAU) % 1; if (x < 0) x += 1; const fi = x * 72, i0 = fi | 0, t = fi - i0, T = f.T[wi]; return T[i0] + (T[i0 + 1] - T[i0]) * t; };
-  // color: gira alrededor del color de la parte, más rápido cuanto más suena
-  f.ph += dt * (.25 + 1.8 * mid + 1.4 * st.k);
-  const hue = hexHue(tint) + 55 * Math.sin(f.ph), glowC = rgbHex(hslRgb(hue, .9, .6));
+  // superficie de cada capa: radio, altura y ángulo cada 5° alrededor y cada 4 de largo (todos los pétalos de la capa se apoyan acá)
+  const HS = 4, bez = (a, u) => a[0] * (1 - u) * (1 - u) + 2 * a[1] * u * (1 - u) + a[2] * u * u;
+  if (!f.SF) f.SF = f.WH.map((w, wi) => { const ns = Math.ceil(Math.max(...f.P.filter(q => q.wi === wi).map(q => q.L)) / HS) + 2; return { ns, d: new Float32Array(73 * ns * 3) }; });
+  f.WH.forEach((w, wi) => {
+    const T = f.T[wi], SF = f.SF[wi], ns = SF.ns, d = SF.d, tp = f.tp[wi];
+    for (let k = 0; k <= 72; k++) {
+      const o = T[k], ang = (s) => { const u = Math.min(1, s / w.L), c = bez(w.c, u); return c + (bez(w.o, u) - c) * o + tp * u * u * u; };
+      let r = w.r0, y = w.y0;
+      for (let i = 0; i < ns; i++) {
+        const q = (k * ns + i) * 3; d[q] = r; d[q + 1] = y; d[q + 2] = ang(i * HS);
+        const a = ang(i * HS + HS / 2); r += Math.sin(a) * HS; y += Math.cos(a) * HS;
+      }
+    }
+  });
+  const surf = (wi, az, s) => {
+    const SF = f.SF[wi], ns = SF.ns, d = SF.d; let x = (az / TAU) % 1; if (x < 0) x += 1;
+    const fa = x * 72, ka = Math.min(71, fa | 0), ta = fa - ka, fs = clamp(s / HS, 0, ns - 1.001), ks = fs | 0, ts = fs - ks, out = [0, 0, 0];
+    for (let c = 0; c < 3; c++) {
+      const A = d[(ka * ns + ks) * 3 + c], B = d[(ka * ns + ks + 1) * 3 + c], C = d[((ka + 1) * ns + ks) * 3 + c], E2 = d[((ka + 1) * ns + ks + 1) * 3 + c];
+      out[c] = (A + (B - A) * ts) * (1 - ta) + (C + (E2 - C) * ts) * ta;
+    }
+    return out;
+  };
+  // color en anillos que salen del centro, como una remera teñida; corren más rápido cuanto más suena
+  f.ph += dt * (.35 + 1.5 * lev + 1.2 * st.k);
+  const nT = TIE.length, sm = (k) => k * k * (3 - 2 * k), x0 = p % nT;
+  const tie = (x) => { x = ((x % nT) + nT) % nT; const i = x | 0, k = sm(clamp((x - i - .2) / .6, 0, 1)), A = TIE[i], B = TIE[(i + 1) % nT]; return [A[0] + (B[0] - A[0]) * k, A[1] + (B[1] - A[1]) * k, A[2] + (B[2] - A[2]) * k]; };
+  const dye = (x, y, z, az, dl) => {
+    const rn = Math.hypot(x, y - 24, z) / 330, c = tie(x0 + rn * 9 - f.ph * .9 + .45 * Math.sin(3 * az + rn * 7 - f.ph * .6)), lt = .92 + .12 * Math.sin(rn * TAU * 2.5 - f.ph * 1.7) + dl, wk = .55 * (1 - sm(clamp(rn / .14, 0, 1)));
+    return c.map(v => clamp((v + (1 - v) * wk) * lt, 0, 1));
+  };
+  const glowC = rgbHex(tie(x0 - f.ph * .9));
   g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; g.lineJoin = 'round'; g.lineCap = 'round';
   // fondo oscuro y 7 barras como en Revista
   const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#130d24'); bg.addColorStop(.6, '#0b0b1a'); bg.addColorStop(1, mixHex('#140b16', glowC, .16));
@@ -3421,21 +3459,29 @@ function drawFlor3D(g, R, st, V) {
       gr.addColorStop(0, 'rgba(242,138,48,0)'); gr.addColorStop(.2, 'rgba(242,138,48,.1)'); gr.addColorStop(1, 'rgba(242,138,48,.24)');
       g.fillStyle = gr; g.fillRect(i * bw + bw * .17, y, bw * .66, hh);
     } }
-  // cámara: 42° por arriba, con perspectiva (los pétalos de atrás suben y los de adelante caen, como en el dibujo); la imagen se inclina un poco
-  const fx = W * .55, fy = 660, F = 1100, el = (42 + f.nod * 4) * D, ce = Math.cos(el), se = Math.sin(el);
-  const ROLL = (-22 + 3 * Math.sin(beats * TAU / 32) + f.nod * 3) * D, cr = Math.cos(ROLL), sr = Math.sin(ROLL);
-  const yaw = Math.sin(beats * TAU / 48) * .22 + Math.sin(beats * TAU / 13) * .04, SC = 1 * (1 + st.k * .04);
+  // cámara: 42° por arriba, con perspectiva; la imagen se inclina un poco
+  const fx = W * .55, fy = 680, F = 1100, el = (42 + f.nod * 6) * D, ce = Math.cos(el), se = Math.sin(el);
+  const ROLL = (-22 + 3 * Math.sin(beats * TAU / 32) + f.nod * 4) * D, cr = Math.cos(ROLL), sr = Math.sin(ROLL);
+  const yaw = Math.sin(beats * TAU / 48) * .26 + Math.sin(beats * TAU / 13) * .04, SC = .9 * (1 + st.k * .04), cyw = Math.cos(yaw), syw = Math.sin(yaw);
+  const rot = (x, y, z) => [x * cyw - z * syw, y, x * syw + z * cyw]; // gira con la flor
   const proj = (x, y, z) => { const up = y * ce + z * se, d = z * ce - y * se, k = F / (F + d * SC) * SC, px = x * k, py = -up * k; return [fx + px * cr - py * sr, fy + px * sr + py * cr, d]; };
   const viewN = (x, y, z) => { const vy = y * ce + z * se, vz = z * ce - y * se; return [x * cr + vy * sr, -x * sr + vy * cr, vz]; };
   // luz: arriba a la izquierda y un poco adelante (fija respecto de la cámara)
   const Lw = (() => { const l = [-.55, .85, -.35], m = Math.hypot(...l); return l.map(v => v / m); })();
   const Lz = Lw.map(v => -v), Lx = (() => { const c = [Lz[2], 0, -Lz[0]], m = Math.hypot(...c); return c.map(v => v / m); })(), Ly = [Lz[1] * Lx[2] - Lz[2] * Lx[1], Lz[2] * Lx[0] - Lz[0] * Lx[2], Lz[0] * Lx[1] - Lz[1] * Lx[0]];
-  const lsp = (P) => [(P[0] * Lx[0] + P[1] * Lx[1] + P[2] * Lx[2]) / 380, (P[0] * Ly[0] + P[1] * Ly[1] + P[2] * Ly[2] - 60) / 380, (P[0] * Lz[0] + P[1] * Lz[1] + P[2] * Lz[2]) / 460];
-  // luz detrás de la flor y tallo (en 2D, quedan detrás)
-  { const [gx, gy] = proj(0, 80, 0), gl2 = g.createRadialGradient(gx, gy, 20, gx, gy, 420); gl2.addColorStop(0, glowC); gl2.addColorStop(1, glowC + '00');
-    g.globalAlpha = .16 + bass * .22 + st.k * .1; g.fillStyle = gl2; g.beginPath(); g.arc(gx, gy, 420, 0, TAU); g.fill(); g.globalAlpha = 1; }
-  { g.beginPath(); for (let t = 0; t <= 1400; t += 70) { const q = proj(Math.sin(t / 900) * 50, -t, 20 - t * .04); t ? g.lineTo(q[0], q[1]) : g.moveTo(q[0], q[1]); }
-    g.strokeStyle = '#1f2a1c'; g.lineWidth = 22; g.stroke(); g.strokeStyle = '#4f8a45'; g.lineWidth = 15; g.stroke(); }
+  const lsp = (P) => [(P[0] * Lx[0] + P[1] * Lx[1] + P[2] * Lx[2]) / 420, (P[0] * Ly[0] + P[1] * Ly[1] + P[2] * Ly[2] - 60) / 420, (P[0] * Lz[0] + P[1] * Lz[1] + P[2] * Lz[2]) / 500];
+  // luz de colores detrás de la flor, en anillos como la flor, más fuerte cuanto más suena
+  { const [gx, gy] = proj(0, 60, 0), RG = 560, gl2 = g.createRadialGradient(gx, gy, 10, gx, gy, RG);
+    for (let i = 0; i <= 5; i++) { const c = tie(x0 + i * 1.5 - f.ph * .9); gl2.addColorStop(i / 6, `rgba(${c.map(v => Math.round(v * 255)).join(',')},${(.9 - i * .14).toFixed(2)})`); }
+    gl2.addColorStop(1, 'rgba(0,0,0,0)');
+    g.globalAlpha = .1 + lev * .2 + st.k * .08; g.fillStyle = gl2; g.beginPath(); g.arc(gx, gy, RG, 0, TAU); g.fill(); g.globalAlpha = 1; }
+  // tallo largo: sale de abajo de la flor con una curva suave y se corta en el borde del video
+  { const a = proj(0, -24, 0), b = proj(0, -200, 0); let dx = b[0] - a[0], dy = b[1] - a[1]; const dl = Math.hypot(dx, dy) || 1; dx /= dl; dy /= dl;
+    const nx = -dy, ny = dx, sway = 70 + 30 * Math.sin(beats * TAU / 16) + f.nod * 40, LS = 2200;
+    g.beginPath();
+    for (let i = 0; i <= 48; i++) { const t = i / 48, bend = sway * Math.sin(Math.min(1, t * 2.2) * Math.PI / 2) * t * 2, x = a[0] + dx * LS * t + nx * bend, y = a[1] + dy * LS * t + ny * bend; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.strokeStyle = '#1f2a1c'; g.lineWidth = 24; g.stroke(); g.strokeStyle = '#4f8a45'; g.lineWidth = 16; g.stroke();
+    g.strokeStyle = 'rgba(190,230,160,.35)'; g.lineWidth = 3; g.stroke(); }
   // geometría: posición en pantalla, normal, color, u/v del pétalo, tipo (0 pétalo, 1 centro, 2 trazo) y posición vista desde la luz
   const VB = GL.V, IB = GL.I; let nv = 0, ni = 0;
   const N0 = [0, 0, -1], FAR = [2, 2, 1];
@@ -3451,86 +3497,58 @@ function drawFlor3D(g, R, st, V) {
     }
     for (let i = 0; i < (closed ? n : n - 1); i++) { const A = b0 + 2 * i, B = b0 + 2 * ((i + 1) % n); tri(A, A + 1, B); tri(A + 1, B + 1, B); }
   };
-  const disc = (s, r, col, bias) => { const c = put([s[0], s[1], s[2] - bias], N0, col, 0, 0, 2, FAR); for (let i = 0; i < 10; i++) { const a = i / 10 * TAU; put([s[0] + Math.cos(a) * r, s[1] + Math.sin(a) * r, s[2] - bias], N0, col, 0, 0, 2, FAR); } for (let i = 0; i < 10; i++) tri(c, c + 1 + i, c + 1 + (i + 1) % 10); };
-  // pétalos
-  const nu = lite ? 11 : 16, nw = lite ? 6 : 10, lwk = lite ? .9 : 1;
+  // pétalos: cada uno se apoya en la superficie de su capa y se levanta de a poco de un borde al otro (como un diafragma)
+  const nu = lite ? 13 : 20, nw = lite ? 6 : 10, lwk = lite ? .9 : 1;
   const shape = (u) => { const b = .3 * (1 - u) * (1 - u); return b + (1 - b) * Math.pow(Math.sin(Math.PI * Math.pow(u, .74)), .5); }; // base angosta, panza ancha, punta fina
   for (const pt of f.P) {
-    const w = f.WH[pt.wi], [A0, A1, A2] = w.a, phi = pt.phi + yaw, L = pt.L, hw0 = pt.hw, step = L / nu, stack = pt.idx * 1.4;
-    // ángulo del perfil en la posición u, para una dirección az alrededor de la flor (la apertura depende de la dirección)
-    const ang = (u, az) => { const o = openAt(pt.wi, az - yaw); return (A0 + o * .6) * (1 - u) * (1 - u) + 2 * (A1 + o) * u * (1 - u) + (A2 + pt.tip + o * 1.15) * u * u + pt.c * u * u * u; };
-    // perfil del centro del pétalo: da el radio para saber cuánto abarca a lo ancho
-    const rc = []; { let r = w.r0; for (let j = 0; j <= nu; j++) { rc.push(r); r += Math.sin(ang(j / nu, phi)) * step; } }
-    const Wg = []; for (let j = 0; j <= nu; j++) Wg.push([]);
-    const AC = []; for (let j = 0; j <= nu; j++) AC.push([]);
-    for (let m = 0; m <= nw; m++) {
-      const v = -1 + 2 * m / nw; let r = w.r0, y = w.y0;
-      for (let j = 0; j <= nu; j++) {
-        const u = j / nu, hw = hw0 * shape(u), bell = Math.sqrt(Math.sin(Math.PI * u)), dl = Math.min(w.sp * .75, hw / Math.max(rc[j], 1)), az = phi + pt.tw * u + v * dl;
-        const a = ang(u, az), ca = Math.cos(a), sa = Math.sin(a), cx = Math.cos(az), cz = Math.sin(az);
-        const rad = r + w.keel * hw * Math.pow(1 - Math.abs(v), 2) * bell + .05 * hw * Math.sin(u * 9 + pt.wv) * v * v; // pliegue en la vena del medio y borde ondulado
-        const cu = w.cup * hw * v * v * bell + stack;                                                                   // bordes hacia adentro; cada pétalo apenas por encima del anterior
-        Wg[j].push([cx * rad - cu * ca * cx, y + cu * sa, cz * rad - cu * ca * cz]); AC[j].push([ca, sa, az]);
-        r += sa * step; y += ca * step;
+    const w = f.WH[pt.wi], L = pt.L, X = w.sp * .8, e = pt.e, b0 = nv, Wg = [], LC = [];
+    for (let j = 0; j <= nu; j++) {
+      const u = j / nu, s = u * L, rc = surf(pt.wi, pt.phi, s)[0], Xj = Math.min(X, pt.hw * shape(u) / Math.max(rc, 4)), bell = .4 + .6 * Math.sqrt(Math.sin(Math.PI * u)), row = [], lrow = [];
+      for (let m = 0; m <= nw; m++) {
+        const v = -1 + 2 * m / nw, t = (v * Xj / w.sp + .8) / 1.6, az = pt.phi + v * Xj, [r, y, a] = surf(pt.wi, az, s), ca = Math.cos(a), sa = Math.sin(a), cx = Math.cos(az), cz = Math.sin(az);
+        const off = w.fm * (.55 * t + .45 * t * t) * bell * Math.min(1, (r + 12) / 30); // hacia el lado de arriba del pétalo
+        const P0 = [cx * r - off * ca * cx, y + off * sa, cz * r - off * ca * cz];
+        row.push(P0); lrow.push([ca, sa, az]);
       }
+      Wg.push(row); LC.push(lrow);
     }
-    // color: base cálida, cuerpo del color de la flor y punta más profunda; cada pétalo se enciende con su banda
-    const e = pt.e, H0 = hue + [-14, 0, 12][pt.wi] + 14 * Math.sin(pt.phi * 2 + f.ph * 1.3);
-    const cb = hslRgb(H0 + 38, .92, .6 + .06 * e), cm = hslRgb(H0, .88, .54 + .08 * e), ct = hslRgb(H0 - 24, .92, .42 + .14 * e);
-    const b0 = nv, S = [];
+    const S = [];
     for (let j = 0; j <= nu; j++) {
       const u = j / nu, ja = Wg[Math.min(nu, j + 1)], jb = Wg[Math.max(0, j - 1)], row = Wg[j], srow = [];
-      const k1 = u < .5 ? u * 2 : u * 2 - 1, sm = k1 * k1 * (3 - 2 * k1), Ac = u < .5 ? cb : cm, Bc = u < .5 ? cm : ct, c0 = [Ac[0] + (Bc[0] - Ac[0]) * sm, Ac[1] + (Bc[1] - Ac[1]) * sm, Ac[2] + (Bc[2] - Ac[2]) * sm];
       for (let m = 0; m <= nw; m++) {
-        const [ca, sa, az0] = AC[j][m], fx0 = -ca * Math.cos(az0), fy0 = sa, fz0 = -ca * Math.sin(az0);
+        const [ca, sa, az0] = LC[j][m], fx0 = -ca * Math.cos(az0), fy0 = sa, fz0 = -ca * Math.sin(az0);
         const P1 = ja[m], P2 = jb[m], E = row[Math.min(nw, m + 1)], G = row[Math.max(0, m - 1)];
         const ux = P1[0] - P2[0], uy = P1[1] - P2[1], uz = P1[2] - P2[2], vx = E[0] - G[0], vy = E[1] - G[1], vz = E[2] - G[2];
         let nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx, nl = Math.hypot(nx, ny, nz);
         if (nl < 1e-6) { nx = fx0; ny = fy0; nz = fz0; nl = 1; } else if (nx * fx0 + ny * fy0 + nz * fz0 < 0) nl = -nl;
-        const v = -1 + 2 * m / nw, ek = .45 * v * v * (.3 + u), P0 = row[m], s = proj(P0[0], P0[1], P0[2]);
-        put(s, viewN(nx / nl, ny / nl, nz / nl), [c0[0] + (ct[0] - c0[0]) * ek, c0[1] + (ct[1] - c0[1]) * ek, c0[2] + (ct[2] - c0[2]) * ek], u, v, 0, lsp(P0));
+        const v = -1 + 2 * m / nw, P0 = row[m], Pw = rot(P0[0], P0[1], P0[2]), s = proj(...Pw);
+        put(s, viewN(...rot(nx / nl, ny / nl, nz / nl)), dye(P0[0], P0[1], P0[2], az0, .05 * e - .1 * v * v * u), u, v, 0, lsp(Pw));
         srow.push(s);
       }
       S.push(srow);
     }
     for (let j = 0; j < nu; j++) for (let m = 0; m < nw; m++) { const a = b0 + j * (nw + 1) + m, b = a + nw + 1; tri(a, b, a + 1); tri(a + 1, b, b + 1); }
-    // contorno: más grueso en la panza, fino en la base y la punta, del tono más oscuro del pétalo
-    const edge = [], ws = [];
+    // contorno: más grueso en la panza, fino en la base y la punta, oscuro
+    const edge = [], ws = [], tipP = Wg[nu][nw >> 1], tc = dye(tipP[0], tipP[1], tipP[2], pt.phi, 0), dk = tc.map(x => x * .22);
     for (let j = 0; j <= nu; j++) { edge.push(S[j][0]); ws.push((1 + 2 * Math.pow(Math.sin(Math.PI * j / nu), .7)) * lwk); }
     for (let j = nu - 1; j >= 0; j--) { edge.push(S[j][nw]); ws.push((1 + 2 * Math.pow(Math.sin(Math.PI * j / nu), .7)) * lwk); } // sin repetir la punta
-    lines.push([edge, ws, hslRgb(H0 - 30, .7, .16)]);
+    lines.push([edge, ws, dk]);
   }
-  // centro: el cono del loto visto de costado, con 16 semillas en espiral áurea (los pasos) y 34 estambres
-  const Y0 = 38, Y1 = 62, R0 = 18, R1 = 30, sg = 28, stp = V.cur && !V.cur.end ? V.cur.s : -1, podS = [.62, .6, .22], podT = [.82, .76, .32];
-  const pp = (x, y, z) => [x * Math.cos(yaw) - z * Math.sin(yaw), y, x * Math.sin(yaw) + z * Math.cos(yaw)]; // gira con la flor
-  { const b0 = nv, nyc = -(R1 - R0) / (Y1 - Y0), nn = Math.hypot(1, nyc);
-    for (let i = 0; i <= sg; i++) { const t = i / sg * TAU, c = Math.cos(t), s = Math.sin(t), n = viewN(c / nn, nyc / nn, s / nn), q0 = [c * R0, Y0, s * R0], q1 = [c * R1, Y1, s * R1]; put(proj(...q0), n, podS, .6, 0, 1, lsp(q0)); put(proj(...q1), n, podS, .6, 0, 1, lsp(q1)); }
-    for (let i = 0; i < sg; i++) { const a = b0 + 2 * i; tri(a, a + 2, a + 1); tri(a + 1, a + 2, a + 3); }
-    const qc = [0, Y1, 0], ctr = put(proj(...qc), viewN(0, 1, 0), podT, .6, 0, 1, lsp(qc)), rim = [];
-    for (let i = 0; i < sg; i++) { const t = i / sg * TAU, q = [Math.cos(t) * R1, Y1, Math.sin(t) * R1], s = proj(...q); put(s, viewN(0, 1, 0), podT, .6, 0, 1, lsp(q)); rim.push(s); }
-    for (let i = 0; i < sg; i++) tri(ctr, ctr + 1 + i, ctr + 1 + (i + 1) % sg);
-    lines.push([rim, 2, [.2, .18, .08]]);
+  { // centro: una cúpula chica, del color del centro de los anillos (tapa el hueco del medio)
+    const b0 = nv, nr = 5, sg = 24, cc = dye(0, 24, 0, 0, .12);
+    for (let i = 0; i <= nr; i++) for (let k = 0; k <= sg; k++) {
+      const th = i / nr * Math.PI / 2, t = k / sg * TAU, n = [Math.sin(th) * Math.cos(t), Math.cos(th), Math.sin(th) * Math.sin(t)], q = rot(n[0] * 12, 21 + n[1] * 10, n[2] * 12);
+      put(proj(...q), viewN(...rot(...n)), cc, .6, 0, 1, lsp(q));
+    }
+    for (let i = 0; i < nr; i++) for (let k = 0; k < sg; k++) { const a = b0 + i * (sg + 1) + k, b = a + sg + 1; tri(a, b, a + 1); tri(a + 1, b, b + 1); }
   }
-  { // receptáculo: la base verde donde nacen los pétalos (tapa el hueco del centro desde abajo)
-    const b0 = nv, col = [.3, .5, .2], nyc = -(36 - 12) / 30, nn = Math.hypot(1, nyc);
-    for (let i = 0; i <= sg; i++) { const t = i / sg * TAU, c = Math.cos(t), s = Math.sin(t), n = viewN(c / nn, nyc / nn, s / nn), q0 = [c * 12, -24, s * 12], q1 = [c * 36, 6, s * 36]; put(proj(...q0), n, col, .6, 0, 1, lsp(q0)); put(proj(...q1), n, col, .6, 0, 1, lsp(q1)); }
+  { // receptáculo: la base verde donde nacen los pétalos
+    const b0 = nv, sg = 28, col = [.3, .5, .2], nyc = -(30 - 10) / 26, nn = Math.hypot(1, nyc);
+    for (let i = 0; i <= sg; i++) { const t = i / sg * TAU, c = Math.cos(t), s = Math.sin(t), n = viewN(c / nn, nyc / nn, s / nn), q0 = [c * 10, -26, s * 10], q1 = [c * 30, 0, s * 30]; put(proj(...q0), n, col, .6, 0, 1, lsp(q0)); put(proj(...q1), n, col, .6, 0, 1, lsp(q1)); }
     for (let i = 0; i < sg; i++) { const a = b0 + 2 * i; tri(a, a + 2, a + 1); tri(a + 1, a + 2, a + 3); }
   }
   const niLit = ni; // hasta acá, lo que hace sombra
-  for (const [pts, ws, col] of lines) ribbon(pts, true, ws, col, 3);
-  for (let k = 0; k < STEPS; k++) {
-    const r = R1 * .84 * Math.sqrt((k + .5) / STEPS), th = k * GA + yaw, on = k === stp, rs = on ? 5 : 3.2, c0 = nv, col = on ? [1, 1, 1] : [.3, .27, .1];
-    put(proj(Math.cos(th) * r, Y1 + .5, Math.sin(th) * r), N0, col, 0, 0, 2, FAR);
-    for (let i = 0; i < 10; i++) { const a = i / 10 * TAU; put(proj(Math.cos(th) * r + Math.cos(a) * rs, Y1 + .5, Math.sin(th) * r + Math.sin(a) * rs), N0, col, 0, 0, 2, FAR); }
-    for (let i = 0; i < 10; i++) tri(c0, c0 + 1 + i, c0 + 1 + (i + 1) % 10);
-    if (on) disc(proj(Math.cos(th) * r, Y1 + .5, Math.sin(th) * r), 9, hslRgb(hue, 1, .62), -1);
-  }
-  f.sta.forEach((s, k) => {
-    const th = k * GA + yaw * 1.2, rr = 36 + 6 * (k % 3) + s.x * 12, ty = Y0 + 14 + s.x * 10 + (k % 2) * 4;
-    const b = proj(Math.cos(th) * 16, Y0 - 2, Math.sin(th) * 16), m2 = proj(Math.cos(th + .06) * (rr * .6), ty - 2, Math.sin(th + .06) * (rr * .6)), t2 = proj(Math.cos(th + .12) * rr, ty, Math.sin(th + .12) * rr);
-    ribbon([b, m2, t2], false, 1.6, [.98, .78, .3], 1);
-    disc(t2, 4, [.25, .16, .08], 2); disc(t2, 2.8, [1, .85, .3], 2.5);
-  });
+  for (const [pts, ws, col] of lines) ribbon(pts, true, ws, col, 2);
   // dibujar: primero las sombras (vista desde la luz), después la flor
   const gl = GL.gl, STR = 60;
   gl.bindBuffer(gl.ARRAY_BUFFER, GL.vb); gl.bufferData(gl.ARRAY_BUFFER, VB.subarray(0, nv * 15), gl.DYNAMIC_DRAW);
@@ -3585,7 +3603,8 @@ async function makeVideo(R) {
   const src = c.createBufferSource(); src.buffer = R.buf; src.connect(dest); src.connect(an);
   const mon = c.createGain(); mon.gain.value = .9; src.connect(mon); mon.connect(c.destination); // se escucha mientras se graba
   const st = { si: 0, ei: 0, lv: new Float32Array(NT), an, fd: new Uint8Array(an.frequencyBinCount), td: new Uint8Array(an.fftSize).fill(128), k: 0, kick: 0, snare: 0, burst: 0, pt: [], q, lastT: -1, style: vstyle() };
-  const lc = document.createElement('canvas'); lc.width = W; lc.height = Math.round(150 * sc); const lg = lc.getContext('2d'); lg.scale(sc, sc); drawLogo(lg, 720, 150, await loadImg('icon-512.png'), st.style === 1 || (st.style === 4 && !!f3gl(W, H, q.lite ? 512 : 1024))); // en papel, el logo va en tinta st.logo = lc;
+  const lc = document.createElement('canvas'); lc.width = W; lc.height = Math.round(150 * sc); const lg = lc.getContext('2d'); lg.scale(sc, sc); drawLogo(lg, 720, 150, await loadImg('icon-512.png'), st.style === 1); // en papel, el logo va en tinta
+  st.logo = lc;
   if (st.style === 0) st.icons = await iconImgs(sc);
   g.fillStyle = '#050907'; g.fillRect(0, 0, W, H);
   drawVideoFrame(g, W, H, R, 0, st);
@@ -3620,7 +3639,7 @@ async function doExport(f) {
   if (f === 'vid' && xDur(blocks) > 240) toast('El video dura más de 4 minutos: va a tardar lo mismo que dura la canción', 3200);
   try {
     xProgress(.08, 'Mezclando…');
-    const R = await renderOffline(blocks, song);
+    const R = await renderOffline(blocks, song && !S.songLoop); // el platillo de cierre va solo si la canción no se repite, igual que al tocarla
     let blob, ext;
     if (f === 'wav') { xProgress(.8, 'Armando el WAV…'); await new Promise(r => setTimeout(r, 0)); blob = toWav(R.buf); ext = 'wav'; }
     else if (f === 'mp3') { xProgress(.6, 'Pasando a MP3…'); blob = await toMp3(R.buf); ext = 'mp3'; }
