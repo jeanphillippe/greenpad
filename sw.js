@@ -1,6 +1,6 @@
 // Greenpad service worker. Subí VERSION en cada release para renovar la caché.
-const VERSION = 'greenpad-v1.7.0';
-const ASSETS = ['./', './index.html', './banda.html', './manifest.webmanifest', './banda.webmanifest', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png'];
+const VERSION = 'greenpad-v1.8.0';
+const ASSETS = ['./', './index.html', './banda.html', './manifest.webmanifest', './banda.webmanifest', './lame.min.js', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png'];
 const SOUNDS = 'greenpad-sonidos-v1'; // las grabaciones de Banda (no cambian entre versiones)
 
 self.addEventListener('install', (e) => {

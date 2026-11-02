@@ -627,6 +627,33 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 #dj.ds .grabs .lbl{display:none}
 .dpb.mx{box-shadow:inset 0 0 0 2px var(--or)}
 .dmx{font-style:normal;font-size:10px;font-weight:800;color:var(--or);margin-left:6px;letter-spacing:.04em}
+
+/* ---- descargar ---- */
+.tools #rec{display:none}
+.mptools #rec{display:flex}
+.rb.dl{background:var(--cy);color:var(--acc-ink)}
+#export .card{max-width:520px}
+.xname{width:100%;box-sizing:border-box;font:inherit;font-size:16px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--pad);color:var(--ink2)}
+#export h4{margin:16px 0 8px;font-size:11px;letter-spacing:.14em;color:var(--ink);font-weight:700}
+#export .seg small{font-weight:600;opacity:.7;margin-left:4px}
+#xLoops{margin-top:6px}
+#xLoops[hidden]{display:none}
+.xfmts{display:grid;gap:8px}
+.xfo{display:flex;align-items:center;gap:12px;padding:12px 14px;border:0;border-radius:12px;background:var(--chip);color:var(--ink2);text-align:left;font-family:var(--font);cursor:pointer}
+.xfo svg{width:22px;height:22px;flex:none;color:var(--cy)}
+.xfo b{display:block;font-size:14px}
+.xfo small{display:block;font-size:12px;color:var(--ink);margin-top:2px}
+.xfo:disabled{opacity:.45}
+.xprog{margin-top:14px}
+.xprog[hidden],.xout[hidden]{display:none}
+.xbar{height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.xbar i{display:block;height:100%;width:0;background:var(--cy);transition:width .2s}
+.xprog p{margin:8px 0 0;font-size:13px;color:var(--ink2)}
+.xout{margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.xout audio{width:100%}
+.xout video{width:100%;max-height:46vh;border-radius:12px;background:#000;object-fit:contain}
+.xout .row{display:flex;gap:8px}
+.xout .row .btn{flex:1}
 </style>
 </head>
 <body>
@@ -659,6 +686,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <button id="rec" class="rb rec" aria-label="Grabar en vivo (R)" title="Grabar en vivo (R)"><i></i><span class="tlab">Grabar en vivo</span></button>
       <button id="micBtn" class="rb mic" aria-label="Grabar un sonido (V)" title="Grabar un sonido y usarlo como instrumento (V)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5.5" y="1.8" width="5" height="8" rx="2.5"/><path d="M3.2 7.6a4.8 4.8 0 009.6 0M8 12.4v2.2"/></svg><span class="tlab">Grabar sonido</span></button>
       <button id="diceBtn" class="rb" aria-label="Inventar un patrón (D)" title="Inventar un patrón que suene bien (D)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="2.5" width="11" height="11" rx="2.6"/><circle cx="5.6" cy="5.6" r="1" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="10.4" cy="10.4" r="1" fill="currentColor" stroke="none"/></svg></button>
+      <button id="dlBtn" class="rb dl" aria-label="Descargar la canción" title="Descargar: audio MP3 o WAV, o video vertical 9:16"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v7.5M4.8 7l3.2 3.2L11.2 7"/><path d="M2.8 11.2v1.3a1.5 1.5 0 001.5 1.5h7.4a1.5 1.5 0 001.5-1.5v-1.3"/></svg><span class="tlab">Descargar</span></button>
       <button id="undo" class="rb" aria-label="Deshacer" title="Deshacer (Ctrl+Z)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4L2 7l3 3"/><path d="M2 7h7.5a4 4 0 010 8H7"/></svg></button>
       <button id="clear" class="rb" aria-label="Borrar patrón" title="Borrar patrón (Supr)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 9h5.6l.7-9"/></svg><span class="tlab">Borrar patrón</span></button>
       <button id="menuBtn" class="rb" aria-label="Menú y ejemplos" title="Menú y ejemplos (M)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h10"/></svg></button>
@@ -741,6 +769,8 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <button class="btn" id="pst">Pegar patrón</button>
       <button class="btn" id="dice">Dado (aleatorio)</button>
       <button class="btn" id="clr2">Borrar patrón</button>
+      <button class="btn" id="recMenu">Grabar en vivo (R)</button>
+      <button class="btn" id="dlMenu">Descargar canción</button>
     </div>
   </section>
   <section>
@@ -754,7 +784,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 <div id="help" class="modal" aria-hidden="true">
   <div class="card">
     <h2>Cómo se usa</h2>
-    <p class="tips" style="margin-top:0"><b>Banda:</b> los instrumentos son grabaciones de verdad (batería, bajo, guitarras, piano, saxo, vibráfono y más). <b>DESTIEMPO</b> hace que cada golpe salga un poco corrido y con fuerza distinta, como tocado por una persona. SONIDO cambia todo el patrón a Banda, Acústico (con aire de sala), Noventa (grabación gastada) o Electro (los sintetizados).<br><br><b>Canción:</b> la barra de abajo de la cabecera es la línea de tiempo. Elegí un patrón y tocá <b>+</b> (o la tecla G) para sumarlo; cada bloque dice cuántas veces se repite. Tocá un bloque para elegirlo: aparecen botones para moverlo, repetirlo más o menos veces, duplicarlo o quitarlo, y Play arranca desde ahí. <b>AUTO</b> arma una canción con intro, verso y estribillo usando los patrones que tengan notas. Con <b>CANCIÓN</b> prendido (tecla L), Play toca el tema entero; mientras suena, tocar un bloque salta a ese bloque al terminar el compás. El botón de las flechas repite la canción; si está apagado, termina con un platillo.<br><br><b>No hace falta saber música.</b> Elegí un ejemplo del menú o tocá el dado para inventar un patrón, y después cambiá lo que quieras.<br><br>
+    <p class="tips" style="margin-top:0"><b>Banda:</b> los instrumentos son grabaciones de verdad (batería, bajo, guitarras, piano, saxo, vibráfono y más). <b>DESTIEMPO</b> hace que cada golpe salga un poco corrido y con fuerza distinta, como tocado por una persona. SONIDO cambia todo el patrón a Banda, Acústico (con aire de sala), Noventa (grabación gastada) o Electro (los sintetizados).<br><br><b>Canción:</b> la barra de abajo de la cabecera es la línea de tiempo. Elegí un patrón y tocá <b>+</b> (o la tecla G) para sumarlo; cada bloque dice cuántas veces se repite. Tocá un bloque para elegirlo: aparecen botones para moverlo, repetirlo más o menos veces, duplicarlo o quitarlo, y Play arranca desde ahí. <b>AUTO</b> arma una canción con intro, verso y estribillo usando los patrones que tengan notas. Con <b>CANCIÓN</b> prendido (tecla L), Play toca el tema entero; mientras suena, tocar un bloque salta a ese bloque al terminar el compás. El botón de las flechas repite la canción; si está apagado, termina con un platillo.<br><br><b>Descargar</b> (botón verde de la flecha, al lado del dado): elegí la canción completa o un patrón, y bajala como audio MP3, WAV o como video vertical 9:16 con visualización. El tema queda guardado en Mis beats con el título que pongas. El video tarda lo mismo que dura la canción.<br><br><b>No hace falta saber música.</b> Elegí un ejemplo del menú o tocá el dado para inventar un patrón, y después cambiá lo que quieras.<br><br>
     <b>Instrumentos:</b> arriba la batería (bombo, caja, hi-hat, percusión) y abajo los melódicos (bajo, guitarra, acordes, melodía). Tocá un ícono para escucharlo; mantenelo apretado (o clic derecho) para elegir su estilo, volumen, inventar una línea nueva o usar una grabación. El <b>+</b> de cada estilo lo suma como capa.<br><br>
     <b>Altura:</b> en los melódicos, cuanto más lleno está el círculo, más agudo suena. Mantené apretado un paso (o clic derecho) para elegir la altura; en la compu también con la rueda del mouse o Shift + ↑ ↓. <b>AMBIENTE</b> elige qué notas usan bajo, guitarra, acordes y melodía: el mismo patrón suena oscuro, triste, alegre, etc. La batería no cambia, y todas las alturas combinan entre sí. Cada patrón (A a H) guarda su propio AMBIENTE y su propio SONIDO, igual que los estilos que elijas para cada instrumento.<br><br>
     <b>Grabar:</b> el botón del micrófono tiene 2 grabaciones de hasta 8 segundos. Podés recortar dónde empieza y dónde termina, hacerla más grave o más aguda, darla vuelta, ponerle eco o efecto robot, y elegir en qué instrumento usarla. La grabación queda en ese instrumento solo en el patrón que estás editando: en los otros patrones el instrumento sigue sonando normal, y cada patrón puede usar una grabación distinta. Siempre suena completa; en los melódicos además sube y baja según la altura de cada paso. En las bandejas, los botones 1 y 2 de GRABACIONES la tocan: mantenelos apretados para que suene mientras los tenés, o tocalos una vez para dejarla sonando.<br><br>
@@ -777,7 +807,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <div>Ir a patrón A…H <kbd>Alt</kbd>+<kbd>1</kbd>…<kbd>8</kbd></div>
             <div>Tempo ±1 / ±10 <kbd>+</kbd> <kbd>-</kbd> / <kbd>RePág</kbd> <kbd>AvPág</kbd></div>
       <div>Tap tempo <kbd>T</kbd></div>
-      <div>Grabar en vivo <kbd>R</kbd></div>
+      <div>Grabar en vivo <kbd>R</kbd> (también en el menú)</div>
       <div>Encadenar patrones <kbd>C</kbd></div>
       <div>Sonido para todos <kbd>K</kbd></div>
       <div>Inventar patrón (dado) <kbd>D</kbd></div>
@@ -849,6 +879,26 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <div class="vdest" id="vDest"></div>
     <div class="shrow"><button class="btn" id="vTry">Escuchar</button><button class="btn pri" id="vUse">Usar en <span id="vUseName"></span></button></div>
     <p class="hint">Suena completa, entre el inicio y el final que elijas. En bajo, guitarra, acordes y melodía además sube y baja según la altura de cada paso. Si el instrumento elegido ya usa esta grabación, los cambios se aplican en vivo. Las grabaciones quedan en este dispositivo y viajan en el .txt exportado.</p>
+  </div>
+</div>
+
+<div id="export" class="modal" aria-hidden="true">
+  <div class="card">
+    <h2>Descargar</h2>
+    <input id="xName" class="xname" maxlength="60" autocomplete="off" placeholder="Título" aria-label="Título">
+    <p class="hint" id="xSaved">Se guarda en Mis beats con este título.</p>
+    <h4>QUÉ</h4>
+    <div class="seg" id="xWhat"><button data-v="song">Canción completa<small id="xSongT"></small></button><button data-v="pat">Patrón <b id="xPatL">A</b></button></div>
+    <div class="seg" id="xLoops"><button data-n="1">1 vuelta</button><button data-n="2">2</button><button data-n="4">4</button><button data-n="8">8 vueltas</button></div>
+    <h4>FORMATO</h4>
+    <div class="xfmts">
+      <button class="xfo" data-f="mp3"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 12V3.5l7-1.5v8.5"/><circle cx="4.3" cy="12" r="1.8"/><circle cx="11.3" cy="10.5" r="1.8"/></svg><span><b>Audio MP3</b><small>Liviano, para mandar o subir</small></span></button>
+      <button class="xfo" data-f="wav"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M1.5 8h1.5M4.5 5v6M7 3v10M9.5 5.5v5M12 4v8M14.5 7v2"/></svg><span><b>Audio WAV</b><small>Calidad máxima, pesa más</small></span></button>
+      <button class="xfo" data-f="vid"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="4" y="1.5" width="8" height="13" rx="1.8"/><path d="M7 6v4l3-2z" fill="currentColor"/></svg><span><b>Video vertical 9:16</b><small>Para historias y reels, con visualización</small></span></button>
+    </div>
+    <div class="xprog" id="xProg" hidden><div class="xbar"><i></i></div><p></p></div>
+    <div class="xout" id="xOut" hidden></div>
+    <div class="mrow"><button class="btn" id="xClose">Cerrar</button></div>
   </div>
 </div>
 
@@ -1149,7 +1199,7 @@ function crushCurve(lf) {
   }
   return (CC[k] = a);
 }
-function buildFx(c) {
+function buildFxCore(c) {
   const fxIn = c.createGain();
   const loLP = c.createBiquadFilter(); loLP.type = 'lowpass'; loLP.frequency.value = 20000; loLP.Q.value = .5;
   const loHP = c.createBiquadFilter(); loHP.type = 'highpass'; loHP.frequency.value = 15;
@@ -1170,6 +1220,10 @@ function buildFx(c) {
   const crHP = c.createBiquadFilter(); crHP.type = 'highpass'; crHP.frequency.value = 500;
   const crG = c.createGain(); crG.gain.value = 0; crk.connect(crHP); crHP.connect(crG); crk.start(); // crG se conecta solo con vinilo
   Object.assign(AU, { fxIn, loLP, loHP, crush, post, revSend, conv, revRet, revOn: false, loOn: null, crOn: false, dlySend, dly, dlyFb, crG });
+}
+function buildFx(c) {
+  buildFxCore(c);
+  const fxIn = AU.fxIn;
   AU.decks = [0, 1].map(() => {
     const k = { in: c.createGain() };
     k.ls = c.createBiquadFilter(); k.ls.type = 'lowshelf'; k.ls.frequency.value = 220;
@@ -2540,6 +2594,256 @@ $('#moreClose').addEventListener('click', () => setMore(false));
 ['#stage', '#song'].forEach(sel => $(sel).addEventListener('pointerdown', () => { if (moreOpen()) setMore(false); }, { capture: true }));
 moodSel.addEventListener('change', renderMoreSum);
 
+
+/* ================= descargar: audio (MP3 / WAV) y video vertical =================
+   La canción se mezcla sin conexión (OfflineAudioContext) con los mismos sonidos, efectos y destiempo,
+   más rápido que en tiempo real. El video se arma tocando esa mezcla y dibujando la visualización. */
+const XP = { what: 'song', loops: 4, busy: false, url: null };
+const xEl = (id) => $('#' + id);
+function xBlocks() { return XP.what === 'song' && S.song.length ? S.song.map(b => ({ p: b.p, n: b.n })) : [{ p: S.cur, n: XP.loops }]; }
+function xDur(blocks) { let d = 0; for (const b of blocks) for (let r = 0; r < b.n; r++) for (let st = 0; st < STEPS; st++) d += stepDur(st); return d; }
+const safeName = () => (S.name || 'Mi tema').replace(/[\\/:*?"<>|]+/g, '').trim().slice(0, 60) || 'Mi tema';
+function openExport() {
+  if (P.loading) return;
+  xEl('xName').value = S.name;
+  XP.what = S.song.length && S.songOn ? 'song' : S.song.length ? XP.what : 'pat';
+  xRender(); clearOut(); openModal('#export');
+}
+function xRender() {
+  const hasSong = S.song.length > 0;
+  xEl('xWhat').querySelector('[data-v="song"]').disabled = !hasSong;
+  if (!hasSong) XP.what = 'pat';
+  xEl('xSongT').textContent = hasSong ? ' ' + fmtT(xDur(S.song)) : '';
+  xEl('xPatL').textContent = LET[S.cur];
+  xEl('xWhat').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === XP.what));
+  xEl('xLoops').hidden = XP.what !== 'pat';
+  xEl('xLoops').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.n === XP.loops));
+  xEl('xSaved').textContent = S.id ? 'Está en Mis beats: el título se guarda ahí.' : 'Al descargar se guarda en Mis beats con este título.';
+  document.querySelectorAll('#export .xfo').forEach(b => { b.disabled = XP.busy; });
+  const vb = document.querySelector('#export .xfo[data-f="vid"]');
+  if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { vb.disabled = true; vb.querySelector('small').textContent = 'Este navegador no puede grabar video'; }
+}
+function clearOut() { if (XP.url) { URL.revokeObjectURL(XP.url); XP.url = null; } xEl('xOut').hidden = true; xEl('xOut').innerHTML = ''; xEl('xProg').hidden = true; }
+function xProgress(k, msg) { xEl('xProg').hidden = false; xEl('xProg').querySelector('i').style.width = Math.round(clamp(k, 0, 1) * 100) + '%'; xEl('xProg').querySelector('p').textContent = msg; }
+// el título queda guardado en el beat y en Mis beats
+function keepTitle() {
+  S.name = (xEl('xName').value || '').trim().slice(0, 60) || S.name || 'Mi tema'; $('#name').value = S.name;
+  if (!S.id) { S.id = addToLib(S); S.dirty = false; }
+  saveNow(); xRender();
+}
+function scheduleOffline(p, st, t, ev) {
+  for (let tr = 0; tr < NT; tr++) {
+    if (S.mutes[tr]) continue;
+    const done = new Set();
+    for (const pp of [p, ...mixedFor(p)]) {
+      const v = S.pats[pp][tr][st]; if (!v) continue;
+      const q = S.ps[pp], key = (TR[tr].mel ? v + ':' + q.sc : 1) + ':' + q.st[tr] + ':' + q.lay[tr];
+      if (done.has(key)) continue; done.add(key);
+      CP = pp; const h = humanize(tr, st);
+      try { playTrack(tr, t + h.dt, h.v, v, TR[tr].mel ? noteLen(S.pats[pp][tr], st) : .3); } finally { CP = null; }
+      ev.push({ t: t + h.dt, tr });
+    }
+  }
+}
+async function renderOffline(blocks, finaleOn) {
+  const c = ensureAudio(); if (!c) throw new Error('audio');
+  const w = bankWhenReady(20000); if (w) { xProgress(.05, 'Afinando la banda…'); await w; }
+  const OC = window.OfflineAudioContext || window.webkitOfflineAudioContext; if (!OC) throw new Error('offline');
+  const sr = 44100, dur = xDur(blocks), tail = finaleOn ? 3.2 : 2.2;
+  const oc = new OC(2, Math.ceil((dur + .05 + tail) * sr), sr);
+  const keep = Object.assign({}, AU), vgL = VG.live, vgK = VG.keys, mv = MAXV, ev = [], steps = [];
+  try {
+    VG.live = []; VG.keys = new Map(); MAXV = 400;
+    AU.ctx = oc; AU.echo = null; AU.echoD = null;
+    const out = oc.createGain(); out.gain.value = S.vol;
+    const comp = oc.createDynamicsCompressor(); comp.threshold.value = -12; comp.knee.value = 8; comp.ratio.value = 4; comp.attack.value = .003; comp.release.value = .16;
+    out.connect(comp); comp.connect(oc.destination); AU.out = out;
+    buildFxCore(oc); AU.master = AU.fxIn; applyFx();
+    let t = .05;
+    blocks.forEach((b, bi) => { for (let r = 0; r < b.n; r++) for (let st = 0; st < STEPS; st++) { steps.push({ t, p: b.p, bi, r, s: st }); scheduleOffline(b.p, st, t, ev); t += stepDur(st); } });
+    if (finaleOn) finale(t);
+    steps.push({ t, end: true });
+  } finally {
+    for (const k of Object.keys(AU)) if (!(k in keep)) delete AU[k];
+    Object.assign(AU, keep); VG.live = vgL; VG.keys = vgK; MAXV = mv;
+  }
+  xProgress(.15, 'Mezclando…');
+  const buf = await new Promise((res, rej) => { const r = oc.startRendering(); if (r && r.then) r.then(res, rej); else oc.oncomplete = (e) => res(e.renderedBuffer); });
+  // nivel: que la descarga quede fuerte pero sin recortar
+  let pk = 0; for (let ch = 0; ch < buf.numberOfChannels; ch++) { const d = buf.getChannelData(ch); for (let i = 0; i < d.length; i += 2) { const a = Math.abs(d[i]); if (a > pk) pk = a; } }
+  const g = pk > 0 ? Math.min(3, .95 / pk) : 1;
+  if (Math.abs(g - 1) > .01) for (let ch = 0; ch < buf.numberOfChannels; ch++) { const d = buf.getChannelData(ch); for (let i = 0; i < d.length; i++) d[i] *= g; }
+  return { buf, ev, steps, dur: dur + .05, blocks };
+}
+function toWav(buf) {
+  const ch = Math.min(2, buf.numberOfChannels), n = buf.length, sr = buf.sampleRate, out = new DataView(new ArrayBuffer(44 + n * ch * 2));
+  const str = (o, x) => { for (let i = 0; i < x.length; i++) out.setUint8(o + i, x.charCodeAt(i)); };
+  str(0, 'RIFF'); out.setUint32(4, 36 + n * ch * 2, true); str(8, 'WAVE'); str(12, 'fmt '); out.setUint32(16, 16, true); out.setUint16(20, 1, true); out.setUint16(22, ch, true);
+  out.setUint32(24, sr, true); out.setUint32(28, sr * ch * 2, true); out.setUint16(32, ch * 2, true); out.setUint16(34, 16, true); str(36, 'data'); out.setUint32(40, n * ch * 2, true);
+  const ds = [...Array(ch)].map((_, k) => buf.getChannelData(k)); let o = 44;
+  for (let i = 0; i < n; i++) for (let k = 0; k < ch; k++) { const v = clamp(ds[k][i], -1, 1); out.setInt16(o, v < 0 ? v * 32768 : v * 32767, true); o += 2; }
+  return new Blob([out], { type: 'audio/wav' });
+}
+let lameP = null;
+function loadLame() {
+  if (window.lamejs) return Promise.resolve();
+  if (!lameP) lameP = new Promise((res, rej) => { const sc = document.createElement('script'); sc.src = 'lame.min.js'; sc.onload = res; sc.onerror = () => { lameP = null; rej(new Error('lame')); }; document.head.appendChild(sc); });
+  return lameP;
+}
+async function toMp3(buf) {
+  await loadLame();
+  const enc = new lamejs.Mp3Encoder(2, buf.sampleRate, 192), L = buf.getChannelData(0), R = buf.getChannelData(buf.numberOfChannels > 1 ? 1 : 0);
+  const n = buf.length, blk = 1152, parts = [], li = new Int16Array(blk), ri = new Int16Array(blk);
+  const cv = (x) => { x = clamp(x, -1, 1); return x < 0 ? x * 32768 : x * 32767; };
+  for (let i = 0; i < n; i += blk) {
+    const m = Math.min(blk, n - i), a = m === blk ? li : new Int16Array(m), b = m === blk ? ri : new Int16Array(m);
+    for (let k = 0; k < m; k++) { a[k] = cv(L[i + k]); b[k] = cv(R[i + k]); }
+    const d = enc.encodeBuffer(a, b); if (d.length) parts.push(new Uint8Array(d));
+    if ((i / blk) % 200 === 0) { xProgress(.6 + .4 * i / n, 'Pasando a MP3…'); await new Promise(r => setTimeout(r, 0)); }
+  }
+  const e = enc.flush(); if (e.length) parts.push(new Uint8Array(e));
+  return new Blob(parts, { type: 'audio/mpeg' });
+}
+/* ---- video 9:16 ---- */
+const VCOL = ['#3ee08a', '#2ee6d6', '#c6f43a', '#ffae5c', '#9be7c4', '#6fc3ff', '#ff8fb1', '#b49cff'];
+const VFONT = '"Avenir Next","Avenir","Segoe UI",Roboto,"Helvetica Neue",system-ui,sans-serif';
+function wrapLines(g, text, maxW, maxL) {
+  const words = text.split(/\s+/), lines = []; let cur = '';
+  for (const w of words) { const t = cur ? cur + ' ' + w : w; if (g.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t; }
+  if (cur) lines.push(cur);
+  if (lines.length > maxL) { lines.length = maxL; lines[maxL - 1] = lines[maxL - 1].replace(/\s*\S*$/, '') + '…'; }
+  return lines;
+}
+function drawVideoFrame(g, W, H, R, now, st) {
+  const steps = R.steps, ev = R.ev;
+  while (st.si + 1 < steps.length && steps[st.si + 1].t <= now) st.si++;
+  while (st.ei < ev.length && ev[st.ei].t <= now) { st.lv[ev[st.ei].tr] = 1; st.ei++; }
+  const cur = steps[st.si], p = cur && cur.p != null ? cur.p : (R.blocks[R.blocks.length - 1] || { p: 0 }).p, col = VCOL[p % 8];
+  // fondo
+  const bg = g.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#0f1a14'); bg.addColorStop(1, '#050906');
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  const glow = g.createRadialGradient(W / 2, H * .47, 10, W / 2, H * .47, W * .75); glow.addColorStop(0, col + '33'); glow.addColorStop(1, '#00000000');
+  g.fillStyle = glow; g.fillRect(0, 0, W, H);
+  // título
+  g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+  g.fillStyle = '#6f8277'; g.font = `700 22px ${VFONT}`; g.fillText('G R E E N P A D   B A N D A', W / 2, 92);
+  g.fillStyle = '#e8f3ec'; g.font = `800 64px ${VFONT}`;
+  const lines = wrapLines(g, S.name || 'Mi tema', W - 100, 2);
+  lines.forEach((l, i) => g.fillText(l, W / 2, 180 + i * 72));
+  g.fillStyle = '#9fb3a7'; g.font = `600 26px ${VFONT}`;
+  g.fillText(`${S.bpm} BPM · ${moodName(S.ps[p].sc)}`, W / 2, 180 + lines.length * 72 + 8);
+  // círculo: espectro + 16 pasos
+  const cx = W / 2, cy = H * .5, r0 = 170;
+  const fr = st.fd; if (st.an) st.an.getByteFrequencyData(fr);
+  const nb = 72;
+  for (let i = 0; i < nb; i++) {
+    const idx = 2 + Math.floor(Math.pow(i / nb, 1.5) * (fr.length * .7)), v = fr[idx] / 255, a = i / nb * Math.PI * 2 - Math.PI / 2, len = 10 + v * v * 170;
+    g.strokeStyle = i % 2 ? col : col + 'aa'; g.lineWidth = 7; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(cx + Math.cos(a) * (r0 + 14), cy + Math.sin(a) * (r0 + 14)); g.lineTo(cx + Math.cos(a) * (r0 + 14 + len), cy + Math.sin(a) * (r0 + 14 + len)); g.stroke();
+  }
+  for (let k = 0; k < STEPS; k++) {
+    const a = k / STEPS * Math.PI * 2 - Math.PI / 2, on = cur && !cur.end && cur.s === k;
+    g.fillStyle = on ? '#ffffff' : k % 4 === 0 ? '#3a5246' : '#22322a';
+    g.beginPath(); g.arc(cx + Math.cos(a) * (r0 - 26), cy + Math.sin(a) * (r0 - 26), on ? 11 : 7, 0, Math.PI * 2); g.fill();
+  }
+  const pulse = 1 + st.lv[0] * .06;
+  g.fillStyle = col; g.beginPath(); g.arc(cx, cy, 92 * pulse, 0, Math.PI * 2); g.fill();
+  g.fillStyle = '#062012'; g.font = `800 112px ${VFONT}`; g.textBaseline = 'middle'; g.fillText(LET[p], cx, cy + 6); g.textBaseline = 'alphabetic';
+  // instrumentos que suenan
+  const names = ['BOMBO', 'CAJA', 'HI-HAT', 'PERCU', 'BAJO', 'GUITARRA', 'ACORDES', 'MELODÍA'], top = H * .74, cw = (W - 80) / 4;
+  for (let t = 0; t < NT; t++) {
+    const x = 40 + (t % 4) * cw + cw / 2, y = top + Math.floor(t / 4) * 92, v = st.lv[t];
+    g.fillStyle = `rgba(255,255,255,${.05 + v * .1})`; g.beginPath(); g.roundRect ? g.roundRect(x - cw / 2 + 8, y - 34, cw - 16, 70, 18) : g.rect(x - cw / 2 + 8, y - 34, cw - 16, 70); g.fill();
+    g.fillStyle = v > .05 ? VCOL[t] : '#3a5246'; g.beginPath(); g.arc(x, y - 6, 9 + v * 7, 0, Math.PI * 2); g.fill();
+    g.fillStyle = v > .05 ? '#e8f3ec' : '#6f8277'; g.font = `700 17px ${VFONT}`; g.fillText(names[t], x, y + 24);
+    st.lv[t] *= .86;
+  }
+  // estructura de la canción y tiempo
+  const bx = 50, bw = W - 100, by = H - 150, tot = R.blocks.reduce((a, b) => a + b.n, 0) || 1; let x = bx;
+  R.blocks.forEach((b, i) => {
+    const w = bw * b.n / tot - 4;
+    g.fillStyle = VCOL[b.p % 8] + (cur && cur.bi === i ? 'ff' : '66'); g.beginPath(); g.roundRect ? g.roundRect(x, by, Math.max(4, w), 26, 8) : g.rect(x, by, Math.max(4, w), 26); g.fill();
+    if (w > 26) { g.fillStyle = '#062012'; g.font = `800 16px ${VFONT}`; g.fillText(LET[b.p], x + w / 2, by + 19); }
+    x += bw * b.n / tot;
+  });
+  const k = clamp(now / R.dur, 0, 1);
+  g.fillStyle = '#ffffff'; g.fillRect(bx + bw * k - 2, by - 8, 4, 42);
+  g.fillStyle = '#9fb3a7'; g.font = `600 24px ${VFONT}`; g.fillText(`${fmtT(Math.min(now, R.dur))} / ${fmtT(R.dur)}`, W / 2, by + 74);
+}
+async function makeVideo(R) {
+  const c = ensureAudio(); try { await c.resume(); } catch {}
+  const mime = ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].find(m => !MediaRecorder.isTypeSupported || MediaRecorder.isTypeSupported(m));
+  const W = 720, H = 1280, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const g = cv.getContext('2d');
+  const dest = c.createMediaStreamDestination(), an = c.createAnalyser(); an.fftSize = 512; an.smoothingTimeConstant = .7;
+  const src = c.createBufferSource(); src.buffer = R.buf; src.connect(dest); src.connect(an);
+  const mon = c.createGain(); mon.gain.value = .9; src.connect(mon); mon.connect(c.destination); // se escucha mientras se graba
+  const st = { si: 0, ei: 0, lv: new Float32Array(NT), an, fd: new Uint8Array(an.frequencyBinCount) };
+  drawVideoFrame(g, W, H, R, 0, st);
+  const vs = cv.captureStream(30), stream = new MediaStream([...vs.getVideoTracks(), ...dest.stream.getAudioTracks()]);
+  const rec = new MediaRecorder(stream, Object.assign({ videoBitsPerSecond: 5e6, audioBitsPerSecond: 192000 }, mime ? { mimeType: mime } : {}));
+  const chunks = []; rec.ondataavailable = (e) => { if (e.data && e.data.size) chunks.push(e.data); };
+  rec.start(500);
+  const t0 = c.currentTime + .25, total = R.buf.duration; src.start(t0);
+  await new Promise((res) => {
+    const tick = () => {
+      if (XP.cancel) return res();
+      const now = c.currentTime - t0;
+      drawVideoFrame(g, W, H, R, Math.max(0, now), st);
+      xProgress(.2 + .8 * clamp(now / total, 0, 1), `Grabando el video… ${fmtT(Math.max(0, now))} / ${fmtT(total)}. Dejá la pantalla prendida.`);
+      if (now >= total) return res();
+      requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  });
+  try { src.stop(); } catch {}
+  await new Promise((res) => { rec.onstop = res; try { rec.stop(); } catch { res(); } });
+  vs.getTracks().forEach(t => t.stop()); try { mon.disconnect(); an.disconnect(); dest.disconnect(); } catch {}
+  const type = (rec.mimeType || mime || 'video/webm').split(';')[0];
+  return new Blob(chunks, { type });
+}
+async function doExport(f) {
+  if (XP.busy) return;
+  keepTitle();
+  if (P.playing) stop();
+  XP.busy = true; XP.cancel = false; clearOut(); xRender();
+  const blocks = xBlocks(), song = XP.what === 'song' && S.song.length > 0;
+  if (f === 'vid' && xDur(blocks) > 240) toast('El video dura más de 4 minutos: va a tardar lo mismo que dura la canción', 3200);
+  try {
+    xProgress(.08, 'Mezclando…');
+    const R = await renderOffline(blocks, song);
+    let blob, ext;
+    if (f === 'wav') { xProgress(.8, 'Armando el WAV…'); await new Promise(r => setTimeout(r, 0)); blob = toWav(R.buf); ext = 'wav'; }
+    else if (f === 'mp3') { xProgress(.6, 'Pasando a MP3…'); blob = await toMp3(R.buf); ext = 'mp3'; }
+    else { blob = await makeVideo(R); ext = /mp4/.test(blob.type) ? 'mp4' : 'webm'; }
+    if (XP.cancel) return;
+    showOut(blob, `${safeName()}.${ext}`, f);
+  } catch (e) {
+    xEl('xProg').hidden = true;
+    toast(e && e.message === 'lame' ? 'No se pudo cargar el conversor a MP3. Probá con WAV o revisá la conexión.' : 'No se pudo armar el archivo en este navegador. Probá con otro formato.', 3600);
+  } finally { XP.busy = false; xRender(); }
+}
+function showOut(blob, name, f) {
+  xEl('xProg').hidden = true;
+  const url = XP.url = URL.createObjectURL(blob), out = xEl('xOut'), mb = (blob.size / 1048576).toFixed(1);
+  out.innerHTML = (f === 'vid' ? `<video controls playsinline src="${url}"></video>` : `<audio controls src="${url}"></audio>`)
+    + `<div class="row"><a class="btn pri" id="xDl" href="${url}">Descargar</a><button class="btn" id="xShare" hidden>Compartir</button></div><p class="hint" style="margin:0"></p>`;
+  const a = out.querySelector('#xDl'); a.download = name;
+  out.querySelector('.hint').textContent = `${name} · ${mb} MB` + (f === 'vid' ? ' · En el iPhone, Compartir > Guardar video lo deja en Fotos.' : '');
+  const file = new File([blob], name, { type: blob.type });
+  const sh = out.querySelector('#xShare');
+  if (navigator.canShare && navigator.canShare({ files: [file] })) { sh.hidden = false; sh.addEventListener('click', () => navigator.share({ files: [file], title: S.name }).catch(() => {})); }
+  out.hidden = false;
+}
+xEl('xWhat').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b || b.disabled || XP.busy) return; XP.what = b.dataset.v; clearOut(); xRender(); });
+xEl('xLoops').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b || XP.busy) return; XP.loops = +b.dataset.n; clearOut(); xRender(); });
+document.querySelectorAll('#export .xfo').forEach(b => b.addEventListener('click', () => doExport(b.dataset.f)));
+xEl('xName').addEventListener('change', () => { if (!XP.busy) keepTitle(); });
+xEl('xClose').addEventListener('click', () => { XP.cancel = true; closeAll(); });
+$('#dlBtn').addEventListener('click', openExport);
+$('#dlMenu').addEventListener('click', openExport);
+$('#recMenu').addEventListener('click', () => { closeAll(); toggleRec(); });
+
 /* ================= live play / record ================= */
 function live(t) {
   ensureAudio();
@@ -2558,7 +2862,7 @@ function live(t) {
 }
 function toggleRec() {
   P.rec = !P.rec; P.recUndo = false;
-  $('#rec').classList.toggle('on', P.rec);
+  $('#rec').classList.toggle('on', P.rec); $('#recMenu').classList.toggle('on', P.rec);
   toast(P.rec ? 'Grabación en vivo: tocá los instrumentos (1 a 8) mientras suena' : 'Grabación apagada');
   if (P.rec && !P.playing) play();
 }

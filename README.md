@@ -209,6 +209,7 @@ Versión pensada para armar canciones enteras con instrumentos grabados de verda
 | `banda.webmanifest` | "Agregar a pantalla de inicio" abre Banda directo |
 | `sonidos/` | 330 grabaciones mp3 (unos 7,5 MB). Solo se bajan las que usa el tema, y quedan guardadas para usar sin conexión |
 | `sonidos/CREDITOS.txt` | De dónde sale cada grabación y su licencia |
+| `lame.min.js` | Conversor a MP3 para Descargar (lamejs, LGPL 3.0) |
 
 Para probar en local hace falta el servidor (`python3 -m http.server 8080`): abriendo el archivo directo, el navegador no deja leer la carpeta `sonidos/` y suena el sintetizado.
 
@@ -272,6 +273,19 @@ DESTIEMPO: 60
 ```
 
 El enlace de "Copiar enlace" también lleva la canción, el destiempo y la mezcla de cada patrón (las grabaciones no, para eso está el `.txt`).
+
+### Descargar
+
+El botón verde de la flecha (al lado del dado; en la compu, en la fila de herramientas) abre **Descargar**. También está en el menú, en Patrón.
+
+- **Título:** el que pongas queda como nombre del tema y se guarda en Mis beats (si no estaba guardado, se guarda solo). Es también el nombre del archivo.
+- **Qué:** la canción completa (como suena en modo canción, con el cierre de platillo al final) o el patrón que estás editando, de 1 a 8 vueltas, con su mezcla.
+- **Audio MP3:** liviano (192 kbps), para mandar o subir. Usa `lame.min.js` (lamejs, licencia LGPL 3.0), que se carga solo cuando hace falta.
+- **Audio WAV:** calidad máxima, 44,1 kHz estéreo.
+- **Video vertical 9:16** (720 × 1280): título, tempo y ambiente, un círculo que se mueve con la música y marca los 16 pasos, los instrumentos que se prenden al sonar y la estructura de la canción con el tiempo. En iPhone sale en MP4; en la compu, MP4 o WebM según el navegador. Tarda lo mismo que dura la canción: hay que dejar la pantalla prendida.
+- El audio se mezcla sin tocar en tiempo real (más rápido) con los mismos sonidos, efectos, mezclas y destiempo, y se ajusta el volumen para que quede fuerte sin recortar.
+- Al terminar aparece para escucharlo, **Descargar** y, en el teléfono, **Compartir** (en iPhone, Compartir > Guardar video lo deja en Fotos).
+- **Grabar en vivo** pasó al panel de la barra resumen (teléfono) y al menú, en Patrón (compu). La tecla `R` sigue igual.
 
 ### En el teléfono
 
