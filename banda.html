@@ -549,7 +549,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .mpmix button.on{background:var(--or);color:var(--acc-ink)}
 .mpmix button.cur{box-shadow:inset 0 0 0 2px var(--cy)}
 .mp-hint{margin:0;font-size:11px;color:var(--ink)}
-.mptools{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.mptools{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
 .mptools .rb{width:auto;height:44px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:4px}
 .mptools .tlab{display:block;font-size:10px;font-weight:700;letter-spacing:.02em}
 .mptools .rb svg{width:16px;height:16px}
@@ -594,7 +594,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .cmp:not(.v) #matrix,.cmp .grille,.cmp .logo,.cmp .spacer{display:none}
 .cmp:not(.v) .morebar{height:26px}
 .cmp:not(.v) .mpanel:not([hidden]){max-height:calc(var(--app-h,100vh) - 90px)}
-.cmp:not(.v) .mptools{grid-template-columns:repeat(3,minmax(0,160px))}
+.cmp:not(.v) .mptools{grid-template-columns:repeat(2,minmax(0,160px))}
 .cmp:not(.v) #stage{padding:4px 10px}
 .cmp .pb{width:auto;min-width:0}
 .cmp .pats{width:100%}
@@ -610,7 +610,8 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .cmp:not(.v) .sgsw{padding-top:5px}
 .cmp:not(.v) #songTime{bottom:7px}
 .cmp:not(.v) #stage{align-items:center;align-items:safe center}
-@media (max-width:350px){.v #top{gap:6px 6px}.v #bpm{font-size:26px}.v .arrows .rb{width:20px;height:20px}.v .tools{gap:4px}.v .tools .rb{width:28px;height:28px}.v .vsw{margin-left:4px}.v .vsw button{width:30px}.cmp .sgsw{padding:0 6px;padding-top:7px}.cmp #songTime{width:84px;padding-left:32px}.cmp .sgt{min-width:30px}.cmp .sgt[data-a="auto"]{font-size:8.5px}}
+@media (max-width:385px){.v .tools{gap:5px}.v .tools .rb{width:28px;height:28px}}
+@media (max-width:350px){.v #top{gap:6px 6px;padding-left:8px;padding-right:8px}.v .tools .rb{width:26px!important;height:26px!important}.v .tools .rb svg{width:14px;height:14px}.v #bpm{font-size:26px}.v .arrows .rb{width:20px;height:20px}.v .tools{gap:3px}.v .vsw{margin-left:3px}.v .vsw button{width:28px}.cmp .sgsw{padding:0 6px;padding-top:7px}.cmp #songTime{width:84px;padding-left:32px}.cmp .sgt{min-width:30px}.cmp .sgt[data-a="auto"]{font-size:8.5px}}
 
 /* ---- bandejas: grabaciones y mezcla ---- */
 .grabs{grid-area:gr;display:flex;gap:6px;align-items:center}
@@ -897,7 +898,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <button class="xfo" data-f="vid"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="4" y="1.5" width="8" height="13" rx="1.8"/><path d="M7 6v4l3-2z" fill="currentColor"/></svg><span><b>Video vertical 9:16</b><small>Para historias y reels, con visualización</small></span></button>
     </div>
     <h4>ESTILO DEL VIDEO</h4>
-    <div class="seg" id="xQual"><button data-q="0">Caracol</button><button data-q="1">Revista</button><button data-q="2">Neón</button></div>
+    <div class="seg" id="xQual"><button data-q="0">Caracol</button><button data-q="1">Revista</button><button data-q="2">Neón</button><button data-q="3">Flor</button></div>
     <p class="hint" id="xQualH"></p>
     <label class="tg" style="margin-top:8px"><input type="checkbox" id="xLite"> Liviano: 540 × 960, para teléfonos viejos o si sale entrecortado</label>
     <div class="xprog" id="xProg" hidden><div class="xbar"><i></i></div><p></p></div>
@@ -2566,7 +2567,7 @@ function moveTo(el, parent) {
 function moveBack(el) { const c = MORE.ph.get(el); if (c && c.parentNode) c.parentNode.insertBefore(el, c); }
 function compactUI(on) {
   if (on === MORE.on) return; MORE.on = on;
-  const sndbox = $('.sndbox'), tone = $('.box.tone'), parts = [[sndbox, '#mpSnd'], [tone, '#mpTone'], [$('#chainBtn'), '#mpChain'], [$('#rec'), '#mpTools'], [$('#micBtn'), '#mpTools'], [$('#clear'), '#mpTools']];
+  const sndbox = $('.sndbox'), tone = $('.box.tone'), parts = [[sndbox, '#mpSnd'], [tone, '#mpTone'], [$('#chainBtn'), '#mpChain'], [$('#rec'), '#mpTools'], [$('#micBtn'), '#mpTools']]; // Borrar patrón queda a la vista, junto al dado y la descarga
   if (on) parts.forEach(([el, p]) => moveTo(el, $(p)));
   else { parts.forEach(([el]) => moveBack(el)); setMore(false); }
 }
@@ -2577,7 +2578,7 @@ function setMore(open) {
 const moreOpen = () => MORE.on && !morePanel.hidden;
 function renderMoreSum() {
   if (!moreBtn) return;
-  if (DJ.on) { $('#moreSum').innerHTML = '<span class="k">MÁS</span>Grabar en vivo · Grabar sonido · Borrar patrón'; return; }
+  if (DJ.on) { $('#moreSum').innerHTML = '<span class="k">MÁS</span>Grabar en vivo · Grabar sonido'; return; }
   const fam = S.st.every((x, t) => x === S.st[0] && !S.lay[t]) && S.st[0] < 4 ? FAM[S.st[0]] : 'Mixto';
   const mx = bits(S.mix).filter(p => p !== S.cur).map(p => LET[p]).join(' ');
   $('#moreSum').innerHTML = `<span class="k">SONIDO</span>${fam}<span class="k">AMBIENTE</span>${moodName(S.scale)}<span class="k">DESTIEMPO</span>${Math.round(S.hum * 100)}%` + (mx ? `<span class="k mx">MEZCLA</span><span class="mx">${mx}</span>` : '');
@@ -2710,13 +2711,14 @@ async function toMp3(buf) {
   return new Blob(parts, { type: 'audio/mpeg' });
 }
 /* ---- video 9:16 ---- */
-// tres estilos de video, cada uno con su versión liviana (540 × 960, 24 cuadros) para teléfonos viejos
+// cuatro estilos de video, cada uno con su versión liviana (540 × 960, 24 cuadros) para teléfonos viejos
 const VSTY = [
   { n: 'Caracol', d: 'Una espiral que sigue la música, con la onda del sonido enroscada. Va con cualquier tema.' },
   { n: 'Revista', d: 'Papel, tinta y tipografía grande, como una tapa de revista. Ideal para temas con guitarras y banda.' },
   { n: 'Neón', d: 'Brillos, chispas y anillos que giran. Para trap y electrónica.' },
+  { n: 'Flor', d: 'Una flor de bordes bien marcados que se abre con el bombo y mueve cada pétalo con el sonido, sobre un fondo oscuro que cambia despacio.' },
 ];
-const vstyle = () => clamp(PREF.vsty == null ? 0 : PREF.vsty, 0, 2);
+const vstyle = () => clamp(PREF.vsty == null ? 0 : PREF.vsty, 0, VSTY.length - 1);
 const vq = () => PREF.vlite ? { n: 'liviano', w: 540, h: 960, fps: 24, br: 2.5e6, lite: true } : { n: 'normal', w: 720, h: 1280, fps: 30, br: 5e6, lite: false };
 const VCOL = ['#3ee08a', '#2ee6d6', '#c6f43a', '#ffae5c', '#9be7c4', '#6fc3ff', '#ff8fb1', '#b49cff'];
 const PCOL = ['#e4572e', '#2a9d8f', '#e9b44c', '#3d5a80', '#c8553d', '#6a994e', '#9a348e', '#1b998b']; // tintas de imprenta para Revista
@@ -2736,6 +2738,7 @@ function drawVideoFrame(g, W0, H0, R, now, st) {
   const q = st.q, W = 720, H = 1280, sc = W0 / W;
   g.setTransform(sc, 0, 0, sc, 0, 0);
   const steps = R.steps, ev = R.ev, TAU = Math.PI * 2;
+  st.fr = (st.fr || 0) + 1;
   while (st.si + 1 < steps.length && steps[st.si + 1].t <= now) st.si++;
   while (st.ei < ev.length && ev[st.ei].t <= now) {
     const tr = ev[st.ei].tr; st.lv[tr] = 1;
@@ -2753,9 +2756,34 @@ function drawVideoFrame(g, W0, H0, R, now, st) {
   const V = { W, H, TAU, now, beats, cur, p, col, col2, bass, mid };
   if (st.style === 0) drawCaracol(g, R, st, V);
   else if (st.style === 1) drawRevista(g, R, st, V);
+  else if (st.style === 3) drawFlor(g, R, st, V);
   else drawNeon(g, R, st, V);
   g.setTransform(1, 0, 0, 1, 0, 0);
   if (st.logo && st.style !== 0) g.drawImage(st.logo, 0, H0 - st.logo.height); // en Caracol el logo va arriba
+}
+/* ---- bandas de frecuencia para las visualizaciones ----
+   Repartidas como las oye el oído (de ~45 Hz a ~11 kHz) y cada una con su propio nivel automático:
+   así las de agudos, que traen menos energía, también se mueven y el círculo reacciona parejo de los dos lados. */
+function vBands(st, n) {
+  const C = st.bands || (st.bands = {}), fd = st.fd, L = fd.length;
+  let B = C[n];
+  if (!B) {
+    const sr = st.an && st.an.context ? st.an.context.sampleRate : 48000, hz = sr / 2 / L, lo = Math.max(1, 45 / hz), hi = Math.min(L - 1, 11000 / hz), ed = [Math.floor(lo)];
+    for (let i = 1; i <= n; i++) ed.push(Math.max(ed[i - 1] + 1, Math.round(lo * Math.pow(hi / lo, i / n))));
+    B = C[n] = { ed, v: new Float32Array(n), mx: new Float32Array(n).fill(.2), av: new Float32Array(n).fill(.1), fr: -1 };
+  }
+  if (B.fr === st.fr) return B.v; // una vez por cuadro
+  B.fr = st.fr;
+  for (let i = 0; i < n; i++) {
+    const a = Math.min(B.ed[i], L - 1), b = Math.min(Math.max(a + 1, B.ed[i + 1]), L);
+    let sum = 0, pk = 0; for (let k = a; k < b; k++) { sum += fd[k]; if (fd[k] > pk) pk = fd[k]; }
+    const raw = (sum / (b - a) + pk) / 510;
+    B.mx[i] = Math.max(raw, B.mx[i] * .993, .14);              // techo de esa banda, baja despacio
+    B.av[i] = B.av[i] * .96 + raw * .04;                       // nivel de siempre de esa banda
+    const lo = B.av[i] * .97, x = clamp((raw - lo) / Math.max(B.mx[i] - lo, .06), 0, 1), y = Math.pow(x, 1.3);
+    B.v[i] = y > B.v[i] ? y : B.v[i] * .7 + y * .3;             // sube rápido, baja suave
+  }
+  return B.v;
 }
 // barra de progreso con el color de cada parte de la canción
 function vProgress(g, R, now, x0, y, w, h, colors, dim) {
@@ -2792,10 +2820,10 @@ function drawCaracol(g, R, st, V) {
   g.fillStyle = col; g.font = `800 24px ${VFONT}`; if ('letterSpacing' in g) g.letterSpacing = '3px';
   g.fillText(`${S.bpm} BPM`, W / 2, ty - 10); if ('letterSpacing' in g) g.letterSpacing = '0px';
   // caracol: barras alrededor que crecen con las frecuencias (graves arriba, girando en sentido horario)
-  const cx = W / 2, cy = H * .5 + (lines.length > 1 ? 30 : 0), r0 = 168 + st.k * 8, nb = lite ? 48 : 72, fr = st.fd;
+  const cx = W / 2, cy = H * .5 + (lines.length > 1 ? 30 : 0), r0 = 168 + st.k * 8, nb = lite ? 48 : 72, bv = vBands(st, nb);
   g.lineCap = 'round';
   for (let i = 0; i < nb; i++) {
-    const idx = 2 + Math.floor(Math.pow(i / nb, 1.5) * (fr.length * .7)), v = fr[idx] / 255, a = i / nb * TAU - Math.PI / 2, len = 10 + v * v * (Math.sin(a) > .3 ? 115 : 160); // abajo más cortas para no tocar los íconos
+    const v = bv[i], a = i / nb * TAU - Math.PI / 2, len = 10 + v * (Math.sin(a) > .3 ? 115 : 160); // abajo más cortas para no tocar los íconos
     g.strokeStyle = i % 2 ? col : col + 'aa'; g.lineWidth = lite ? 9 : 7;
     g.beginPath(); g.moveTo(cx + Math.cos(a) * (r0 + 14), cy + Math.sin(a) * (r0 + 14)); g.lineTo(cx + Math.cos(a) * (r0 + 14 + len), cy + Math.sin(a) * (r0 + 14 + len)); g.stroke();
   }
@@ -2845,6 +2873,24 @@ function drawRevista(g, R, st, V) {
   g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
   g.drawImage(st.bg, 0, 0, W, H);
   const M = 48;
+  // fondo: barras verticales de lado a lado que suben desde abajo con el sonido (graves a la izquierda, agudos a la derecha).
+  // Al máximo llegan al alto de la pantalla; van suaves, como tinta clara, para dar movimiento sin tapar nada.
+  { const nb = q.lite ? 24 : 32, bv = vBands(st, nb), bw = W / nb;
+    g.globalCompositeOperation = 'multiply';
+    for (const [c, ox, al] of [[ink, 4, .035], [acc2, 0, .17]]) {
+      g.fillStyle = c; g.globalAlpha = al; g.beginPath();
+      for (let i = 0; i < nb; i++) { const h = 24 + bv[i] * (H - 24); g.rect(i * bw + bw * .14 + ox, H - h - ox * .6, bw * .72, h); }
+      g.fill();
+    }
+    g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+    // detrás del círculo, un degradado blanco que aclara las barras y despeja los puntos
+    const wg = g.createRadialGradient(W * .5, 610, 120, W * .5, 610, 400);
+    wg.addColorStop(0, 'rgba(255,253,248,.92)'); wg.addColorStop(.6, 'rgba(255,253,248,.6)'); wg.addColorStop(1, 'rgba(255,253,248,0)');
+    g.fillStyle = wg; g.fillRect(0, 200, W, 820);
+    // y una franja de papel detrás del título para que se lea bien
+    const tg = g.createLinearGradient(0, H - 380, 0, H - 170);
+    tg.addColorStop(0, 'rgba(239,232,218,0)'); tg.addColorStop(.35, 'rgba(239,232,218,.75)'); tg.addColorStop(.8, 'rgba(239,232,218,.75)'); tg.addColorStop(1, 'rgba(239,232,218,0)');
+    g.fillStyle = tg; g.fillRect(0, H - 380, W, 210); }
   // cabezal: filetes como en una revista
   g.fillStyle = ink; g.fillRect(M, 64, W - 2 * M, 3); g.fillRect(M, 72, W - 2 * M, 1);
   // número grande del tempo, en contorno, que se mueve apenas con el pulso
@@ -2888,7 +2934,6 @@ function drawRevista(g, R, st, V) {
   const lines = wrapLines(g, S.name || 'Mi tema', W - 2 * M, 2), ty = H - 250 - (lines.length - 1) * 66;
   lines.forEach((l, i) => g.fillText(l, M, ty + i * 66));
   if ('letterSpacing' in g) g.letterSpacing = '0px';
-  g.fillRect(M, H - 212, W - 2 * M, 2);
   vProgress(g, R, V.now, M, H - 196, W - 2 * M, 6, PCOL, (c) => c + '33');
   g.textAlign = 'center';
 }
@@ -2927,9 +2972,9 @@ function drawNeon(g, R, st, V) {
   }
   if (q.arc) { g.strokeStyle = col2 + '55'; g.lineWidth = 3; g.beginPath(); g.arc(0, 0, 330 + st.snare * 30, -rot * 1.7, -rot * 1.7 + TAU * .7); g.stroke(); }
   // espectro en rayos
-  const nb = q.rays;
+  const nb = q.rays, bv = vBands(st, nb);
   for (let i = 0; i < nb; i++) {
-    const v = st.fd[2 + Math.floor(Math.pow(i / nb, 1.4) * 150)] / 255, a = -rot * .5 + i / nb * TAU, len = 6 + v * v * 120;
+    const v = bv[i], a = -rot * .5 + i / nb * TAU, len = 6 + v * 120;
     g.strokeStyle = (i % 2 ? col : col2) + 'cc'; g.lineWidth = 5;
     g.beginPath(); g.moveTo(Math.cos(a) * 196, Math.sin(a) * 196); g.lineTo(Math.cos(a) * (196 + len), Math.sin(a) * (196 + len)); g.stroke();
   }
@@ -2983,6 +3028,97 @@ function drawNeon(g, R, st, V) {
   g.save(); g.beginPath(); g.rect(bx, by - 2, bw * kk, 10); g.clip(); x = bx;
   R.blocks.forEach((b) => { const w = bw * b.n / tot; g.fillStyle = VCOL[b.p % 8]; g.fillRect(x + 1, by, w - 2, 6); x += w; });
   g.restore();
+}
+/* ---- Flor: una flor de contornos marcados; cada pétalo se mueve con su banda y se abre con el bombo ---- */
+const FCOL = [['#ff5d8f', '#ffc2d4'], ['#ff9f1c', '#ffe0a3'], ['#ffd23f', '#fff1b8'], ['#b388ff', '#e2d4ff'], ['#4cc9f0', '#c4f1ff'], ['#ff6b6b', '#ffd0c9'], ['#7aa2ff', '#d9e3ff'], ['#f72585', '#ffc1e0']];
+function petalPath(g, len, wid) { // pétalo que sale del centro hacia arriba
+  g.beginPath(); g.moveTo(0, 0);
+  g.bezierCurveTo(wid, -len * .22, wid * .95, -len * .78, 0, -len);
+  g.bezierCurveTo(-wid * .95, -len * .78, -wid, -len * .22, 0, 0);
+  g.closePath();
+}
+function drawFlor(g, R, st, V) {
+  const { W, H, TAU, now, beats, p, bass, mid } = V, lite = st.q.lite, OUT = '#0d0816', HALO = '#f7f0ff';
+  const [pc, pl] = FCOL[p % 8], [qc, ql] = FCOL[(p + 3) % 8], [rc] = FCOL[(p + 5) % 8];
+  g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  // fondo: degradado oscuro que gira despacio y toma un poco del color de la parte
+  const ang = beats * TAU / 64, dx = Math.cos(ang) * H * .55, dy = Math.sin(ang) * H * .55;
+  const bg = g.createLinearGradient(W / 2 - dx, H / 2 - dy, W / 2 + dx, H / 2 + dy);
+  bg.addColorStop(0, mixHex('#140a26', qc, .12)); bg.addColorStop(.55, '#0a0d1c'); bg.addColorStop(1, mixHex('#03131a', pc, .14));
+  g.fillStyle = bg; g.fillRect(0, 0, W, H);
+  const cx = W / 2, cy = 640;
+  // luz detrás de la flor, que crece con los graves
+  const gl = g.createRadialGradient(cx, cy, 20, cx, cy, 520); gl.addColorStop(0, pc); gl.addColorStop(1, pc + '00');
+  g.globalAlpha = .16 + bass * .3 + st.k * .1; g.fillStyle = gl; g.fillRect(0, 0, W, H); g.globalAlpha = 1;
+  // círculos que suben despacio por el fondo
+  if (!lite) {
+    if (!st.bokeh) st.bokeh = Array.from({ length: 9 }, (_, i) => ({ x: Math.random() * W, y: Math.random() * H, r: 30 + Math.random() * 90, v: .3 + Math.random() * .8, c: i % 3 }));
+    for (const o of st.bokeh) {
+      o.y -= o.v * (1 + bass * 2); if (o.y < -o.r) { o.y = H + o.r; o.x = Math.random() * W; }
+      g.fillStyle = [pc, qc, rc][o.c]; g.globalAlpha = .07; g.beginPath(); g.arc(o.x, o.y, o.r, 0, TAU); g.fill();
+      g.strokeStyle = HALO; g.globalAlpha = .08; g.lineWidth = 2; g.stroke();
+    }
+    g.globalAlpha = 1;
+  }
+  // con cada bombo: una onda que se abre y polen que sale volando
+  st.rip = st.rip || [];
+  if (st.burst > 0) { st.rip.push({ r: 300, a: 1 }); for (let i = 0; i < (lite ? 6 : 12); i++) { const a = Math.random() * TAU, sp = 2 + Math.random() * 5; st.pt.push({ x: cx + Math.cos(a) * 120, y: cy + Math.sin(a) * 120, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp - 1, l: 1, s: 4 + Math.random() * 6 }); } }
+  st.burst = 0;
+  st.rip = st.rip.filter(o => { o.r += 7; o.a -= .022; if (o.a <= 0) return false; g.strokeStyle = pl; g.globalAlpha = o.a * .5; g.lineWidth = 5; g.beginPath(); g.arc(cx, cy, o.r, 0, TAU); g.stroke(); return true; });
+  g.globalAlpha = 1;
+  const bv = vBands(st, 30), zoom = 1 + st.k * .06;
+  st.spin = (st.spin || 0) + st.snare * .012;
+  g.save(); g.translate(cx, cy); g.scale(zoom, zoom); g.lineJoin = 'round'; g.lineCap = 'round';
+  const lw = lite ? 6 : 7;
+  // dibuja una capa: primero el borde claro (sticker) si va, después relleno, brillo, nervio y contorno oscuro
+  const layer = (n, rot, lenF, wid, fill, hi, halo) => {
+    const shapes = [];
+    for (let i = 0; i < n; i++) shapes.push([rot + i / n * TAU, lenF(i)]);
+    if (halo) for (const [a, len] of shapes) { g.save(); g.rotate(a); petalPath(g, len, wid); g.strokeStyle = HALO; g.lineWidth = lw + 12; g.stroke(); g.restore(); }
+    for (const [a, len] of shapes) {
+      g.save(); g.rotate(a);
+      petalPath(g, len, wid); g.fillStyle = fill; g.fill(); g.strokeStyle = OUT; g.lineWidth = lw; g.stroke();
+      g.save(); g.translate(0, -len * .2); petalPath(g, len * .58, wid * .42); g.fillStyle = hi; g.globalAlpha = .55; g.fill(); g.restore();
+      g.globalAlpha = .55; g.strokeStyle = OUT; g.lineWidth = 3; g.beginPath(); g.moveTo(0, -len * .16); g.lineTo(0, -len * .7); g.stroke(); g.globalAlpha = 1;
+      g.restore();
+    }
+  };
+  // hojas verdes detrás, que se balancean con el pulso
+  const sway = Math.sin(beats * TAU / 8) * .07;
+  layer(5, Math.PI / 5 + sway, () => 300 + bass * 40, 74, '#2bb673', '#8ff0bf', true);
+  // pétalos de afuera (medios y agudos), del medio (medios) y de adentro (graves)
+  layer(12, beats * TAU / 96, (i) => 236 + bv[14 + (i * 16 / 12 | 0)] * 74, 60, pc, pl, true);
+  layer(10, -beats * TAU / 128 + .3, (i) => 172 + bv[5 + i] * 54, 50, qc, ql, false);
+  layer(8, st.spin + beats * TAU / 160, (i) => 112 + bv[i] * 40 + st.k * 10, 38, pl, '#ffffff', false);
+  // centro: un disco con los 16 pasos como semillas
+  const cr = 64 + st.k * 6;
+  g.fillStyle = '#ffd23f'; g.beginPath(); g.arc(0, 0, cr, 0, TAU); g.fill(); g.strokeStyle = OUT; g.lineWidth = lw; g.stroke();
+  g.fillStyle = '#ff9f1c'; g.beginPath(); g.arc(0, 0, cr * .45, 0, TAU); g.fill(); g.lineWidth = 4; g.stroke();
+  const s = V.cur && !V.cur.end ? V.cur.s : -1;
+  for (let k = 0; k < STEPS; k++) {
+    const a = -Math.PI / 2 + k / STEPS * TAU, on = k === s, x = Math.cos(a) * cr * .74, y = Math.sin(a) * cr * .74;
+    g.fillStyle = on ? '#ffffff' : k % 4 === 0 ? OUT : '#7a4a12'; g.beginPath(); g.arc(x, y, on ? 8 : 4.5, 0, TAU); g.fill();
+    if (on) { g.strokeStyle = OUT; g.lineWidth = 3; g.stroke(); }
+  }
+  g.restore();
+  // polen
+  st.pt = st.pt.slice(-(lite ? 40 : 90)).filter(q => { q.x += q.vx; q.y += q.vy; q.vx *= .97; q.vy = q.vy * .97 - .05; q.l -= .014; if (q.l <= 0) return false; g.globalAlpha = q.l; g.fillStyle = '#ffe58a'; g.beginPath(); g.arc(q.x, q.y, q.s * (.5 + q.l * .5), 0, TAU); g.fill(); g.strokeStyle = OUT; g.lineWidth = 2; g.stroke(); return true; });
+  g.globalAlpha = 1;
+  // título con contorno, como un sticker, y los BPM
+  g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.lineJoin = 'round';
+  g.font = `900 54px ${VFONT}`;
+  const lines = wrapLines(g, S.name || 'Mi tema', W - 120, 2);
+  lines.forEach((l, i) => { const y = 130 + i * 62; g.strokeStyle = OUT; g.lineWidth = 12; g.strokeText(l, W / 2, y); g.fillStyle = HALO; g.fillText(l, W / 2, y); });
+  g.font = `800 24px ${VFONT}`; if ('letterSpacing' in g) g.letterSpacing = '3px';
+  g.fillStyle = pc; g.fillText(`${S.bpm} BPM`, W / 2, 130 + lines.length * 62 - 6); if ('letterSpacing' in g) g.letterSpacing = '0px';
+  // abajo: las partes de la canción en color y por dónde va
+  const bx = 70, bw = W - 140, by = H - 176, tot = R.blocks.reduce((a, b) => a + b.n, 0) || 1, kk = clamp(now / R.dur, 0, 1); let x = bx;
+  g.save(); rrect(g, bx, by, bw, 12, 6); g.clip();
+  R.blocks.forEach((b) => { const w = bw * b.n / tot; g.fillStyle = FCOL[b.p % 8][0] + '40'; g.fillRect(x, by, w - 2, 12); x += w; });
+  g.beginPath(); g.rect(bx, by - 2, bw * kk, 16); g.clip(); x = bx;
+  R.blocks.forEach((b) => { const w = bw * b.n / tot; g.fillStyle = FCOL[b.p % 8][0]; g.fillRect(x, by, w - 2, 12); x += w; });
+  g.restore();
+  g.strokeStyle = HALO; g.globalAlpha = .35; g.lineWidth = 2; rrect(g, bx, by, bw, 12, 6); g.stroke(); g.globalAlpha = 1;
 }
 function rrect(g, x, y, w, h, r) { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); }
 // logo de Greenpad (ícono + GREENPAD), dibujado una vez en una capa aparte
