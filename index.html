@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<title>Greenpad Banda</title>
-<meta name="description" content="Greenpad Banda: armá canciones con batería, bajo, guitarras, piano y vientos grabados de verdad. Funciona offline y guarda tus temas en el dispositivo.">
+<title>GREENPAD</title>
+<meta name="description" content="GREENPAD: armá canciones con batería, bajo, guitarras, piano y vientos grabados de verdad. Funciona offline y guarda tus temas en el dispositivo.">
 <meta name="theme-color" content="#0f1612">
 <link rel="manifest" href="banda.webmanifest">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Banda">
+<meta name="apple-mobile-web-app-title" content="GREENPAD">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
 :root{
@@ -120,8 +120,8 @@ svg{display:block}
 .pp .ip{transform:translateX(1px)}
 .pp .ia,.pp.on .ip{display:none}
 .pp.on .ia{display:block}
-.logo{font-weight:800;font-size:clamp(22px,2.2vw,32px);letter-spacing:-.03em;color:var(--ink);flex:none;line-height:1}
-.logo span{color:var(--cy)}
+.logo{font-weight:800;font-size:clamp(22px,2.2vw,32px);letter-spacing:-.03em;color:var(--cy);flex:none;line-height:1}
+.logo span{color:var(--ink)}
 .spacer{flex:1}
 
 /* ---------- board ---------- */
@@ -419,8 +419,10 @@ input.xf::-moz-range-thumb{width:30px;height:40px;border:0;border-radius:8px;bac
   padding:calc(env(safe-area-inset-top) + 14px) 18px calc(env(safe-area-inset-bottom) + 24px);box-shadow:var(--shadow);user-select:text;-webkit-user-select:text}
 #drawer.on{transform:none}
 .dh{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.dh b{font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--ink)}
-.dh b span{color:var(--cy)}
+.dh b{font-size:22px;font-weight:800;letter-spacing:-.03em;color:var(--cy)}
+.dh b span{color:var(--ink)}
+.madeby{padding:6px 0 18px;text-align:center}
+.madeby img{display:inline-block;max-width:100%;height:auto}
 #drawer section{padding:14px 0;border-bottom:1px solid var(--line)}
 #drawer h3{margin:0 0 10px;font-size:11px;letter-spacing:.16em;color:var(--ink);font-weight:700;text-transform:uppercase}
 #drawer h4{margin:14px 0 8px;font-size:11px;color:var(--ink);font-weight:600}
@@ -511,7 +513,6 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 #songTime{flex:none;min-width:36px;font-size:11px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;text-align:right}
 @media (pointer:coarse){.sgt{height:34px;min-width:34px}.sgsw{height:34px}.sgwrap{height:38px}}
 @media (max-width:640px){#song{gap:6px;padding:6px 10px}.sgwrap{order:5;flex-basis:100%}.sgtools{margin-left:auto}}
-.logo em{font-style:normal;font-size:.55em;letter-spacing:.2em;margin-left:6px;color:var(--ink);vertical-align:middle}
 #humBtn i{display:inline-flex;gap:2px;margin-left:3px}
 #humBtn i b{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.3}
 #humBtn i b.f{opacity:1}
@@ -713,7 +714,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <div class="mp-sec mptools" id="mpTools"></div>
     </div>
     <div class="spacer"></div>
-    <div class="logo">GREEN<span>PAD</span><em>BANDA</em></div>
+    <div class="logo">GREEN<span>PAD</span></div>
     <div class="grille gr" aria-hidden="true"></div>
   </header>
   <nav id="song" aria-label="Canción">
@@ -730,7 +731,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 
 <div id="scrim"></div>
 <aside id="drawer" aria-label="Menú">
-  <div class="dh"><b><span>GREEN</span>PAD</b><button class="rb" data-close aria-label="Cerrar menú"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
+  <div class="dh"><b>GREEN<span>PAD</span></b><button class="rb" data-close aria-label="Cerrar menú"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
   <section>
     <h3>Beat</h3>
     <input id="name" maxlength="60" placeholder="Nombre del beat" autocomplete="off">
@@ -782,12 +783,13 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <button class="btn wide" id="helpBtn">Cómo se usa y atajos</button>
   </section>
   <p class="foot">Todo se guarda en este dispositivo, sin cuentas ni base de datos. Exportá un .txt para respaldar o para pasar tus beats a otro equipo.</p>
+  <footer class="madeby"><a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" style="opacity:.8;max-height: 60px;margin-top: 15px;" alt="Hecho en La Pampa por Jean Phillippe Studio"></a></footer>
 </aside>
 
 <div id="help" class="modal" aria-hidden="true">
   <div class="card">
     <h2>Cómo se usa</h2>
-    <p class="tips" style="margin-top:0"><b>Banda:</b> los instrumentos son grabaciones de verdad (batería, bajo, guitarras, piano, saxo, vibráfono y más). <b>DESTIEMPO</b> hace que cada golpe salga un poco corrido y con fuerza distinta, como tocado por una persona. SONIDO cambia todo el patrón a Banda, Acústico (con aire de sala), Noventa (grabación gastada) o Electro (los sintetizados).<br><br><b>Canción:</b> la barra de abajo de la cabecera es la línea de tiempo. Elegí un patrón y tocá <b>+</b> (o la tecla G) para sumarlo; cada bloque dice cuántas veces se repite. Tocá un bloque para elegirlo: aparecen botones para moverlo, repetirlo más o menos veces, duplicarlo o quitarlo, y Play arranca desde ahí. <b>AUTO</b> arma una canción con intro, verso y estribillo usando los patrones que tengan notas. Con <b>CANCIÓN</b> prendido (tecla L), Play toca el tema entero; mientras suena, tocar un bloque salta a ese bloque al terminar el compás. El botón de las flechas repite la canción; si está apagado, termina con un platillo.<br><br><b>Descargar</b> (botón verde de la flecha, al lado del dado): elegí la canción completa o un patrón, y bajala como audio MP3, WAV o como video vertical 9:16 con visualización. El tema queda guardado en Mis beats con el título que pongas. El video tarda lo mismo que dura la canción.<br><br><b>No hace falta saber música.</b> Elegí un ejemplo del menú o tocá el dado para inventar un patrón, y después cambiá lo que quieras.<br><br>
+    <p class="tips" style="margin-top:0"><b style="color:var(--cy)">GREEN<span style="color:var(--ink)">PAD</span>:</b> los instrumentos son grabaciones de verdad (batería, bajo, guitarras, piano, saxo, vibráfono y más). <b>DESTIEMPO</b> hace que cada golpe salga un poco corrido y con fuerza distinta, como tocado por una persona. SONIDO cambia todo el patrón a Banda, Acústico (con aire de sala), Noventa (grabación gastada) o Electro (los sintetizados).<br><br><b>Canción:</b> la barra de abajo de la cabecera es la línea de tiempo. Elegí un patrón y tocá <b>+</b> (o la tecla G) para sumarlo; cada bloque dice cuántas veces se repite. Tocá un bloque para elegirlo: aparecen botones para moverlo, repetirlo más o menos veces, duplicarlo o quitarlo, y Play arranca desde ahí. <b>AUTO</b> arma una canción con intro, verso y estribillo usando los patrones que tengan notas. Con <b>CANCIÓN</b> prendido (tecla L), Play toca el tema entero; mientras suena, tocar un bloque salta a ese bloque al terminar el compás. El botón de las flechas repite la canción; si está apagado, termina con un platillo.<br><br><b>Descargar</b> (botón verde de la flecha, al lado del dado): elegí la canción completa o un patrón, y bajala como audio MP3, WAV o como video vertical 9:16 con visualización. El tema queda guardado en Mis beats con el título que pongas. El video tarda lo mismo que dura la canción.<br><br><b>No hace falta saber música.</b> Elegí un ejemplo del menú o tocá el dado para inventar un patrón, y después cambiá lo que quieras.<br><br>
     <b>Instrumentos:</b> arriba la batería (bombo, caja, hi-hat, percusión) y abajo los melódicos (bajo, guitarra, acordes, melodía). Tocá un ícono para escucharlo; mantenelo apretado (o clic derecho) para elegir su estilo, volumen, inventar una línea nueva o usar una grabación. El <b>+</b> de cada estilo lo suma como capa.<br><br>
     <b>Altura:</b> en los melódicos, cuanto más lleno está el círculo, más agudo suena. Mantené apretado un paso (o clic derecho) para elegir la altura; en la compu también con la rueda del mouse o Shift + ↑ ↓. <b>AMBIENTE</b> elige qué notas usan bajo, guitarra, acordes y melodía: el mismo patrón suena oscuro, triste, alegre, etc. La batería no cambia, y todas las alturas combinan entre sí. Cada patrón (A a H) guarda su propio AMBIENTE y su propio SONIDO, igual que los estilos que elijas para cada instrumento.<br><br>
     <b>Grabar:</b> el botón del micrófono tiene 2 grabaciones de hasta 8 segundos. Podés recortar dónde empieza y dónde termina, hacerla más grave o más aguda, darla vuelta, ponerle eco o efecto robot, y elegir en qué instrumento usarla. La grabación queda en ese instrumento solo en el patrón que estás editando: en los otros patrones el instrumento sigue sonando normal, y cada patrón puede usar una grabación distinta. Siempre suena completa; en los melódicos además sube y baja según la altura de cada paso. En las bandejas, los botones 1 y 2 de GRABACIONES la tocan: mantenelos apretados para que suene mientras los tenés, o tocalos una vez para dejarla sonando.<br><br>
@@ -832,7 +834,6 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <div class="mrow"><button class="btn pri" data-close>Listo</button></div>
   </div>
 </div>
-<a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" style="opacity:.8,max-height: 60px;margin-top: 15px;" alt="Hecho en La Pampa por Jean Phillippe Studio"></a>
 
 <div id="styles" class="modal" aria-hidden="true">
   <div class="card sh">
@@ -2720,7 +2721,7 @@ const VSTY = [
   { n: 'Revista', d: 'Papel, tinta y tipografía grande, como una tapa de revista. Ideal para temas con guitarras y banda.' },
   { n: 'Neón', d: 'Brillos, chispas y anillos que giran. Para trap y electrónica.' },
   { n: 'Flor', d: 'Una flor de bordes bien marcados que se abre con el bombo y mueve cada pétalo con el sonido, sobre un fondo oscuro que cambia despacio.' },
-  { n: 'Flor 3D', d: 'Un loto en 3D armado con Fibonacci y la proporción áurea: 21 pétalos en tres capas. Las puntas se doblan con la música.' },
+  { n: 'Flor 3D', d: 'Un loto en 3D armado con Fibonacci y la proporción áurea: 21 pétalos en tres capas. Con poco sonido queda cerrado como un capullo abultado de puntas finas y con mucho sonido se abre del todo; las puntas se doblan con la música, más las del centro. Cada pétalo va de un tono claro en el centro a uno profundo afuera, y el bombo larga olas de luz. Tallo largo. Barras de fondo como en Revista.' },
 ];
 const vstyle = () => clamp(PREF.vsty == null ? 0 : PREF.vsty, 0, VSTY.length - 1);
 const vq = () => PREF.vlite ? { n: 'liviano', w: 540, h: 960, fps: 24, br: 2.5e6, lite: true } : { n: 'normal', w: 720, h: 1280, fps: 30, br: 5e6, lite: false };
@@ -3621,7 +3622,7 @@ function drawLogo(g, W, H, img, dark) {
   g.textBaseline = 'middle'; g.font = `800 40px ${VFONT}`; if ('letterSpacing' in g) g.letterSpacing = '-1px';
   const a = 'GREEN', b = 'PAD', wa = g.measureText(a).width, wb = g.measureText(b).width, is = img ? 52 : 0, gap = img ? 14 : 0, tw = is + gap + wa + wb, x0 = (W - tw) / 2, y = H - 92;
   if (img) g.drawImage(img, x0, y - is / 2, is, is);
-  g.textAlign = 'left'; g.fillStyle = dark ? '#16130f' : '#8fa398'; g.fillText(a, x0 + is + gap, y); g.fillStyle = dark ? '#1a9a52' : '#3ee08a'; g.fillText(b, x0 + is + gap + wa, y);
+  g.textAlign = 'left'; g.fillStyle = dark ? '#1a9a52' : '#3ee08a'; g.fillText(a, x0 + is + gap, y); g.fillStyle = dark ? '#16130f' : '#8fa398'; g.fillText(b, x0 + is + gap + wa, y);
   g.textAlign = 'center'; g.textBaseline = 'alphabetic';
 }
 function loadImg(src) { return new Promise((res) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = src; }); }
@@ -4015,7 +4016,7 @@ const stInto = (q) => (t, x) => {
 };
 const scaleOf = (v) => { const n = norm(v); let i = MOODS.findIndex(m => norm(m.n) === n); if (i >= 0) return MOODS[i].sc; i = SCALES.findIndex(s => norm(s.n) === n); return i >= 0 ? i : null; };
 function toText() {
-  const L2 = ['# GREENPAD BANDA beat v3', '# Batería: x = golpe, . = silencio. Melódicos: 1 a 8 = nota de la escala.', '# Podés editarlo a mano y volver a importarlo. Cada patrón lleva su AMBIENTE y sus ESTILOS.', '',
+  const L2 = ['# GREENPAD beat v3', '# Batería: x = golpe, . = silencio. Melódicos: 1 a 8 = nota de la escala.', '# Podés editarlo a mano y volver a importarlo. Cada patrón lleva su AMBIENTE y sus ESTILOS.', '',
     `NOMBRE: ${S.name}`, `BPM: ${S.bpm}`, `SWING: ${S.swing}`, `TONO: ${NOTES[S.key]} ${SCALES[S.scale].n}`,
     `CANCION: ${S.song.map(b => LET[b.p] + 'x' + b.n).join(' ') || '-'}`, `MODO: ${S.songOn ? 'cancion' : 'patron'}`, `REPETIR: ${S.songLoop ? 'si' : 'no'}`, `DESTIEMPO: ${Math.round(S.hum * 100)}`,
     `CADENA: ${S.chain ? 'si' : 'no'}`,
@@ -5109,7 +5110,7 @@ if (/^#b=/.test(location.hash)) {
   if (o) openBeat(o, `Beat cargado desde el enlace: ${o.name}`);
 }
 bankWarm(true);
-if (!store.get(LS_PREF + '.seen1')) { store.set(LS_PREF + '.seen1', 1); setTimeout(() => toast('Greenpad Banda: instrumentos grabados de verdad y modo CANCIÓN. Tocá Play para escuchar el primer tema.', 4600), 600); }
+if (!store.get(LS_PREF + '.seen1')) { store.set(LS_PREF + '.seen1', 1); setTimeout(() => toast('GREENPAD: instrumentos grabados de verdad y modo CANCIÓN. Tocá Play para escuchar el primer tema.', 4600), 600); }
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
 
 if ('serviceWorker' in navigator && location.protocol === 'https:') {

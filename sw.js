@@ -1,5 +1,5 @@
 // Greenpad service worker. Subí VERSION en cada release para renovar la caché.
-const VERSION = 'greenpad-v1.9.0';
+const VERSION = 'greenpad-v1.10.0';
 const ASSETS = ['./', './index.html', './mini.html', './manifest.webmanifest', './banda.webmanifest', './lame.min.js', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png'];
 const SOUNDS = 'greenpad-sonidos-v1'; // las grabaciones de Banda (no cambian entre versiones)
 
@@ -19,7 +19,7 @@ self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== location.origin) return;
   // páginas: red primero (para recibir versiones nuevas), caché si no hay conexión.
-  // Cada página se guarda con su propia dirección (index.html, que es Banda, y mini.html no se pisan).
+  // Cada página se guarda con su propia dirección (index.html y mini.html no se pisan).
   if (req.mode === 'navigate') {
     e.respondWith(
       fetch(req)

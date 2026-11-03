@@ -1,6 +1,6 @@
 # GREENPAD
 
-La página principal (`index.html`) es **Greenpad Banda** (ver más abajo). La caja de ritmos original quedó en `mini.html` y se describe primero.
+La página principal (`index.html`) es **GREENPAD** (ver más abajo). La caja de ritmos original quedó en `mini.html` y se describe primero.
 
 Caja de ritmos y secuenciador de 16 pasos, inspirada en el drumpad de la consola. Tiene 4 pistas de batería y 4 melódicas (bajo, guitarra, acordes y melodía). Tema oscuro verde por defecto (hay tema claro en el menú). Corre en el navegador del teléfono y de la compu, funciona offline y guarda todo en el dispositivo (localStorage), sin base de datos.
 
@@ -29,7 +29,7 @@ No hay build, ni dependencias, ni `package.json`.
 
 Cuando cambies algo, subí `VERSION` en `sw.js` (por ejemplo `greenpad-v1.2.1`) para que los teléfonos que ya la tienen instalada bajen la versión nueva.
 
-Para probar en local: `python3 -m http.server 8080` dentro de la carpeta y abrir `http://localhost:8080` (Banda) o `http://localhost:8080/mini.html`. El service worker solo se registra en https.
+Para probar en local: `python3 -m http.server 8080` dentro de la carpeta y abrir `http://localhost:8080` (GREENPAD) o `http://localhost:8080/mini.html`. El service worker solo se registra en https.
 
 ## Instrumentos y estilos
 
@@ -199,7 +199,7 @@ MELODÍA   .... .... .... ....
 - Las cuerdas (Karplus-Strong) usan búferes más chicos con afinación exacta y una caché de 48 notas.
 - Con lo-fi en 0 la señal no pasa por sus filtros, el vinilo apagado no procesa nada y en la grilla la bandeja A va directo (sin filtros ni scratch).
 
-## Greenpad Banda (`index.html`, la página principal)
+## GREENPAD (`index.html`, la página principal)
 
 Versión pensada para armar canciones enteras con instrumentos grabados de verdad. Tiene sus propios beats guardados (no se mezclan con los de Greenpad Mini) y se abre en la dirección principal (`/`). Antes se llamaba `banda.html`.
 
@@ -207,8 +207,8 @@ Versión pensada para armar canciones enteras con instrumentos grabados de verda
 
 | Archivo | Para qué |
 |---|---|
-| `index.html` | La app Banda completa |
-| `banda.webmanifest` | "Agregar a pantalla de inicio" abre Banda directo |
+| `index.html` | La app GREENPAD completa |
+| `banda.webmanifest` | "Agregar a pantalla de inicio" abre GREENPAD directo |
 | `sonidos/` | 330 grabaciones mp3 (unos 7,5 MB). Solo se bajan las que usa el tema, y quedan guardadas para usar sin conexión |
 | `sonidos/CREDITOS.txt` | De dónde sale cada grabación y su licencia |
 | `lame.min.js` | Conversor a MP3 para Descargar (lamejs, LGPL 3.0) |
@@ -289,7 +289,7 @@ El botón verde de la flecha (al lado del dado; en la compu, en la fila de herra
   - **Revista:** papel con grano, tinta negra y un color de imprenta por parte de la canción. El tempo en números grandes que se llenan con el bombo, un círculo de semitono con ondas que salen del centro, con un degradado blanco detrás, y la onda del sonido en tinta, recta, cruzando el centro del círculo. De fondo, 7 barras verticales naranjas y suaves, de lado a lado de la pantalla (cada una junta varias frecuencias), que suben desde abajo con el sonido hasta el alto completo (graves a la izquierda, agudos a la derecha). Título en serif itálica sobre una franja de papel y, debajo, solo la barra de avance de la canción. Ideal para temas con guitarras y banda.
   - **Neón:** brillos, chispas, anillos que giran y la grilla del logo que se prende. Para trap y electrónica.
   - **Flor:** una flor de bordes bien marcados (contorno oscuro y borde claro, tipo sticker) sobre un fondo oscuro en degradado que gira despacio, con círculos que suben. Hojas que se balancean con el pulso; tres capas de pétalos: los de afuera se mueven con medios y agudos, los del medio con los medios y los de adentro con los graves. Con cada bombo la flor se abre, sale una onda y vuela polen. En el centro, los 16 pasos como semillas.
-  - **Flor 3D:** un loto en 3D dibujado con WebGL (viene en el navegador, sin librerías) y armado con la sucesión de Fibonacci y la proporción áurea: 21 pétalos en tres capas de 5, 8 y 8 (todos números de Fibonacci), cada capa girada el ángulo áureo (137,5°) respecto de la anterior, con el largo creciendo en proporción φ hacia afuera y el ancho sacado del largo dividido φ. Con poco sonido queda cerrado como un capullo y con mucho sonido se abre del todo: el nivel sale de la mezcla misma, comparado con las partes más fuertes del tema, sube rápido con cada golpe y baja más despacio, así la flor respira. Cada capa tiene su forma cerrada y su forma abierta y va de una a otra con resortes de distinto peso (se mueven con desfase); la música además abre zonas de la flor (8 direcciones por capa, cada una con su banda), las puntas se mueven con los agudos y la flor cabecea con el bombo. No se atraviesan: todos los pétalos de una capa se apoyan sobre la misma superficie y cada uno se levanta de a poco de un borde al otro, como las hojas del diafragma de una cámara, así donde dos vecinos se solapan uno queda siempre encima; una capa de adentro nunca se abre más que la de afuera y las formas están medidas para que entre capas siempre quede lugar. Las puntas se doblan con la música: cada zona de la flor sigue su banda, los pétalos de adentro se cierran sobre el centro y se doblan más, los del medio levantan la punta y los de afuera la levantan en silencio y la tiran hacia afuera con el sonido; como el doblez va en la superficie de la capa, los vecinos se doblan juntos y no se cruzan. Color: cada pétalo va de un tono claro y cálido en el centro al color de la flor y a uno más profundo afuera; el color gira alrededor del color de la parte, más rápido cuanto más suena, la caja lo sacude, cada pétalo se enciende con su banda y cada bombo larga una ola de luz que sale del centro y recorre los pétalos. Detrás, una luz del color de la flor que late con los graves. En el centro, el cono del loto con las 16 semillas de los pasos en espiral áurea (se prende la del paso que suena), sin estambres; su tamaño se ajusta a la capa de adentro, así con la flor cerrada queda escondido y crece cuando se abre. El tallo es largo y se corta en el borde del video. Luz con sombras entre pétalos y contorno de grosor variable. De fondo, 7 barras naranjas y suaves como en Revista. La versión liviana usa menos detalle y una sombra más chica. Si el equipo no tiene WebGL, se dibuja una versión 2D más simple.
+  - **Flor 3D:** un loto en 3D dibujado con WebGL (viene en el navegador, sin librerías) y armado con la sucesión de Fibonacci y la proporción áurea: 21 pétalos en tres capas de 5, 8 y 8 (todos números de Fibonacci), cada capa girada el ángulo áureo (137,5°) respecto de la anterior, con el largo creciendo en proporción φ hacia afuera y el ancho sacado del largo dividido φ. Con poco sonido queda cerrado como un capullo abultado (panzón abajo, con las puntas finas que se juntan arriba y las de afuera apenas abiertas) y con mucho sonido se abre del todo; mientras está cerrado se ve más cerca y al abrirse la cámara se aleja un poco: el nivel sale de la mezcla misma, comparado con las partes más fuertes del tema, sube rápido con cada golpe y baja más despacio, así la flor respira. Cada capa tiene su forma cerrada y su forma abierta y va de una a otra con resortes de distinto peso (se mueven con desfase); la música además abre zonas de la flor (8 direcciones por capa, cada una con su banda), las puntas se mueven con los agudos y la flor cabecea con el bombo. No se atraviesan: todos los pétalos de una capa se apoyan sobre la misma superficie y cada uno se levanta de a poco de un borde al otro, como las hojas del diafragma de una cámara, así donde dos vecinos se solapan uno queda siempre encima; una capa de adentro nunca se abre más que la de afuera y las formas están medidas para que entre capas siempre quede lugar. Las puntas se doblan con la música: cada zona de la flor sigue su banda, los pétalos de adentro se cierran sobre el centro y se doblan más, los del medio levantan la punta y los de afuera la levantan en silencio y la tiran hacia afuera con el sonido; como el doblez va en la superficie de la capa, los vecinos se doblan juntos y no se cruzan. Color: cada pétalo va de un tono claro y cálido en el centro al color de la flor y a uno más profundo afuera; el color gira alrededor del color de la parte, más rápido cuanto más suena, la caja lo sacude, cada pétalo se enciende con su banda y cada bombo larga una ola de luz que sale del centro y recorre los pétalos. Detrás, una luz del color de la flor que late con los graves. En el centro, el cono del loto con las 16 semillas de los pasos en espiral áurea (se prende la del paso que suena), sin estambres; su tamaño se ajusta a la capa de adentro, así con la flor cerrada queda escondido y crece cuando se abre. El tallo es largo y se corta en el borde del video. Luz con sombras entre pétalos y contorno de grosor variable. De fondo, 7 barras naranjas y suaves como en Revista. La versión liviana usa menos detalle y una sombra más chica. Si el equipo no tiene WebGL, se dibuja una versión 2D más simple.
   - **Liviano** (casilla): 540 × 960 a 24 cuadros y menos elementos, para teléfonos viejos o si el video sale entrecortado.
   - En iPhone sale en MP4; en la compu, MP4 o WebM según el navegador. Tarda lo mismo que dura la canción: hay que dejar la pantalla prendida.
 - El audio se mezcla sin tocar en tiempo real (más rápido) con los mismos sonidos, efectos, mezclas y destiempo, y se ajusta el volumen para que quede fuerte sin recortar.
@@ -307,3 +307,6 @@ Parado o acostado, la cabecera se compacta para que la grilla tenga más lugar:
 ### Service worker
 
 `sw.js` guarda cada página con su dirección (`index.html` y `mini.html` no se pisan; antes guardaba cualquier página como `index.html`) y guarda las grabaciones en una caché aparte que no se borra al subir `VERSION`.
+
+### Nombre y firma
+En la página principal el nombre es **GREENPAD**, con GREEN en verde y PAD en el otro color (cabecera, menú, ayuda, video y al agregarla a la pantalla de inicio). Al final del menú va la firma "Hecho en La Pampa por Jean Phillippe Studio", con el enlace a jeanphillippe.com.
