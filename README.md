@@ -307,6 +307,3 @@ Parado o acostado, la cabecera se compacta para que la grilla tenga más lugar:
 ### Service worker
 
 `sw.js` guarda cada página con su dirección (`index.html` y `mini.html` no se pisan; antes guardaba cualquier página como `index.html`) y guarda las grabaciones en una caché aparte que no se borra al subir `VERSION`.
-
-### Nombre y firma
-En la página principal el nombre es **GREENPAD**, con GREEN en verde y PAD en el otro color (cabecera, menú, ayuda, video y al agregarla a la pantalla de inicio). Al final del menú va la firma "Hecho en La Pampa por Jean Phillippe Studio", con el enlace a jeanphillippe.com.

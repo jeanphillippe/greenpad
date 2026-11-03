@@ -42,7 +42,7 @@
   --drawer:#111a15; --shadow:0 18px 50px rgba(0,0,0,.6);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;background:var(--bg);overflow:hidden;overscroll-behavior:none}
+html,body{margin:0;height:100%;background:var(--bg);overflow-x:hidden;overflow-y:auto;overscroll-behavior:none}
 body{font-family:var(--font);color:var(--ink2);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
   background:radial-gradient(120% 90% at 50% 0%,color-mix(in srgb,var(--bg) 70%,#fff 30%),var(--bg))}
 :root[data-theme="night"] body{background:radial-gradient(120% 90% at 50% 0%,#12201a,var(--bg))}
@@ -53,7 +53,7 @@ svg{display:block}
 #app{position:relative;display:flex;flex-direction:column;height:100vh;margin:0 auto;background:var(--body);
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 @media (min-width:1100px) and (min-height:640px){
-  #app{max-width:1440px;border-radius:22px;box-shadow:var(--shadow);margin-top:2vh;height:96vh!important}
+  #app{max-width:1440px;border-radius:22px;box-shadow:var(--shadow);margin-top:2vh;height:calc(98vh - 100px)!important}
 }
 
 /* ---------- header ---------- */
@@ -423,6 +423,13 @@ input.xf::-moz-range-thumb{width:30px;height:40px;border:0;border-radius:8px;bac
 .dh b span{color:var(--ink)}
 .madeby{padding:6px 0 18px;text-align:center}
 .madeby img{display:inline-block;max-width:100%;height:auto}
+/* firma: abajo de todo y centrada. En el teléfono parado va después de la grilla (se ve al hacer scroll);
+   en la compu y el teléfono acostado va debajo de la app (en pantallas grandes la app deja lugar y se ve sin scroll) */
+.madeby-end{display:none}
+.v #stage{flex-wrap:wrap;align-content:space-between}
+.v .madeby-end{display:block;flex:0 0 100%;padding:10px 0 calc(env(safe-area-inset-bottom) + 18px)}
+.madeby-page{padding:4px 0 calc(env(safe-area-inset-bottom) + 10px)}
+#app.v ~ .madeby-page{display:none}
 #drawer section{padding:14px 0;border-bottom:1px solid var(--line)}
 #drawer h3{margin:0 0 10px;font-size:11px;letter-spacing:.16em;color:var(--ink);font-weight:700;text-transform:uppercase}
 #drawer h4{margin:14px 0 8px;font-size:11px;color:var(--ink);font-weight:600}
@@ -724,8 +731,10 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <div class="sgtools" id="songTools"></div>
     <div class="sgpop" id="songPop" hidden></div>
   </nav>
-  <main id="stage"><div id="board" role="grid" aria-label="Secuenciador de 16 pasos"><div id="fx"></div></div><section id="dj" hidden aria-label="Bandejas"></section></main>
+  <main id="stage"><div id="board" role="grid" aria-label="Secuenciador de 16 pasos"><div id="fx"></div></div><section id="dj" hidden aria-label="Bandejas"></section><footer class="madeby madeby-end"><a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" style="opacity:.8;max-height: 60px;margin-top: 15px;" alt="Hecho en La Pampa por Jean Phillippe Studio"></a></footer></main>
 </div>
+
+<footer class="madeby madeby-page"><a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" style="opacity:.8;max-height: 60px;margin-top: 15px;" alt="Hecho en La Pampa por Jean Phillippe Studio"></a></footer>
 
 <div id="notes" role="dialog" aria-label="Elegir nota"></div>
 
@@ -783,7 +792,6 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <button class="btn wide" id="helpBtn">Cómo se usa y atajos</button>
   </section>
   <p class="foot">Todo se guarda en este dispositivo, sin cuentas ni base de datos. Exportá un .txt para respaldar o para pasar tus beats a otro equipo.</p>
-  <footer class="madeby"><a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" style="opacity:.8;max-height: 60px;margin-top: 15px;" alt="Hecho en La Pampa por Jean Phillippe Studio"></a></footer>
 </aside>
 
 <div id="help" class="modal" aria-hidden="true">
