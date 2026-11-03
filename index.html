@@ -730,7 +730,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 
 <div id="scrim"></div>
 <aside id="drawer" aria-label="Menú">
-  <div class="dh"><b>GREEN<span>PAD</span> BANDA</b><button class="rb" data-close aria-label="Cerrar menú"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
+  <div class="dh"><b><span>GREEN</span>PAD</b><button class="rb" data-close aria-label="Cerrar menú"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 4l8 8M12 4l-8 8"/></svg></button></div>
   <section>
     <h3>Beat</h3>
     <input id="name" maxlength="60" placeholder="Nombre del beat" autocomplete="off">
@@ -832,6 +832,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <div class="mrow"><button class="btn pri" data-close>Listo</button></div>
   </div>
 </div>
+<a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" style="opacity:.8,max-height: 60px;margin-top: 15px;" alt="Hecho en La Pampa por Jean Phillippe Studio"></a>
 
 <div id="styles" class="modal" aria-hidden="true">
   <div class="card sh">
@@ -2719,7 +2720,7 @@ const VSTY = [
   { n: 'Revista', d: 'Papel, tinta y tipografía grande, como una tapa de revista. Ideal para temas con guitarras y banda.' },
   { n: 'Neón', d: 'Brillos, chispas y anillos que giran. Para trap y electrónica.' },
   { n: 'Flor', d: 'Una flor de bordes bien marcados que se abre con el bombo y mueve cada pétalo con el sonido, sobre un fondo oscuro que cambia despacio.' },
-  { n: 'Flor 3D', d: 'Un loto en 3D armado con Fibonacci y la proporción áurea: 21 pétalos en tres capas. Con poco sonido queda cerrado como un capullo y con mucho sonido se abre del todo; las puntas se doblan con la música, más las del centro. Cada pétalo va de un tono claro en el centro a uno profundo afuera, y el bombo larga olas de luz. Tallo largo. Barras de fondo como en Revista.' },
+  { n: 'Flor 3D', d: 'Un loto en 3D armado con Fibonacci y la proporción áurea: 21 pétalos en tres capas. Las puntas se doblan con la música.' },
 ];
 const vstyle = () => clamp(PREF.vsty == null ? 0 : PREF.vsty, 0, VSTY.length - 1);
 const vq = () => PREF.vlite ? { n: 'liviano', w: 540, h: 960, fps: 24, br: 2.5e6, lite: true } : { n: 'normal', w: 720, h: 1280, fps: 30, br: 5e6, lite: false };
@@ -3295,9 +3296,9 @@ function lotusFib() {
   // n: cantidad, ph: giro, L: largo (crece con φ), r0/y0: dónde nace, c/o: ángulo desde el eje en la base, la mitad y la punta
   // con la flor cerrada y abierta, fm: cuánto se levanta un pétalo de un borde al otro, k: rigidez del resorte, b0/bs: bandas
   const WH = [
-    { n: 5, ph: -69, L: L0, r0: 12, y0: 26, c: [8, 0, -12], o: [38, 50, 44], fm: 5, k: 70, b0: 1, bs: 1 },
-    { n: 8, ph: -69 + 137.508, L: L0 * Math.sqrt(PHI), r0: 22, y0: 13, c: [16, 6, -8], o: [60, 76, 66], fm: 7, k: 50, b0: 6, bs: 1 },
-    { n: 8, ph: -69 + 2 * 137.508, L: L0 * PHI, r0: 32, y0: 0, c: [24, 12, -4], o: [80, 94, 82], fm: 7, k: 36, b0: 12, bs: 1.5 },
+    { n: 5, ph: -69, L: L0, r0: 12, y0: 26, c: [24, 6, -30], o: [38, 50, 44], fm: 5, k: 70, b0: 1, bs: 1 },
+    { n: 8, ph: -69 + 137.508, L: L0 * Math.sqrt(PHI), r0: 22, y0: 13, c: [36, 12, -52], o: [60, 76, 66], fm: 7, k: 50, b0: 6, bs: 1 },
+    { n: 8, ph: -69 + 2 * 137.508, L: L0 * PHI, r0: 32, y0: 0, c: [46, 14, -62], o: [80, 94, 82], fm: 7, k: 36, b0: 12, bs: 1.5 },
   ].map(w => Object.assign(w, { sp: Math.PI * 2 / w.n, c: w.c.map(x => x * D), o: w.o.map(x => x * D) }));
   WH.forEach((w, wi) => {
     for (let i = 0; i < w.n; i++) {
@@ -3429,16 +3430,16 @@ function drawFlor3D(g, R, st, V) {
     }
   }
   // superficie de cada capa: radio, altura y ángulo cada 5° alrededor y cada 4 de largo (todos los pétalos de la capa se apoyan acá)
-  const HS = 4, bez = (a, u) => a[0] * (1 - u) * (1 - u) + 2 * a[1] * u * (1 - u) + a[2] * u * u;
+  const FL = 10 * D, HS = 4, bez = (a, u) => a[0] * (1 - u) * (1 - u) + 2 * a[1] * u * (1 - u) + a[2] * u * u;
   if (!f.SF) f.SF = f.WH.map((w, wi) => { const ns = Math.ceil(Math.max(...f.P.filter(q => q.wi === wi).map(q => q.L)) / HS) + 2; return { ns, d: new Float32Array(73 * ns * 3) }; });
   f.WH.forEach((w, wi) => {
     const T = f.T[wi], CC = f.C[wi], SF = f.SF[wi], ns = SF.ns, d = SF.d, tp = f.tp[wi];
     for (let k = 0; k <= 72; k++) {
-      const o = T[k], cu = CC[k], ang = (s) => { const u = Math.min(1, s / w.L), c = bez(w.c, u), wu = u > .35 ? Math.pow((u - .35) / .65, 1.5) : 0; return c + (bez(w.o, u) - c) * o + tp * u * u * u - cu * wu; };
+      const o = T[k], cu = CC[k], ang = (s) => { const u = Math.min(1, s / w.L), c = bez(w.c, u), wu = u > .35 ? Math.pow((u - .35) / .65, 1.5) : 0; const fl = wi === 2 && u > .8 ? FL * (1 - Math.min(1, o)) * ((u - .8) / .2) * ((u - .8) / .2) : 0; return c + (bez(w.o, u) - c) * o + tp * u * u * u - cu * wu + fl; };
       let r = w.r0, y = w.y0;
       for (let i = 0; i < ns; i++) {
         const q = (k * ns + i) * 3; d[q] = r; d[q + 1] = y; d[q + 2] = ang(i * HS);
-        const a = ang(i * HS + HS / 2); r += Math.sin(a) * HS; y += Math.cos(a) * HS;
+        const a = ang(i * HS + HS / 2); r = Math.max(r + Math.sin(a) * HS, [6, 10, 16][wi]); y += Math.cos(a) * HS; // las puntas más largas suben derecho en vez de pasar al otro lado
       }
     }
   });
@@ -3477,7 +3478,7 @@ function drawFlor3D(g, R, st, V) {
   // cámara: 42° por arriba, con perspectiva; la imagen se inclina un poco
   const fx = W * .55, fy = 680, F = 1100, el = (42 + f.nod * 6) * D, ce = Math.cos(el), se = Math.sin(el);
   const ROLL = (-22 + 3 * Math.sin(beats * TAU / 32) + f.nod * 4) * D, cr = Math.cos(ROLL), sr = Math.sin(ROLL);
-  const yaw = Math.sin(beats * TAU / 48) * .26 + Math.sin(beats * TAU / 13) * .04, SC = .9 * (1 + st.k * .04), cyw = Math.cos(yaw), syw = Math.sin(yaw);
+  const yaw = Math.sin(beats * TAU / 48) * .26 + Math.sin(beats * TAU / 13) * .04, SC = .9 * (1 + .22 * (1 - clamp(f.S[2], 0, 1))) * (1 + st.k * .04), cyw = Math.cos(yaw), syw = Math.sin(yaw);
   const rot = (x, y, z) => [x * cyw - z * syw, y, x * syw + z * cyw]; // gira con la flor
   const proj = (x, y, z) => { const up = y * ce + z * se, d = z * ce - y * se, k = F / (F + d * SC) * SC, px = x * k, py = -up * k; return [fx + px * cr - py * sr, fy + px * sr + py * cr, d]; };
   const viewN = (x, y, z) => { const vy = y * ce + z * se, vz = z * ce - y * se; return [x * cr + vy * sr, -x * sr + vy * cr, vz]; };
@@ -3512,12 +3513,12 @@ function drawFlor3D(g, R, st, V) {
   };
   // pétalos: cada uno se apoya en la superficie de su capa y se levanta de a poco de un borde al otro (como un diafragma)
   const nu = lite ? 13 : 20, nw = lite ? 6 : 10, lwk = lite ? .9 : 1;
-  const shape = (u) => { const b = .3 * (1 - u) * (1 - u); return b + (1 - b) * Math.pow(Math.sin(Math.PI * Math.pow(u, .74)), .5); }; // base angosta, panza ancha, punta fina
+  const shape = (u) => { const b = .3 * (1 - u) * (1 - u), k = clamp((u - .55) / .45, 0, 1); return b + (1 - b) * Math.pow(Math.sin(Math.PI * Math.pow(u, .74)), .5 + .55 * k * k); }; // base angosta, panza ancha, punta fina y afilada
   if (st.dbg) st.dbg.P = [];
   for (const pt of f.P) {
     const w = f.WH[pt.wi], L = pt.L, X = w.sp * .8, e = pt.e, b0 = nv, Wg = [], LC = [];
     for (let j = 0; j <= nu; j++) {
-      const u = j / nu, s = u * L, rc = surf(pt.wi, pt.phi, s)[0], Xj = Math.min(X * Math.min(1, (1 - u) * 4 + .08), pt.hw * shape(u) / Math.max(rc, 4)), bell = .4 + .6 * Math.sqrt(Math.sin(Math.PI * u)), row = [], lrow = [];
+      const u = j / nu, s = u * L, rc = surf(pt.wi, pt.phi, s)[0], Xj = Math.min(X * Math.min(1, (1 - u) * 4 + .08), pt.hw * shape(u) / Math.max(rc, 4)), bell = .4 + .6 * Math.sqrt(Math.sin(Math.PI * clamp(s / (w.L * (pt.wi === 2 ? 1.34 : 1.06)), 0, 1))), row = [], lrow = [];
       for (let m = 0; m <= nw; m++) {
         const v = -1 + 2 * m / nw, t = (v * Xj / w.sp + .8) / 1.6, az = pt.phi + v * Xj, [r, y, a] = surf(pt.wi, az, s), ca = Math.cos(a), sa = Math.sin(a), cx = Math.cos(az), cz = Math.sin(az);
         const off = w.fm * (.55 * t + .45 * t * t) * bell * Math.min(1, (r + 12) / 30); // hacia el lado de arriba del pétalo
