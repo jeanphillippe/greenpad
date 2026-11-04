@@ -217,6 +217,7 @@ Versión pensada para armar canciones enteras con instrumentos grabados de verda
 | `sonidos/CREDITOS.txt` | De dónde sale cada grabación y su licencia |
 | `lame.min.js` | Conversor a MP3 para Descargar (lamejs, LGPL 3.0) |
 | `frases.txt` | Frases que aparecen sobre el logo (una por línea) |
+| `acerca.txt` | Texto de "Acerca de" (hasta 3 párrafos) |
 | `caveat-bold.woff2` | Letra de la frase del logo (Caveat Bold, SIL Open Font License 1.1) |
 
 Para probar en local hace falta el servidor (`python3 -m http.server 8080`): abriendo el archivo directo, el navegador no deja leer la carpeta `sonidos/` y suena el sintetizado.
@@ -334,7 +335,15 @@ El tercer botón del selector de pantalla (la cámara, debajo de grilla y bandej
 
 ### Frase sobre el logo
 
-Sobre el logo (arriba a la derecha en la compu, y en el menú) aparece una frase inclinada en amarillo que late, como la de Minecraft. Las frases están en `frases.txt`, una por línea (las líneas vacías o que empiezan con `#` no cuentan). Cada vez que se abre la app sale una distinta de la vez anterior, y tocarla pasa a la siguiente. Para sumar frases alcanza con editar `frases.txt` en el repo: no hace falta tocar `index.html` ni subir `VERSION` (el service worker lo pide siempre a la red primero). Si no se puede leer el archivo, sale "A gente ajuda". La letra es Caveat Bold (`caveat-bold.woff2`, licencia SIL Open Font 1.1 en `caveat-OFL.txt`), guardada en el repo para que funcione sin conexión.
+Sobre el logo (arriba a la derecha en la compu, y en el menú) aparece una frase inclinada en amarillo, como la de Minecraft. Las frases están en `frases.txt`, una por línea (las líneas vacías o que empiezan con `#` no cuentan). Cada vez que se abre la app sale una distinta de la vez anterior. Tocar el logo o la frase abre "Acerca de". Para sumar frases alcanza con editar `frases.txt` en el repo: no hace falta tocar `index.html` ni subir `VERSION` (el service worker lo pide siempre a la red primero). Si no se puede leer el archivo, sale "A gente ajuda". La letra es Caveat Bold (`caveat-bold.woff2`, licencia SIL Open Font 1.1 en `caveat-OFL.txt`), guardada en el repo para que funcione sin conexión.
 
 ### Nombre y firma
-En la página principal el nombre es **GREENPAD**, con GREEN en verde y PAD en el otro color (cabecera, menú, ayuda, video y al agregarla a la pantalla de inicio). La firma "Hecho en La Pampa por Jean Phillippe Studio" (con el enlace a jeanphillippe.com) va abajo de todo y centrada: en el teléfono parado, después de la grilla (se ve al hacer scroll); en la compu, debajo de la app (en pantallas grandes la app deja lugar y se ve sin scroll; en las más chicas, bajando un poco).
+En la página principal el nombre es **GREENPAD**, con GREEN en verde y PAD en el otro color (cabecera, menú, ayuda, video y al agregarla a la pantalla de inicio). La firma "Hecho en La Pampa por Jean Phillippe Studio" (con el enlace a jeanphillippe.com) va abajo de todo y centrada: en el teléfono parado, después de la grilla (se ve al hacer scroll); en la compu, debajo de la app (la app ocupa todo el alto de la pantalla, así la grilla y las bandejas se ven más grandes; la firma se ve bajando un poco).
+
+### Acerca de
+
+Arriba de la firma hay un **ACERCA DE** que abre un texto corto sobre GREENPAD. También se abre desde el menú (Vista) y al tocar el logo o la frase amarilla. El texto está en `acerca.txt`: párrafos separados por una línea vacía (conviene que sean hasta 3); las líneas que empiezan con `#` no se muestran. Se edita en el repo sin tocar `index.html` ni subir `VERSION`, igual que `frases.txt`.
+
+### Tracks
+
+En la pantalla, los patrones A a H se llaman **tracks** (en este README a veces siguen apareciendo como "patrones"; es lo mismo). En el menú, la sección **Track** (copiar, pegar, dado, borrar, grabar en vivo y descargar) está arriba, justo después de Beat. El formato `.txt` no cambió.

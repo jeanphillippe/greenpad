@@ -53,7 +53,7 @@ svg{display:block}
 #app{position:relative;display:flex;flex-direction:column;height:100vh;margin:0 auto;background:var(--body);
   padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
 @media (min-width:1100px) and (min-height:640px){
-  #app{max-width:1440px;border-radius:22px;box-shadow:var(--shadow);margin-top:2vh;height:calc(98vh - 100px)!important}
+  #app{max-width:1440px;border-radius:22px;box-shadow:var(--shadow);margin-top:2vh;height:96vh!important}
 }
 
 /* ---------- header ---------- */
@@ -484,6 +484,11 @@ input.xf::-moz-range-thumb{width:30px;height:40px;border:0;border-radius:8px;bac
 .dh b span{color:var(--ink)}
 .madeby{padding:6px 0 18px;text-align:center}
 .madeby img{display:inline-block;max-width:100%;height:auto}
+.about-l{display:block;margin:2px auto 0;padding:8px 14px;font-family:var(--font);font-size:10px;font-weight:800;letter-spacing:.16em;color:var(--ink);border-radius:8px}
+.about-l:hover{color:var(--cy)}
+.about p{margin:0 0 12px;font-size:14px;line-height:1.6;color:var(--ink2)}
+.ab-logo{color:var(--cy);font-weight:800;letter-spacing:-.03em}.ab-logo span{color:var(--ink)}
+.logo{cursor:pointer}
 /* firma: abajo de todo y centrada. En el teléfono parado va después de la grilla (se ve al hacer scroll);
    en la compu y el teléfono acostado va debajo de la app (en pantallas grandes la app deja lugar y se ve sin scroll) */
 .madeby-end{display:none}
@@ -741,9 +746,9 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <button id="tap" class="chip" aria-label="Marcar tempo con toques (T)">TAP</button>
     </div>
     <div class="box patbox">
-      <div class="pl"><span class="lbl" title="Cada letra es un patrón de 16 pasos. Tildá la casilla para que suene junto con el actual.">PATRONES</span>
-        <button id="chainBtn" class="chain" title="Encadenar: tocar los patrones con notas uno detrás de otro (C)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 9.5l3-3M7 4.5l1-1a3 3 0 014.2 4.2l-1 1M9 11.5l-1 1a3 3 0 01-4.2-4.2l1-1"/></svg>CADENA</button></div>
-      <div class="pats" id="pats" aria-label="Patrones"></div>
+      <div class="pl"><span class="lbl" title="Cada letra es un track de 16 pasos. Tildá la casilla para que suene junto con el actual.">TRACKS</span>
+        <button id="chainBtn" class="chain" title="Encadenar: tocar los tracks con notas uno detrás de otro (C)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 9.5l3-3M7 4.5l1-1a3 3 0 014.2 4.2l-1 1M9 11.5l-1 1a3 3 0 01-4.2-4.2l1-1"/></svg>CADENA</button></div>
+      <div class="pats" id="pats" aria-label="Tracks"></div>
     </div>
     <div class="box sndbox">
       <div class="pl"><span class="lbl">SONIDO</span><span id="sndMix"></span><button id="humBtn" class="chain" title="Destiempo: cada golpe sale un poco corrido y con fuerza distinta, como tocado por una persona">DESTIEMPO<i></i></button></div>
@@ -757,27 +762,27 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <div class="tools">
       <button id="rec" class="rb rec" aria-label="Grabar en vivo (R)" title="Grabar en vivo (R)"><i></i><span class="tlab">Grabar en vivo</span></button>
       <button id="micBtn" class="rb mic" aria-label="Grabar un sonido (V)" title="Grabar un sonido y usarlo como instrumento (V)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="5.5" y="1.8" width="5" height="8" rx="2.5"/><path d="M3.2 7.6a4.8 4.8 0 009.6 0M8 12.4v2.2"/></svg><span class="tlab">Grabar sonido</span></button>
-      <button id="diceBtn" class="rb" aria-label="Inventar un patrón (D)" title="Inventar un patrón que suene bien (D)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="2.5" width="11" height="11" rx="2.6"/><circle cx="5.6" cy="5.6" r="1" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="10.4" cy="10.4" r="1" fill="currentColor" stroke="none"/></svg></button>
+      <button id="diceBtn" class="rb" aria-label="Inventar un track (D)" title="Inventar un track que suene bien (D)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2.5" y="2.5" width="11" height="11" rx="2.6"/><circle cx="5.6" cy="5.6" r="1" fill="currentColor" stroke="none"/><circle cx="8" cy="8" r="1" fill="currentColor" stroke="none"/><circle cx="10.4" cy="10.4" r="1" fill="currentColor" stroke="none"/></svg></button>
       <button id="dlBtn" class="rb dl" aria-label="Descargar la canción" title="Descargar: audio MP3 o WAV, o video vertical 9:16"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v7.5M4.8 7l3.2 3.2L11.2 7"/><path d="M2.8 11.2v1.3a1.5 1.5 0 001.5 1.5h7.4a1.5 1.5 0 001.5-1.5v-1.3"/></svg><span class="tlab">Descargar</span></button>
       <button id="undo" class="rb" aria-label="Deshacer" title="Deshacer (Ctrl+Z)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4L2 7l3 3"/><path d="M2 7h7.5a4 4 0 010 8H7"/></svg></button>
-      <button id="clear" class="rb" aria-label="Borrar patrón" title="Borrar patrón (Supr)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 9h5.6l.7-9"/></svg><span class="tlab">Borrar patrón</span></button>
+      <button id="clear" class="rb" aria-label="Borrar track" title="Borrar track (Supr)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 9h5.6l.7-9"/></svg><span class="tlab">Borrar track</span></button>
       <button id="menuBtn" class="rb" aria-label="Menú y ejemplos" title="Menú y ejemplos (M)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 4.5h10M3 8h10M3 11.5h10"/></svg></button>
     </div>
     <div class="leverbox">
       <button id="playBtn" class="pp" aria-label="Play (Espacio)" title="Play / pausa (Espacio)"><svg class="ip" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.2v15.6c0 .8.9 1.3 1.6.9l12.4-7.8c.6-.4.6-1.4 0-1.8L8.1 3.3c-.7-.4-1.6.1-1.6.9z"/></svg><svg class="ia" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="5" height="16" rx="1.3"/><rect x="14" y="4" width="5" height="16" rx="1.3"/></svg></button>
       <div class="vsw" role="tablist" aria-label="Pantalla"><button id="vGrid" class="on" role="tab" title="Grilla (B)" aria-label="Pantalla grilla"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></button><button id="vDj" role="tab" title="Bandejas (B)" aria-label="Pantalla bandejas"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="1.6"/><path d="M12.5 1.5l1.8 1.8-3.4 4.6" stroke-linecap="round"/></svg></button><button id="vVid" role="tab" title="Video (J)" aria-label="Pantalla video"><svg viewBox="0 0 16 16" stroke-linejoin="round"><rect x="1.6" y="3.6" width="9.2" height="8.8" rx="1.8"/><path d="M10.8 7.1l3.6-2.1v6l-3.6-2.1"/></svg></button></div>
     </div>
-    <button id="moreBtn" class="morebar" aria-expanded="false" aria-controls="morePanel" title="Sonido, ambiente, mezcla y herramientas del patrón">
+    <button id="moreBtn" class="morebar" aria-expanded="false" aria-controls="morePanel" title="Sonido, ambiente, mezcla y herramientas del track">
       <span id="moreSum"></span><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
     </button>
     <div id="morePanel" class="mpanel" hidden>
-      <div class="mp-head"><span class="lbl" id="mpTitle">PATRÓN A</span><button class="mp-x" id="moreClose" aria-label="Cerrar">Listo</button></div>
+      <div class="mp-head"><span class="lbl" id="mpTitle">TRACK A</span><button class="mp-x" id="moreClose" aria-label="Cerrar">Listo</button></div>
       <div class="mp-sec" id="mpSnd"></div>
       <div class="mp-sec" id="mpTone"></div>
       <div class="mp-sec mp-mix">
         <div class="pl"><span class="lbl">SUMAR A LA MEZCLA</span><span id="mpChain"></span></div>
         <div class="mpmix" id="mpMix"></div>
-        <p class="mp-hint">Los patrones tildados suenan junto con el que estás editando, también en la canción y en las bandejas.</p>
+        <p class="mp-hint">Los tracks tildados suenan junto con el que estás editando, también en la canción y en las bandejas.</p>
       </div>
       <div class="mp-sec mptools" id="mpTools"></div>
     </div>
@@ -803,10 +808,10 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <div class="vd-sec"><p class="vd-info" id="vdCuts"></p><div class="vd-sug" id="vdSug" hidden><p id="vdSugT"></p><button class="mbt pri" id="vdSugGo">USAR ESTE ORDEN</button></div></div>
       <div class="vd-sec vd-more"><button class="mbt" id="vdFit" title="Cambia el tempo para que la canción termine junto con el video">AJUSTAR TEMPO AL VIDEO</button><button class="mbt" id="vdNew">OTRO VIDEO</button><button class="mbt pri" id="vdDl"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v7.5M4.8 7l3.2 3.2L11.2 7"/><path d="M2.8 11.2v1.3a1.5 1.5 0 001.5 1.5h7.4a1.5 1.5 0 001.5-1.5v-1.3"/></svg>AUDIO PARA EL VIDEO</button></div>
     </div>
-  </section><footer class="madeby madeby-end"><a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" style="opacity:.8;max-height: 60px;margin-top: 15px;" alt="Hecho en La Pampa por Jean Phillippe Studio"></a></footer></main>
+  </section><footer class="madeby madeby-end"><button class="about-l" data-about>ACERCA DE</button><a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" style="opacity:.8;max-height: 60px;margin-top: 15px;" alt="Hecho en La Pampa por Jean Phillippe Studio"></a></footer></main>
 </div>
 
-<footer class="madeby madeby-page"><a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" style="opacity:.8;max-height: 60px;margin-top: 15px;" alt="Hecho en La Pampa por Jean Phillippe Studio"></a></footer>
+<footer class="madeby madeby-page"><button class="about-l" data-about>ACERCA DE</button><a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" style="opacity:.8;max-height: 60px;margin-top: 15px;" alt="Hecho en La Pampa por Jean Phillippe Studio"></a></footer>
 
 <div id="notes" role="dialog" aria-label="Elegir nota"></div>
 
@@ -820,8 +825,19 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <p class="hint" id="syncHint"></p>
   </section>
   <section>
+    <h3>Track</h3>
+    <div class="grid2">
+      <button class="btn" id="cpy">Copiar track</button>
+      <button class="btn" id="pst">Pegar track</button>
+      <button class="btn" id="dice">Dado (aleatorio)</button>
+      <button class="btn" id="clr2">Borrar track</button>
+      <button class="btn" id="recMenu">Grabar en vivo (R)</button>
+      <button class="btn" id="dlMenu">Descargar canción</button>
+    </div>
+  </section>
+  <section>
     <h3>Ejemplos</h3>
-    <p class="hint" style="margin:0 0 10px">Se cargan en el patrón actual, con su tempo, tono y estilos.</p>
+    <p class="hint" style="margin:0 0 10px">Se cargan en el track actual, con su tempo, tono y estilos.</p>
     <div class="ex" id="presets"></div>
   </section>
   <section><h3>Mis beats</h3><ul id="lib"></ul></section>
@@ -841,27 +857,17 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <label class="sl">Swing <output id="swO"></output><input type="range" id="sw" min="0" max="100" step="1"></label>
     <label class="sl">Volumen general <output id="volO"></output><input type="range" id="vol" min="0" max="100" step="1"></label>
     <label class="sl">Destiempo <output id="humO"></output><input type="range" id="hum" min="0" max="100" step="1"></label>
-    <label class="tg"><input type="checkbox" id="chain"> Encadenar patrones con notas (C), cuando la canción está apagada</label>
+    <label class="tg"><input type="checkbox" id="chain"> Encadenar tracks con notas (C), cuando la canción está apagada</label>
     <label class="tg"><input type="checkbox" id="lite"> Modo liviano: menos reverb y menos sonidos superpuestos, para equipos que se traban</label>
     <h4>Nota base (opcional)</h4>
     <p class="hint" style="margin:0">Sube o baja todo el tema. Si no sabés de música, dejala como está: con cualquiera suena bien.</p>
     <select id="keySel" class="sel" aria-label="Nota base"></select>
   </section>
   <section>
-    <h3>Patrón</h3>
-    <div class="grid2">
-      <button class="btn" id="cpy">Copiar patrón</button>
-      <button class="btn" id="pst">Pegar patrón</button>
-      <button class="btn" id="dice">Dado (aleatorio)</button>
-      <button class="btn" id="clr2">Borrar patrón</button>
-      <button class="btn" id="recMenu">Grabar en vivo (R)</button>
-      <button class="btn" id="dlMenu">Descargar canción</button>
-    </div>
-  </section>
-  <section>
     <h3>Vista</h3>
     <div class="seg" id="themeSeg"><button data-v="night">Oscuro</button><button data-v="day">Claro</button></div>
     <button class="btn wide" id="helpBtn">Cómo se usa y atajos</button>
+    <button class="btn wide" data-about style="margin-top:8px">Acerca de</button>
   </section>
   <p class="foot">Todo se guarda en este dispositivo, sin cuentas ni base de datos. Exportá un .txt para respaldar o para pasar tus beats a otro equipo.</p>
 </aside>
@@ -869,19 +875,19 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 <div id="help" class="modal" aria-hidden="true">
   <div class="card">
     <h2>Cómo se usa</h2>
-    <p class="tips" style="margin-top:0"><b style="color:var(--cy)">GREEN<span style="color:var(--ink)">PAD</span>:</b> los instrumentos son grabaciones de verdad (batería, bajo, guitarras, piano, saxo, vibráfono y más). <b>DESTIEMPO</b> hace que cada golpe salga un poco corrido y con fuerza distinta, como tocado por una persona. SONIDO cambia todo el patrón a Banda, Acústico (con aire de sala), Noventa (grabación gastada) o Electro (los sintetizados).<br><br><b>Canción:</b> la barra de abajo de la cabecera es la línea de tiempo. Elegí un patrón y tocá <b>+</b> (o la tecla G) para sumarlo; cada bloque dice cuántas veces se repite. Tocá un bloque para elegirlo: aparecen botones para moverlo, repetirlo más o menos veces, duplicarlo o quitarlo, y Play arranca desde ahí. <b>AUTO</b> arma una canción con intro, verso y estribillo usando los patrones que tengan notas. Con <b>CANCIÓN</b> prendido (tecla L), Play toca el tema entero; mientras suena, tocar un bloque salta a ese bloque al terminar el compás. El botón de las flechas repite la canción; si está apagado, termina con un platillo.<br><br><b>Descargar</b> (botón verde de la flecha, al lado del dado): elegí la canción completa o un patrón, y bajala como audio MP3, WAV o como video vertical 9:16 con visualización. El tema queda guardado en Mis beats con el título que pongas. El video tarda lo mismo que dura la canción.<br><br><b>No hace falta saber música.</b> Elegí un ejemplo del menú o tocá el dado para inventar un patrón, y después cambiá lo que quieras.<br><br>
+    <p class="tips" style="margin-top:0"><b style="color:var(--cy)">GREEN<span style="color:var(--ink)">PAD</span>:</b> los instrumentos son grabaciones de verdad (batería, bajo, guitarras, piano, saxo, vibráfono y más). <b>DESTIEMPO</b> hace que cada golpe salga un poco corrido y con fuerza distinta, como tocado por una persona. SONIDO cambia todo el track a Banda, Acústico (con aire de sala), Noventa (grabación gastada) o Electro (los sintetizados).<br><br><b>Canción:</b> la barra de abajo de la cabecera es la línea de tiempo. Elegí un track y tocá <b>+</b> (o la tecla G) para sumarlo; cada bloque dice cuántas veces se repite. Tocá un bloque para elegirlo: aparecen botones para moverlo, repetirlo más o menos veces, duplicarlo o quitarlo, y Play arranca desde ahí. <b>AUTO</b> arma una canción con intro, verso y estribillo usando los tracks que tengan notas. Con <b>CANCIÓN</b> prendido (tecla L), Play toca el tema entero; mientras suena, tocar un bloque salta a ese bloque al terminar el compás. El botón de las flechas repite la canción; si está apagado, termina con un platillo.<br><br><b>Descargar</b> (botón verde de la flecha, al lado del dado): elegí la canción completa o un track, y bajala como audio MP3, WAV o como video vertical 9:16 con visualización. El tema queda guardado en Mis beats con el título que pongas. El video tarda lo mismo que dura la canción.<br><br><b>No hace falta saber música.</b> Elegí un ejemplo del menú o tocá el dado para inventar un track, y después cambiá lo que quieras.<br><br>
     <b>Instrumentos:</b> arriba la batería (bombo, caja, hi-hat, percusión) y abajo los melódicos (bajo, guitarra, acordes, melodía). Tocá un ícono para escucharlo; mantenelo apretado (o clic derecho) para elegir su estilo, volumen, inventar una línea nueva o usar una grabación. El <b>+</b> de cada estilo lo suma como capa.<br><br>
-    <b>Altura:</b> en los melódicos, cuanto más lleno está el círculo, más agudo suena. Mantené apretado un paso (o clic derecho) para elegir la altura; en la compu también con la rueda del mouse o Shift + ↑ ↓. <b>AMBIENTE</b> elige qué notas usan bajo, guitarra, acordes y melodía: el mismo patrón suena oscuro, triste, alegre, etc. La batería no cambia, y todas las alturas combinan entre sí. Cada patrón (A a H) guarda su propio AMBIENTE y su propio SONIDO, igual que los estilos que elijas para cada instrumento.<br><br>
-    <b>Grabar:</b> el botón del micrófono tiene 2 grabaciones de hasta 8 segundos. Podés recortar dónde empieza y dónde termina, hacerla más grave o más aguda, darla vuelta, ponerle eco o efecto robot, y elegir en qué instrumento usarla. La grabación queda en ese instrumento solo en el patrón que estás editando: en los otros patrones el instrumento sigue sonando normal, y cada patrón puede usar una grabación distinta. Siempre suena completa; en los melódicos además sube y baja según la altura de cada paso. En las bandejas, los botones 1 y 2 de GRABACIONES la tocan: mantenelos apretados para que suene mientras los tenés, o tocalos una vez para dejarla sonando.<br><br>
-    <b>Patrones A a H:</b> 8 grillas distintas. Tocá la letra para editarla. Tildá la casilla de otra letra para que suene <b>mezclada</b> con la que estás editando (cada patrón guarda su propia mezcla, y se respeta en la canción y en las bandejas); sus notas se ven como fantasmas en la grilla. Con CADENA suenan uno detrás de otro.</p>
-    <p class="tips"><b>Bandejas</b> (botón del disco al lado de Play, o tecla B): dos platos que suenan juntos, cada uno con el patrón que elijas. El crossfader pasa de uno al otro. Arrastrá un disco con el dedo o el mouse para hacer scratch; FRENO lo para como un tocadiscos y REBOBINAR lo tira para atrás. GRAVES, MEDIOS y AGUDOS cortan esa parte del sonido, FILTRO deja solo graves o solo agudos, y los íconos de abajo apagan instrumentos de esa bandeja. Cada bandeja toca su patrón y los que tenga tildados en su mezcla (se ven como +B +C al lado del nombre). En el centro: REVERB, ECO, LO-FI, VINILO (ruido de disco), MODO 90, GRABACIONES (1 y 2: mantener apretado para que suene mientras lo tenés, o tocar una vez para dejarla sonando; teclas O y P) y REPETIR (mantener apretado repite el último pedacito).</p>
+    <b>Altura:</b> en los melódicos, cuanto más lleno está el círculo, más agudo suena. Mantené apretado un paso (o clic derecho) para elegir la altura; en la compu también con la rueda del mouse o Shift + ↑ ↓. <b>AMBIENTE</b> elige qué notas usan bajo, guitarra, acordes y melodía: el mismo track suena oscuro, triste, alegre, etc. La batería no cambia, y todas las alturas combinan entre sí. Cada track (A a H) guarda su propio AMBIENTE y su propio SONIDO, igual que los estilos que elijas para cada instrumento.<br><br>
+    <b>Grabar:</b> el botón del micrófono tiene 2 grabaciones de hasta 8 segundos. Podés recortar dónde empieza y dónde termina, hacerla más grave o más aguda, darla vuelta, ponerle eco o efecto robot, y elegir en qué instrumento usarla. La grabación queda en ese instrumento solo en el track que estás editando: en los otros tracks el instrumento sigue sonando normal, y cada track puede usar una grabación distinta. Siempre suena completa; en los melódicos además sube y baja según la altura de cada paso. En las bandejas, los botones 1 y 2 de GRABACIONES la tocan: mantenelos apretados para que suene mientras los tenés, o tocalos una vez para dejarla sonando.<br><br>
+    <b>Tracks A a H:</b> 8 grillas distintas. Tocá la letra para editarla. Tildá la casilla de otra letra para que suene <b>mezclada</b> con la que estás editando (cada track guarda su propia mezcla, y se respeta en la canción y en las bandejas); sus notas se ven como fantasmas en la grilla. Con CADENA suenan uno detrás de otro.</p>
+    <p class="tips"><b>Bandejas</b> (botón del disco al lado de Play, o tecla B): dos platos que suenan juntos, cada uno con el track que elijas. El crossfader pasa de uno al otro. Arrastrá un disco con el dedo o el mouse para hacer scratch; FRENO lo para como un tocadiscos y REBOBINAR lo tira para atrás. GRAVES, MEDIOS y AGUDOS cortan esa parte del sonido, FILTRO deja solo graves o solo agudos, y los íconos de abajo apagan instrumentos de esa bandeja. Cada bandeja toca su track y los que tenga tildados en su mezcla (se ven como +B +C al lado del nombre). En el centro: REVERB, ECO, LO-FI, VINILO (ruido de disco), MODO 90, GRABACIONES (1 y 2: mantener apretado para que suene mientras lo tenés, o tocar una vez para dejarla sonando; teclas O y P) y REPETIR (mantener apretado repite el último pedacito).</p>
     <p class="tips"><b>Video</b> (botón de la cámara, o tecla J): elegí un video del equipo (horizontal, vertical o cuadrado; no se sube a ningún lado) y se ve en sincronía con la canción. Abajo están la onda del sonido del video y la de la música, con el color de cada parte; arrastrá la de la música para correrla. Hay un volumen para el video y otro para la música. Las rayas amarillas son momentos donde el sonido del video cambia fuerte: si otro orden de los bloques hace caer más cambios de parte justo ahí, aparece una sugerencia. AUDIO PARA EL VIDEO baja un MP3 o WAV del mismo largo que el video, listo para pegarlo debajo en cualquier editor.</p>
     <h2 style="margin-top:18px">Atajos de teclado</h2>
     <div class="keys">
       <div>Play / pausa <kbd>Espacio</kbd></div>
       <div>Stop <kbd>Esc</kbd></div>
       <div>Modo canción <kbd>L</kbd></div>
-      <div>Sumar patrón a la canción <kbd>G</kbd></div>
+      <div>Sumar track a la canción <kbd>G</kbd></div>
       <div>Tocar instrumento <kbd>1</kbd>…<kbd>8</kbd></div>
       <div>Estilos del instrumento <span>mantener <kbd>1</kbd>…<kbd>8</kbd></span></div>
       <div>Silenciar instrumento <kbd>Shift</kbd>+<kbd>1</kbd>…<kbd>8</kbd></div>
@@ -889,31 +895,31 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <div>Marcar paso <kbd>Enter</kbd> o <kbd>X</kbd></div>
       <div>Subir / bajar altura <kbd>Shift</kbd>+<kbd>↑</kbd> <kbd>↓</kbd></div>
       <div>Grabar un sonido <kbd>V</kbd></div>
-      <div>Patrón anterior / siguiente <kbd>,</kbd> <kbd>.</kbd></div>
-      <div>Ir a patrón A…H <kbd>Alt</kbd>+<kbd>1</kbd>…<kbd>8</kbd></div>
+      <div>Track anterior / siguiente <kbd>,</kbd> <kbd>.</kbd></div>
+      <div>Ir a track A…H <kbd>Alt</kbd>+<kbd>1</kbd>…<kbd>8</kbd></div>
             <div>Tempo ±1 / ±10 <kbd>+</kbd> <kbd>-</kbd> / <kbd>RePág</kbd> <kbd>AvPág</kbd></div>
       <div>Tap tempo <kbd>T</kbd></div>
       <div>Grabar en vivo <kbd>R</kbd> (también en el menú)</div>
-      <div>Encadenar patrones <kbd>C</kbd></div>
+      <div>Encadenar tracks <kbd>C</kbd></div>
       <div>Sonido para todos <kbd>K</kbd></div>
-      <div>Inventar patrón (dado) <kbd>D</kbd></div>
-      <div>Borrar patrón <kbd>Supr</kbd></div>
+      <div>Inventar track (dado) <kbd>D</kbd></div>
+      <div>Borrar track <kbd>Supr</kbd></div>
       <div>Deshacer / rehacer <kbd>Ctrl</kbd>+<kbd>Z</kbd> / <kbd>Y</kbd></div>
-      <div>Copiar / pegar patrón <kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>V</kbd></div>
+      <div>Copiar / pegar track <kbd>Ctrl</kbd>+<kbd>C</kbd> / <kbd>V</kbd></div>
       <div>Guardar en Mis beats <kbd>Ctrl</kbd>+<kbd>S</kbd></div>
       <div>Exportar / importar <kbd>Ctrl</kbd>+<kbd>E</kbd> / <kbd>O</kbd></div>
       <div>Menú y ejemplos <kbd>M</kbd></div>
       <div>Esta ayuda <kbd>?</kbd></div>
       <div>Grilla / bandejas <kbd>B</kbd></div>
-      <div>Bandejas: patrón en A <kbd>Q</kbd>…<kbd>I</kbd></div>
-      <div>Bandejas: patrón en B <kbd>A</kbd>…<kbd>K</kbd></div>
+      <div>Bandejas: track en A <kbd>Q</kbd>…<kbd>I</kbd></div>
+      <div>Bandejas: track en B <kbd>A</kbd>…<kbd>K</kbd></div>
       <div>Bandejas: crossfader <kbd>←</kbd> <kbd>→</kbd> (<kbd>↓</kbd> al medio)</div>
       <div>Bandejas: repetir 1/4, 1/8, 1/16 <span>mantener <kbd>Z</kbd> <kbd>X</kbd> <kbd>C</kbd></span></div>
       <div>Bandejas: freno A / B <kbd>N</kbd> <kbd>,</kbd></div>
       <div>Pantalla video <kbd>J</kbd></div>
       <div>Video: 1 segundo atrás / adelante <kbd>←</kbd> <kbd>→</kbd> (<kbd>Shift</kbd>: un compás)</div>
     </div>
-    <p class="tips">Si cambiás de patrón mientras suena, entra al terminar el compás; tocalo otra vez para saltar ya. En el teléfono, tocá y arrastrá sobre la grilla para pintar varios pasos. Podés soltar un .txt sobre la página para importarlo.</p>
+    <p class="tips">Si cambiás de track mientras suena, entra al terminar el compás; tocalo otra vez para saltar ya. En el teléfono, tocá y arrastrá sobre la grilla para pintar varios pasos. Podés soltar un .txt sobre la página para importarlo.</p>
     <div class="mrow"><button class="btn pri" data-close>Listo</button></div>
   </div>
 </div>
@@ -930,7 +936,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       </div>
     </div>
     <div class="sts" id="shSts"></div>
-    <p class="hint" style="margin-top:10px">Tocá un estilo para elegirlo. El <b>+</b> lo suma como capa encima del elegido. Vale para el patrón que estás editando.</p>
+    <p class="hint" style="margin-top:10px">Tocá un estilo para elegirlo. El <b>+</b> lo suma como capa encima del elegido. Vale para el track que estás editando.</p>
     <div class="shrow" style="margin-top:10px"><button class="btn pri" id="shGen">Inventar línea nueva</button><button class="btn" id="shVoice">Grabar</button></div>
     <label class="sl">Afinación <output id="shTuneO"></output><input type="range" id="shTune" min="-12" max="12" step="1"></label>
     <label class="sl">Volumen <output id="shLvlO"></output><input type="range" id="shLvl" min="0" max="150" step="5"></label>
@@ -976,7 +982,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <input id="xName" class="xname" maxlength="60" autocomplete="off" placeholder="Título" aria-label="Título">
     <p class="hint" id="xSaved">Se guarda en Mis beats con este título.</p>
     <h4>QUÉ</h4>
-    <div class="seg" id="xWhat"><button data-v="song">Canción completa<small id="xSongT"></small></button><button data-v="pat">Patrón <b id="xPatL">A</b></button><button data-v="vidv" hidden>Para el video<small id="xVidT"></small></button></div>
+    <div class="seg" id="xWhat"><button data-v="song">Canción completa<small id="xSongT"></small></button><button data-v="pat">Track <b id="xPatL">A</b></button><button data-v="vidv" hidden>Para el video<small id="xVidT"></small></button></div>
     <div class="seg" id="xLoops"><button data-n="1">1 vuelta</button><button data-n="2">2</button><button data-n="4">4</button><button data-n="8">8 vueltas</button></div>
     <h4>FORMATO</h4>
     <div class="xfmts">
@@ -991,6 +997,14 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <div class="xprog" id="xProg" hidden><div class="xbar"><i></i></div><p></p></div>
     <div class="xout" id="xOut" hidden></div>
     <div class="mrow"><button class="btn" id="xClose">Cerrar</button></div>
+  </div>
+</div>
+
+<div id="about" class="modal" aria-hidden="true">
+  <div class="card about">
+    <h2>Acerca de <span class="ab-logo">GREEN<span>PAD</span></span></h2>
+    <div id="aboutTxt"></div>
+    <div class="mrow"><button class="btn" data-close>Cerrar</button></div>
   </div>
 </div>
 
@@ -1052,7 +1066,7 @@ const MOODS = [
 ];
 const B64 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_';
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
-let CP = null; // patrón cuyo sonido y ambiente se usan en este momento (null = el que se está editando)
+let CP = null; // track cuyo sonido y ambiente se usan en este momento (null = el que se está editando)
 const FINE = matchMedia('(hover:hover) and (pointer:fine)').matches;
 
 /* ================= helpers ================= */
@@ -1083,15 +1097,15 @@ function blank() {
     tune: Array(NT).fill(0), lvl: Array(NT).fill(1),
     mutes: Array(NT).fill(false), pats: Array.from({ length: NP }, emptyPat) });
 }
-// cada patrón guarda su sonido (estilo y capas de cada instrumento) y su ambiente en ps[p].
-// S.st, S.lay y S.scale apuntan al patrón que se edita, o al que está sonando mientras se programa el audio (CP).
+// cada track guarda su sonido (estilo y capas de cada instrumento) y su ambiente en ps[p].
+// S.st, S.lay y S.scale apuntan al track que se edita, o al que está sonando mientras se programa el audio (CP).
 function withPS(d) {
   const q = () => d.ps[CP == null ? d.cur : CP];
   Object.defineProperties(d, {
     st: { get: () => q().st, set: (v) => { q().st = v; }, configurable: true },
     lay: { get: () => q().lay, set: (v) => { q().lay = v; }, configurable: true },
     scale: { get: () => q().sc, set: (v) => { q().sc = v; }, configurable: true },
-    // cada patrón tiene su mezcla (qué otros patrones suenan con él) y sus grabaciones por instrumento
+    // cada track tiene su mezcla (qué otros tracks suenan con él) y sus grabaciones por instrumento
     mix: { get: () => q().mix, set: (v) => { q().mix = v; }, configurable: true },
     smp: { get: () => q().smp, set: (v) => { q().smp = v; }, configurable: true },
   });
@@ -1124,10 +1138,10 @@ function normalize(o) {
   d.vol = clamp(o.vol == null ? .8 : +o.vol, 0, 1);
   d.cur = clamp(o.cur | 0, 0, NP - 1);
   d.key = clamp(o.key == null ? 9 : o.key | 0, 0, 11);
-  // beats viejos (un solo sonido y ambiente para todo): se copian a los 8 patrones
+  // beats viejos (un solo sonido y ambiente para todo): se copian a los 8 tracks
   const srcPS = (p) => (Array.isArray(o.ps) && o.ps[p] ? o.ps[p] : { st: o.st, lay: o.lay, sc: o.scale });
   for (let p = 0; p < NP; p++) { const sc = srcPS(p).sc; d.ps[p].sc = clamp(sc == null ? 2 : sc | 0, 0, SCALES.length - 1); }
-  const legMix = (o.mix | 0) & 255; // beats viejos: una sola mezcla para todos los patrones
+  const legMix = (o.mix | 0) & 255; // beats viejos: una sola mezcla para todos los tracks
   const ofx = o.fx || {}, odj = o.dj || {};
   d.fx = { rev: clamp(+ofx.rev || 0, 0, 1), eco: clamp(+ofx.eco || 0, 0, 1), lofi: clamp(+ofx.lofi || 0, 0, 1), vin: ofx.vin ? 1 : 0 };
   d.dj = { a: clamp(odj.a | 0, 0, NP - 1), b: clamp(odj.b == null ? 1 : odj.b | 0, 0, NP - 1), x: clamp(+odj.x || 0, 0, 1), va: clamp(odj.va == null ? 1 : +odj.va, 0, 1.2), vb: clamp(odj.vb == null ? 1 : +odj.vb, 0, 1.2) };
@@ -1149,7 +1163,7 @@ function normalize(o) {
       if (t === 5 && !(o.v >= 5)) { if (st0 === 5) st0 = 6; if (ly0 & 32) ly0 = (ly0 & ~32) | 64; }
       q.st[t] = clamp(st0, 0, ns - 1);
       q.lay[t] = ly0 & ((1 << ns) - 1) & ~(1 << q.st[t]);
-      const ssrc = Array.isArray(sp.smp) ? sp.smp : Array.isArray(o.smp) ? o.smp : []; // beats viejos: una grabación por instrumento para todos los patrones
+      const ssrc = Array.isArray(sp.smp) ? sp.smp : Array.isArray(o.smp) ? o.smp : []; // beats viejos: una grabación por instrumento para todos los tracks
       q.smp[t] = sanSmp(ssrc[t]);
       if (t === 0) q.mix = ((sp.mix != null ? sp.mix : legMix) | 0) & 255 & ~(1 << p);
     }
@@ -1829,7 +1843,7 @@ function drumBufs(tr, st, pf) {
   one().then(a => one().then(b => DR.set(key, [trimBuf(c, a), trimBuf(c, b)]))).catch(() => DR.set(key, 2));
   return null;
 }
-function warmDrums() { // deja listas las baterías de todos los patrones antes de que suenen
+function warmDrums() { // deja listas las baterías de todos los tracks antes de que suenen
   if (!AU.ctx) return;
   for (let p = 0; p < NP; p++) { CP = p; try { for (let tr = 1; tr < 4; tr++) for (const st of stylesOf(tr)) if (st !== VC(tr) && !VOICES[tr][st].smp) drumBufs(tr, st, Math.pow(2, (S.tune[tr] || 0) / 12)); } finally { CP = null; } }
 }
@@ -1844,7 +1858,7 @@ function playTrack(tr, t, v = 1, val = 1, dur = .3, dest) {
   // tope general
   if (VG.live.length >= MAXV) { const x = VG.live.find(y => y.end > t && y.t < t); if (x) vgFade(x, t, .02); }
   const list = stylesOf(tr), isRec = list.includes(VC(tr));
-  if (!isRec) for (const y of arr) if (y.rec && y.t < t && y.end > t) vgFade(y, t, .04); // la grabación de otro patrón se apaga cuando el instrumento vuelve a lo normal
+  if (!isRec) for (const y of arr) if (y.rec && y.t < t && y.end > t) vgFade(y, t, .04); // la grabación de otro track se apaga cuando el instrumento vuelve a lo normal
   const vg = c.createGain(); vg.connect(o); vg.__vg = true;
   const info = TR[tr].mel ? { f: mtof(midiOf(tr, val || 1)), fs: TR[tr].chord || TR[tr].id === 'GT' ? chordOf(tr, val || 1) : null, dur } : null;
   const k = (S.lvl[tr] == null ? 1 : S.lvl[tr]) / Math.sqrt(list.length);
@@ -2069,16 +2083,16 @@ for (let i = 0; i < 28; i++) { const r = document.createElement('div'); r.classN
 const patsEl = $('#pats'); const pbs = [];
 for (let i = 0; i < NP; i++) {
   const b = document.createElement('button');
-  b.className = 'pb'; b.innerHTML = `<span class="cz" title="Tildar: suena junto con el patrón que editás"><span class="ck"></span></span><span class="pn">${LET[i]}</span>`;
-  b.title = `Patrón ${LET[i]}: tocá la letra para editarlo, la casilla para mezclarlo`;
-  b.setAttribute('aria-label', `Patrón ${LET[i]}`);
+  b.className = 'pb'; b.innerHTML = `<span class="cz" title="Tildar: suena junto con el track que editás"><span class="ck"></span></span><span class="pn">${LET[i]}</span>`;
+  b.title = `Track ${LET[i]}: tocá la letra para editarlo, la casilla para mezclarlo`;
+  b.setAttribute('aria-label', `Track ${LET[i]}`);
   b.addEventListener('click', (e) => { if (e.target.closest('.cz')) toggleMix(i); else selectPattern(i); });
   patsEl.appendChild(b); pbs.push(b);
 }
 const sndsEl = $('#snds'); const sbs = [];
 FAM.forEach((f, i) => {
   const b = document.createElement('button'); b.className = 'sb'; b.textContent = f; b.style.setProperty('--c', `var(--s${i})`);
-  b.title = `Poner todos los instrumentos de este patrón en ${f} (K)`;
+  b.title = `Poner todos los instrumentos de este track en ${f} (K)`;
   b.addEventListener('click', () => setAllStyles(i)); sndsEl.appendChild(b); sbs.push(b);
 });
 const keySel = $('#keySel'), moodSel = $('#moodSel');
@@ -2088,7 +2102,7 @@ keySel.addEventListener('change', () => { keySel.blur(); pushUndo(); S.key = +ke
 moodSel.addEventListener('change', () => {
   moodSel.blur(); pushUndo(); S.scale = MOODS[+moodSel.value].sc; renderPads(); markEdit(); ensureAudio();
   const c = AU.ctx; if (c) [1, 3, 5, 8].forEach((v, i) => playTrack(7, c.currentTime + .02 + i * .12, .9, v, .2));
-  toast(`Ambiente ${MOODS[+moodSel.value].n} en el patrón ${LET[S.cur]}: cambian las notas de bajo, guitarra, acordes y melodía`, 2000);
+  toast(`Ambiente ${MOODS[+moodSel.value].n} en el track ${LET[S.cur]}: cambian las notas de bajo, guitarra, acordes y melodía`, 2000);
 });
 
 /* ================= layout ================= */
@@ -2292,11 +2306,11 @@ function djSchedule(s, t) {
     for (let tr = 0; tr < NT; tr++) {
       if (S.mutes[tr] || (mute & (1 << tr))) continue;
       const done = new Set();
-      for (const pp of [p, ...mixedFor(p)]) { // la bandeja toca su patrón y los que están tildados con él
+      for (const pp of [p, ...mixedFor(p)]) { // la bandeja toca su track y los que están tildados con él
         const v = S.pats[pp][tr][s]; if (!v) continue;
         const q = S.ps[pp], key = (TR[tr].mel ? v + ':' + q.sc : 1) + ':' + q.st[tr] + ':' + q.lay[tr];
         if (done.has(key)) continue; done.add(key);
-        CP = pp; // cada patrón suena con su sonido y ambiente
+        CP = pp; // cada track suena con su sonido y ambiente
         const h = humanize(tr, s);
         try { playTrack(tr, t + h.dt, h.v, v, TR[tr].mel ? noteLen(S.pats[pp][tr], s) : .3, dest); } finally { CP = null; }
       }
@@ -2316,7 +2330,7 @@ function schedule(s, t) {
       const v = S.pats[p][tr][s]; if (!v) continue;
       const q = S.ps[p], key = (TR[tr].mel ? v + ':' + q.sc : 1) + ':' + q.st[tr] + ':' + q.lay[tr];
       if (done.has(key)) continue; done.add(key);
-      CP = p; // cada patrón suena con su propio sonido y ambiente, también al mezclarlos
+      CP = p; // cada track suena con su propio sonido y ambiente, también al mezclarlos
       const h = humanize(tr, s);
       try { playTrack(tr, t + h.dt, h.v, v, TR[tr].mel ? noteLen(S.pats[p][tr], s) : .3); } finally { CP = null; }
     }
@@ -2429,7 +2443,7 @@ function selectPattern(i) {
       P.pat = i; P.pending = -1; P.queue.forEach(q => q.p = i);
       S.cur = i; renderPads(true); patChanged();
     } else if (i === P.pat) { P.pending = -1; }
-    else { P.pending = i; toast(`Patrón ${LET[i]} entra al terminar el compás. Tocalo otra vez para saltar ya.`, 1600); }
+    else { P.pending = i; toast(`Track ${LET[i]} entra al terminar el compás. Tocalo otra vez para saltar ya.`, 1600); }
   } else {
     if (i === S.cur) return;
     S.cur = i; P.pat = i; renderPads(true); patChanged();
@@ -2442,7 +2456,7 @@ function toggleMix(i) {
   const on = !!(S.mix & (1 << i));
   renderPats(); renderPads(); save(); if (DJ.on) renderDJ();
   if (!RM) bump(pbs[i], 1.12, 180);
-  if (on && !hasNotes(i)) toast(`Patrón ${LET[i]} tildado, pero todavía está vacío`, 1800);
+  if (on && !hasNotes(i)) toast(`Track ${LET[i]} tildado, pero todavía está vacío`, 1800);
   else if (on) toast(`${LET[i]} suena junto con ${LET[S.cur]} (también en la canción y en las bandejas)`, 2000);
   else toast(`${LET[i]} ya no suena con ${LET[S.cur]}`, 1200);
 }
@@ -2481,7 +2495,7 @@ function renderHum() {
 }
 
 /* ================= canción =================
-   Línea de tiempo con bloques (patrón y cuántos compases). Con CANCIÓN prendido, Play la toca de principio a fin. */
+   Línea de tiempo con bloques (track y cuántos compases). Con CANCIÓN prendido, Play la toca de principio a fin. */
 const songEl = $('#song'), songTrk = $('#songTrk');
 const SG = { sel: -1, jump: -1, pl: -1 };
 const songMode = () => S.songOn && S.song.length > 0 && !DJ.on;
@@ -2500,14 +2514,14 @@ function renderSong() {
   $('#songOn').setAttribute('aria-pressed', S.songOn);
   if (SG.sel >= S.song.length) SG.sel = -1;
   songTrk.innerHTML = '';
-  if (!S.song.length) songTrk.insertAdjacentHTML('beforeend', '<span class="sgempty">Elegí un patrón y tocá <b>+</b> para sumarlo, o tocá <b>AUTO</b></span>');
+  if (!S.song.length) songTrk.insertAdjacentHTML('beforeend', '<span class="sgempty">Elegí un track y tocá <b>+</b> para sumarlo, o tocá <b>AUTO</b></span>');
   S.song.forEach((b, i) => {
     const el = document.createElement('button');
     el.className = 'sgb' + (i === SG.sel ? ' sel' : '') + (i === SG.pl && P.playing ? ' pl' : '') + (i === SG.jump ? ' nx' : '');
     el.style.setProperty('--c', `var(--s${b.p})`); el.style.setProperty('--n', b.n);
     el.innerHTML = `<b>${LET[b.p]}</b>${b.n > 1 ? `<small>×${b.n}</small>` : ''}`;
-    el.dataset.i = i; el.title = `Patrón ${LET[b.p]}, ${b.n} ${b.n > 1 ? 'veces' : 'vez'}`;
-    el.setAttribute('aria-label', `Bloque ${i + 1}: patrón ${LET[b.p]}, ${b.n} ${b.n > 1 ? 'veces' : 'vez'}`);
+    el.dataset.i = i; el.title = `Track ${LET[b.p]}, ${b.n} ${b.n > 1 ? 'veces' : 'vez'}`;
+    el.setAttribute('aria-label', `Bloque ${i + 1}: track ${LET[b.p]}, ${b.n} ${b.n > 1 ? 'veces' : 'vez'}`);
     songTrk.appendChild(el);
   });
   const bar = document.createElement('i'); bar.id = 'songBar'; songTrk.appendChild(bar);
@@ -2516,9 +2530,9 @@ function renderSong() {
 }
 function renderSongTools() {
   const T = $('#songTools'); if (!T) return;
-  T.innerHTML = `<button class="sgt" data-a="auto" title="Armar una canción con los patrones que tienen notas">AUTO</button>`
+  T.innerHTML = `<button class="sgt" data-a="auto" title="Armar una canción con los tracks que tienen notas">AUTO</button>`
     + `<button class="sgt${S.songLoop ? ' on' : ''}" data-a="loop" title="Repetir la canción al terminar" aria-label="Repetir al terminar" aria-pressed="${S.songLoop}">${sgIc('loop')}</button>`
-    + `<button class="sgt add" data-a="add" title="Sumar el patrón ${LET[S.cur]} a la canción (G)" aria-label="Sumar el patrón ${LET[S.cur]} a la canción">+ ${LET[S.cur]}</button>`;
+    + `<button class="sgt add" data-a="add" title="Sumar el track ${LET[S.cur]} a la canción (G)" aria-label="Sumar el track ${LET[S.cur]} a la canción">+ ${LET[S.cur]}</button>`;
   renderSongPop();
 }
 // globo con las herramientas del bloque elegido, debajo del bloque
@@ -2559,7 +2573,7 @@ function songAdd(p) {
   const wasOn = S.songOn; S.songOn = true;
   save(); renderSong(); scrollSel();
   if (SG.sel < 0) { const w = songTrk.parentElement; w.scrollTo({ left: w.scrollWidth, behavior: RM ? 'auto' : 'smooth' }); }
-  toast(!hasNotes(p) ? `Patrón ${LET[p]} sumado (todavía está vacío)` : wasOn ? `Patrón ${LET[p]} sumado a la canción` : `Patrón ${LET[p]} sumado. Modo canción prendido: Play toca el tema entero`, 1800);
+  toast(!hasNotes(p) ? `Track ${LET[p]} sumado (todavía está vacío)` : wasOn ? `Track ${LET[p]} sumado a la canción` : `Track ${LET[p]} sumado. Modo canción prendido: Play toca el tema entero`, 1800);
 }
 function songAct(a) {
   const L = S.song, i = SG.sel;
@@ -2586,7 +2600,7 @@ function songTap(i) {
   SG.sel = SG.sel === i ? -1 : i;
   if (SG.sel >= 0 && S.cur !== b.p) selectPattern(b.p);
   renderSong();
-  if (SG.sel >= 0) toast(`Bloque ${i + 1}: patrón ${LET[b.p]}. Play arranca desde acá`, 1400);
+  if (SG.sel >= 0) toast(`Bloque ${i + 1}: track ${LET[b.p]}. Play arranca desde acá`, 1400);
 }
 function toggleSong() {
   S.songOn = !S.songOn; SG.jump = -1;
@@ -2594,11 +2608,11 @@ function toggleSong() {
   if (P.playing && songMode()) { let k = S.song.findIndex(b => b.p === P.pat); if (k < 0) { k = 0; P.pending = S.song[0].p; } P.si = k; P.sr = 0; songEl.classList.add('pl'); }
   if (!S.songOn) { songEl.classList.remove('pl'); SG.pl = -1; }
   save(); renderSong();
-  toast(S.songOn ? 'Modo canción: Play toca la línea de tiempo de principio a fin' : 'Modo patrón: Play repite el patrón que estás editando', 1900);
+  toast(S.songOn ? 'Modo canción: Play toca la línea de tiempo de principio a fin' : 'Modo track: Play repite el track que estás editando', 1900);
 }
 function autoSong(quiet) {
   const ps = []; for (let p = 0; p < NP; p++) if (hasNotes(p)) ps.push(p);
-  if (!ps.length) { if (!quiet) toast('Primero armá algún patrón, o cargá un ejemplo del menú'); return; }
+  if (!ps.length) { if (!quiet) toast('Primero armá algún track, o cargá un ejemplo del menú'); return; }
   pushUndo(); const [a, b, c, d] = ps;
   S.song = ps.length === 1 ? [{ p: a, n: 4 }]
     : ps.length === 2 ? [{ p: a, n: 2 }, { p: b, n: 4 }, { p: a, n: 4 }, { p: b, n: 4 }, { p: a, n: 2 }]
@@ -2659,7 +2673,7 @@ function moveTo(el, parent) {
 function moveBack(el) { const c = MORE.ph.get(el); if (c && c.parentNode) c.parentNode.insertBefore(el, c); }
 function compactUI(on) {
   if (on === MORE.on) return; MORE.on = on;
-  const sndbox = $('.sndbox'), tone = $('.box.tone'), parts = [[sndbox, '#mpSnd'], [tone, '#mpTone'], [$('#chainBtn'), '#mpChain'], [$('#rec'), '#mpTools'], [$('#micBtn'), '#mpTools']]; // Borrar patrón queda a la vista, junto al dado y la descarga
+  const sndbox = $('.sndbox'), tone = $('.box.tone'), parts = [[sndbox, '#mpSnd'], [tone, '#mpTone'], [$('#chainBtn'), '#mpChain'], [$('#rec'), '#mpTools'], [$('#micBtn'), '#mpTools']]; // Borrar track queda a la vista, junto al dado y la descarga
   if (on) parts.forEach(([el, p]) => moveTo(el, $(p)));
   else { parts.forEach(([el]) => moveBack(el)); setMore(false); }
 }
@@ -2674,13 +2688,13 @@ function renderMoreSum() {
   const fam = S.st.every((x, t) => x === S.st[0] && !S.lay[t]) && S.st[0] < 4 ? FAM[S.st[0]] : 'Mixto';
   const mx = bits(S.mix).filter(p => p !== S.cur).map(p => LET[p]).join(' ');
   $('#moreSum').innerHTML = `<span class="k">SONIDO</span>${fam}<span class="k">AMBIENTE</span>${moodName(S.scale)}<span class="k">DESTIEMPO</span>${Math.round(S.hum * 100)}%` + (mx ? `<span class="k mx">MEZCLA</span><span class="mx">${mx}</span>` : '');
-  $('#mpTitle').textContent = `PATRÓN ${LET[S.cur]}`;
+  $('#mpTitle').textContent = `TRACK ${LET[S.cur]}`;
   if (moreOpen()) renderMoreMix();
 }
 function renderMoreMix() {
   const box = $('#mpMix');
   if (!box.children.length) for (let i = 0; i < NP; i++) {
-    const b = document.createElement('button'); b.textContent = LET[i]; b.setAttribute('aria-label', `Mezclar patrón ${LET[i]}`);
+    const b = document.createElement('button'); b.textContent = LET[i]; b.setAttribute('aria-label', `Mezclar track ${LET[i]}`);
     b.addEventListener('click', () => toggleMix(i)); box.appendChild(b);
   }
   [...box.children].forEach((b, i) => { b.classList.toggle('on', !!(S.mix & (1 << i))); b.classList.toggle('has', hasNotes(i)); b.classList.toggle('cur', i === S.cur); b.setAttribute('aria-pressed', !!(S.mix & (1 << i))); });
@@ -4001,9 +4015,9 @@ function nudgeNote(d) {
 
 /* ================= pattern ops ================= */
 function clearPattern() {
-  if (!hasNotes(S.cur)) return toast('El patrón ya está vacío');
+  if (!hasNotes(S.cur)) return toast('El track ya está vacío');
   pushUndo(); S.pats[S.cur] = emptyPat(); renderPads(true); renderPats(); markEdit();
-  toast(`Patrón ${LET[S.cur]} borrado. ${FINE ? 'Ctrl+Z' : 'Deshacer'} lo recupera.`);
+  toast(`Track ${LET[S.cur]} borrado. ${FINE ? 'Ctrl+Z' : 'Deshacer'} lo recupera.`);
 }
 const PROGS = [[1, 6], [6, 7], [1, 4], [4, 5], [1, 7], [6, 4], [1, 5], [1, 3]];
 const pick = (a) => a[Math.floor(Math.random() * a.length)];
@@ -4070,10 +4084,10 @@ function randomPat() {
   if (Math.random() < .35) p[5] = Array(STEPS).fill(0);
   return p;
 }
-function dice() { pushUndo(); S.pats[S.cur] = randomPat(); renderPads(true); renderPats(); markEdit(); if (!P.playing) play(); toast('Patrón inventado. Tirá de nuevo o tocá Deshacer.', 1600); }
-function copyPattern() { P.clip = { p: clone(S.pats[S.cur]), s: clone(S.ps[S.cur]) }; toast(`Patrón ${LET[S.cur]} copiado`); }
+function dice() { pushUndo(); S.pats[S.cur] = randomPat(); renderPads(true); renderPats(); markEdit(); if (!P.playing) play(); toast('Track inventado. Tirá de nuevo o tocá Deshacer.', 1600); }
+function copyPattern() { P.clip = { p: clone(S.pats[S.cur]), s: clone(S.ps[S.cur]) }; toast(`Track ${LET[S.cur]} copiado`); }
 function pastePattern() {
-  if (!P.clip) return toast('Primero copiá un patrón');
+  if (!P.clip) return toast('Primero copiá un track');
   pushUndo(); S.pats[S.cur] = clone(P.clip.p); S.ps[S.cur] = clone(P.clip.s); renderAll(true); markEdit(); toast(`Pegado en ${LET[S.cur]}`);
 }
 function loadPreset(pr) {
@@ -4083,13 +4097,13 @@ function loadPreset(pr) {
   for (let t = 0; t < NT; t++) [S.st[t], S.lay[t]] = presetSt(pr, t);
   bankWarm();
   renderAll(true); markEdit();
-  toast(`${pr.n} en el patrón ${LET[S.cur]} (${pr.bpm} bpm)`);
+  toast(`${pr.n} en el track ${LET[S.cur]} (${pr.bpm} bpm)`);
 }
 function setAllStyles(i) {
   for (let t = 0; t < NT; t++) { S.st[t] = Math.min(i, VOICES[t].length - 1); S.lay[t] = 0; }
   renderTracks(); save(); ensureAudio(); playTrack(0, null, 1); playTrack(6, null, .8, 1, .4);
   if (!RM) trks.forEach((el, t) => el.animate([{ transform: 'translateY(4px)', opacity: .3 }, { transform: 'none', opacity: 1 }], { duration: 260, delay: t * 30, fill: 'backwards' }));
-  toast(`Sonido ${FAM[i]} en el patrón ${LET[S.cur]}`, 1400);
+  toast(`Sonido ${FAM[i]} en el track ${LET[S.cur]}`, 1400);
 }
 
 /* ================= text format ================= */
@@ -4111,7 +4125,7 @@ const stInto = (q) => (t, x) => {
 };
 const scaleOf = (v) => { const n = norm(v); let i = MOODS.findIndex(m => norm(m.n) === n); if (i >= 0) return MOODS[i].sc; i = SCALES.findIndex(s => norm(s.n) === n); return i >= 0 ? i : null; };
 function toText() {
-  const L2 = ['# GREENPAD beat v3', '# Batería: x = golpe, . = silencio. Melódicos: 1 a 8 = nota de la escala.', '# Podés editarlo a mano y volver a importarlo. Cada patrón lleva su AMBIENTE y sus ESTILOS.', '',
+  const L2 = ['# GREENPAD beat v3', '# Batería: x = golpe, . = silencio. Melódicos: 1 a 8 = nota de la escala.', '# Podés editarlo a mano y volver a importarlo. Cada track lleva su AMBIENTE y sus ESTILOS.', '',
     `NOMBRE: ${S.name}`, `BPM: ${S.bpm}`, `SWING: ${S.swing}`, `TONO: ${NOTES[S.key]} ${SCALES[S.scale].n}`,
     `CANCION: ${S.song.map(b => LET[b.p] + 'x' + b.n).join(' ') || '-'}`, `MODO: ${S.songOn ? 'cancion' : 'patron'}`, `REPETIR: ${S.songLoop ? 'si' : 'no'}`, `DESTIEMPO: ${Math.round(S.hum * 100)}`,
     `CADENA: ${S.chain ? 'si' : 'no'}`,
@@ -4181,7 +4195,7 @@ function parseText(txt) {
       else if (k === 'ACTUAL') { const i = LET.indexOf(v.toUpperCase()); if (i >= 0) o.cur = i; }
       continue;
     }
-    if (m && p >= 0) { // sonido y ambiente propios del patrón
+    if (m && p >= 0) { // sonido y ambiente propios del track
       const k = norm(m[1]), v = m[2].trim(), q = PP[p] || (PP[p] = { st: H0.st.slice(), lay: H0.lay.slice(), sc: null, mix: null, gr: {} });
       if (k === 'ESTILOS' || k === 'ESTILO' || k === 'SONIDO') pairs(v, stInto(q));
       else if (k === 'AMBIENTE' || k === 'ESCALA') q.sc = scaleOf(v);
@@ -4206,7 +4220,7 @@ function parseText(txt) {
     const q = PP[i], smp = TR.map((x, t) => {
       const g = q && q.gr && q.gr[t];
       if (g && REF[g.ref]) { const { ref, ...fx } = g; return Object.assign({ id: REF[g.ref] }, fx); }
-      return LEG[t] ? Object.assign({ id: LEG[t], rev: false, echo: false, robot: false, len: 1 }, vfx[t] || {}) : null; // .txt viejo: la misma grabación en todos los patrones
+      return LEG[t] ? Object.assign({ id: LEG[t], rev: false, echo: false, robot: false, len: 1 }, vfx[t] || {}) : null; // .txt viejo: la misma grabación en todos los tracks
     });
     return { st: (q ? q.st : H0.st).slice(), lay: (q ? q.lay : H0.lay).slice(), sc: q && q.sc != null ? q.sc : H0.sc != null ? H0.sc : 2, mix: (q && q.mix != null ? q.mix : H0.mix) & ~(1 << i), smp };
   });
@@ -4356,7 +4370,7 @@ function renderLib() {
     const n = (e.data.pats || []).filter(p => Array.isArray(p) && p.some(r => Array.isArray(r) && r.some(Boolean))).length;
     li.innerHTML = '<button class="open"><b></b><small></small></button><button class="del" aria-label="Borrar beat"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 9h5.6l.7-9"/></svg></button>';
     li.querySelector('b').textContent = e.name;
-    li.querySelector('small').textContent = `${fmtDate(e.t)} · ${n} patrón${n === 1 ? '' : 'es'} · ${e.data.bpm} bpm`;
+    li.querySelector('small').textContent = `${fmtDate(e.t)} · ${n} track${n === 1 ? '' : 's'} · ${e.data.bpm} bpm`;
     li.querySelector('.open').addEventListener('click', () => {
       if (e.id === S.id) return closeAll();
       const o = normalize(clone(e.data)); o.id = e.id; openBeat(o, `Abierto: ${e.name}`, true); closeAll();
@@ -4399,7 +4413,7 @@ $('#sw').addEventListener('input', (e) => { S.swing = +e.target.value; $('#swO')
 $('#vol').addEventListener('input', (e) => { S.vol = +e.target.value / 100; $('#volO').textContent = e.target.value + '%'; if (AU.out) AU.out.gain.setTargetAtTime(S.vol, AU.ctx.currentTime, .02); save(); });
 $('#chain').addEventListener('change', (e) => { setChain(e.target.checked, true); });
 $('#chainBtn').addEventListener('click', () => setChain(!S.chain));
-function setChain(v, quiet) { S.chain = v; save(); syncDrawer(); if (!quiet) toast(v ? 'Cadena: los patrones con notas suenan uno detrás de otro' : 'Cadena apagada: se repite el patrón actual'); }
+function setChain(v, quiet) { S.chain = v; save(); syncDrawer(); if (!quiet) toast(v ? 'Cadena: los tracks con notas suenan uno detrás de otro' : 'Cadena apagada: se repite el track actual'); }
 $('#cpy').addEventListener('click', copyPattern);
 $('#pst').addEventListener('click', pastePattern);
 $('#dice').addEventListener('click', dice);
@@ -4451,7 +4465,7 @@ function renderStyles(anim) {
   const t = SH.t, tr = TR[t];
   shCard.style.setProperty('--sc', effSt(t) === VC(t) ? 'var(--red)' : `var(--s${effSt(t)})`);
   $('#shIc').innerHTML = svgIcon(tr.ic);
-  $('#shNum').textContent = `INSTRUMENTO ${t + 1} · PATRÓN ${LET[S.cur]}`;
+  $('#shNum').textContent = `INSTRUMENTO ${t + 1} · TRACK ${LET[S.cur]}`;
   $('#shName').textContent = tr.name;
   $('#shGen').textContent = tr.mel ? 'Inventar línea nueva' : 'Inventar ritmo nuevo';
   shSts.innerHTML = '';
@@ -4740,7 +4754,7 @@ function useVoice() {
   S.st[t] = VC(t); S.lay[t] &= ~(1 << VC(t));
   renderTracks(); markEdit(); closeAll(); live(t);
   if (!RM) bump(trks[t], 1.15, 260);
-  toast(`La grabación suena en ${TR[t].name.toLowerCase()} del patrón ${LET[S.cur]}. En los otros patrones ${TR[t].name.toLowerCase()} sigue igual.`, 3000);
+  toast(`La grabación suena en ${TR[t].name.toLowerCase()} del track ${LET[S.cur]}. En los otros tracks ${TR[t].name.toLowerCase()} sigue igual.`, 3000);
 }
 // recorte, tono y efectos se aplican en vivo al instrumento elegido si ya usa esta grabación
 function bindVoice() {
@@ -4799,7 +4813,7 @@ function knob(host, { label, min = 0, max = 1, val = 0, def = 0, bip = false, fm
 }
 function buildDJ() {
   const deckHTML = (d) => `
-    <div class="dkh"><span class="dn">BANDEJA <b>${'AB'[d]}</b><em class="dmx"></em></span><div class="dkp" aria-label="Patrón de la bandeja ${'AB'[d]}"></div></div>
+    <div class="dkh"><span class="dn">BANDEJA <b>${'AB'[d]}</b><em class="dmx"></em></span><div class="dkp" aria-label="Track de la bandeja ${'AB'[d]}"></div></div>
     <div class="plat" aria-label="Disco: arrastralo para hacer scratch">
       <div class="base"></div>
       <div class="disc"><div class="lab"><small>GREENPAD</small><b>A</b><i></i></div></div>
@@ -4829,7 +4843,7 @@ function buildDJ() {
     const pw = el.querySelector('.dkp');
     for (let i = 0; i < NP; i++) {
       const b = document.createElement('button'); b.className = 'dpb'; b.textContent = LET[i]; b.style.setProperty('--c', `var(--s${i})`);
-      b.title = `Poner el patrón ${LET[i]} en la bandeja ${'AB'[d]}`; b.addEventListener('click', () => deckLoad(d, i)); pw.appendChild(b); E.pbs.push(b);
+      b.title = `Poner el track ${LET[i]} en la bandeja ${'AB'[d]}`; b.addEventListener('click', () => deckLoad(d, i)); pw.appendChild(b); E.pbs.push(b);
     }
     const mw = el.querySelector('.dkm');
     TR.forEach((tr, t) => { const b = document.createElement('button'); b.className = 'mt'; b.innerHTML = svgIcon(tr.ic); b.title = `${tr.name}: prender o apagar en esta bandeja`; b.addEventListener('click', () => deckMute(d, t)); mw.appendChild(b); E.mts.push(b); });
@@ -5010,7 +5024,7 @@ function setView(dj) {
   applyDecks(); layout();
   if (dj) { renderDJ(); djKick(); if (!RM) DJ.els.forEach((E, d) => E.el.animate([{ transform: `translateY(18px) scale(.96)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 380, delay: d * 90, easing: 'cubic-bezier(.2,.9,.3,1.2)', fill: 'backwards' })); }
   else { renderAll(true); setPH(P.playing ? P.vstep : -1); }
-  if (dj && !store.get(LS_PREF + '.dj1')) { store.set(LS_PREF + '.dj1', 1); toast('Bandejas: elegí un patrón para cada disco y pasá de uno al otro con el crossfader. Arrastrá un disco para hacer scratch.', 4200); }
+  if (dj && !store.get(LS_PREF + '.dj1')) { store.set(LS_PREF + '.dj1', 1); toast('Bandejas: elegí un track para cada disco y pasá de uno al otro con el crossfader. Arrastrá un disco para hacer scratch.', 4200); }
   save();
 }
 function djKeys(e) {
@@ -5181,7 +5195,7 @@ function vidSeek(t, snap) {
   vidV.currentTime = t;
   if (VD.run) vidGo(); else vidDirty();
 }
-// al moverse con la música quieta: el patrón de ese momento queda elegido
+// al moverse con la música quieta: el track de ese momento queda elegido
 function vidFollow() {
   if (VD.run) return;
   const g = vidSegAt(vidV.currentTime);
@@ -5470,7 +5484,7 @@ function vidKeys(e) {
   if (['ArrowUp', 'ArrowDown', 'Enter', 'Delete', 'Backspace', 'KeyX'].includes(c)) { e.preventDefault(); return true; } // en video no se edita la grilla escondida
   return false;
 }
-// el audio para el video: la canción (o el patrón en loop) desde donde empieza hasta el final del video
+// el audio para el video: la canción (o el track en loop) desde donde empieza hasta el final del video
 function vidBlocks() {
   const need = Math.max(1, Math.ceil((VD.dur - S.vid.off) / barSec() - 1e-6)), out = [];
   let left = need;
@@ -5500,7 +5514,18 @@ function showSplash(next) {
   FRA.i = i; store.set(LS_PREF + '.fr', L[i]);
   document.querySelectorAll('.splash').forEach(el => { el.textContent = L[i]; el.classList.toggle('mid', L[i].length > 16 && L[i].length <= 26); el.classList.toggle('long', L[i].length > 26); });
 }
-document.querySelectorAll('.splash').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); showSplash(true); }));
+// tocar el logo o la leyenda abre "Acerca de" (el texto está en acerca.txt)
+document.querySelectorAll('.logo, .dh b, [data-about]').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); openAbout(); }));
+const ABOUT0 = 'GREENPAD es una caja de ritmos para armar canciones con instrumentos grabados.';
+let aboutP = null;
+function openAbout() {
+  if (!aboutP) aboutP = fetch('acerca.txt', { cache: 'no-cache' }).then(r => (r.ok ? r.text() : '')).catch(() => '').then((t) => {
+    const ps = t.split(/\r?\n\s*\r?\n/).map(x => x.split(/\r?\n/).filter(l => !l.trim().startsWith('#')).join(' ').trim()).filter(Boolean); // párrafos separados por una línea vacía
+    const box = $('#aboutTxt'); box.innerHTML = '';
+    (ps.length ? ps : [ABOUT0]).forEach(x => { const el = document.createElement('p'); el.textContent = x; box.appendChild(el); });
+  });
+  aboutP.then(() => openModal('#about'));
+}
 fetch('frases.txt', { cache: 'no-cache' }).then(r => (r.ok ? r.text() : '')).then((t) => {
   const L = t.split(/\r?\n/).map(x => x.trim()).filter(x => x && !x.startsWith('#')).map(x => x.slice(0, 60));
   if (L.length) FRA.list = L;
@@ -5571,7 +5596,7 @@ addEventListener('keydown', (e) => {
     }
     case 'PageUp': e.preventDefault(); setBpm(S.bpm + 10); return;
     case 'PageDown': e.preventDefault(); setBpm(S.bpm - 10); return;
-    case 'KeyQ': toast('Para mezclar, tildá la casilla de otra letra: suena junto con el patrón que estás editando', 2400); return;
+    case 'KeyQ': toast('Para mezclar, tildá la casilla de otra letra: suena junto con el track que estás editando', 2400); return;
     case 'KeyV': openVoice(); return;
     case 'KeyT': tapTempo(); return;
     case 'KeyR': toggleRec(); return;
