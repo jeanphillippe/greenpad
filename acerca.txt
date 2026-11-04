@@ -1,7 +1,7 @@
 # Texto de "Acerca de" de GREENPAD. Se abre desde el pie de página, el menú y al tocar el logo o la frase.
 # Cada párrafo va separado por una línea vacía (hasta 3 párrafos). Las líneas que empiezan con # no se muestran.
 
-GREENPAD es una caja de ritmos para armar canciones con instrumentos grabados: batería, bajo, guitarras, piano, vientos y más. Se arma tocando cuadros en una grilla, sin necesidad de saber de escalas ni de notas.
+GREENPAD es una caja de ritmos para armar canciones con distintos instrumentos: batería, bajo, guitarras, piano, vientos y más. Se arma tocando cuadros en una grilla, sin necesidad de saber de escalas ni de notas.
 
 Los tracks se combinan en una canción, se mezclan en las bandejas y se pueden poner sobre un video. El tema se baja en MP3, WAV o video. Funciona en el teléfono y en la compu, también sin conexión, y todo queda guardado en el propio equipo.
 

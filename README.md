@@ -190,7 +190,7 @@ MELODÍA   .... .... .... ....
 - Tocar y arrastrar sobre los cuadros pinta o borra varios pasos.
 - Mantener apretado un ícono abre sus estilos; mantener apretado un paso melódico abre las notas.
 - No se hace zoom al tocar varias veces seguidas ni con dos dedos (en iPhone y iPad también).
-- Las tablets paradas usan la misma pantalla que el teléfono parado.
+- Las tablets paradas usan la misma pantalla que el teléfono parado, con el logo arriba entre el tempo y las herramientas. En tablets acostadas (y pantallas de 900 a 1240 px de ancho) el logo va al final de la fila de la canción; en bandejas, arriba a la derecha. En el teléfono el logo se ve en el menú.
 - Bandejas en vertical: los dos discos arriba, la mezcla con el crossfader en el medio y los controles de cada bandeja abajo.
 - En iPhone, si no suena, revisar el interruptor de silencio.
 - Modo liviano (menú, Sonido): reverb más corta, menos sonidos superpuestos y la animación de fondo a la mitad de cuadros. Se activa solo si el reloj de audio se atrasa (el equipo no da abasto) y queda guardado en ese dispositivo.
@@ -323,11 +323,15 @@ El tercer botón del selector de pantalla (la cámara, debajo de grilla y bandej
 
 - **Elegir un video** del equipo (horizontal 16:9, vertical 9:16, cuadrado o cualquier otra medida: la pantalla se acomoda). No se sube a ningún lado. También se puede soltar el archivo sobre la página.
 - El video no se guarda: al recargar hay que elegirlo otra vez. Dónde empieza la música sí queda guardado con el beat (si se elige el mismo archivo; con otro video arranca de cero).
-- **Play** (el del video, el de arriba o Espacio) toca el video y la canción juntos. Manda el reloj de audio: si el video se adelanta o se atrasa, se acomoda solo.
+- **Play** (el del video, el de arriba o Espacio) toca el video y la canción juntos. Manda el video: cuando ya está andando, la música entra justo en ese punto (contando lo que tarda en salir el sonido). Al video nunca se le cambia la velocidad ni se lo hace saltar, así su sonido no se corta. Si con el tiempo se separan más de un octavo de segundo, o el video se traba cargando, la música se vuelve a enganchar sola.
 - **Ondas:** arriba, el sonido del video; abajo, la música con el color de cada parte de la canción (la onda de la música se recalcula sola un momento después de cada cambio, con la música quieta). Tocar o arrastrar arriba va a ese momento; arrastrar la onda de la música la corre.
 - **VOLUMEN:** uno para el video y otro para la música (el de la música es el mismo "Volumen general" del menú). Ninguno cambia la descarga.
 - **MÚSICA DESDE:** − y + la corren de a 0,05 segundos (mantener apretado para ir rápido); **ACÁ** la hace empezar en el momento que se ve.
-- **Cortes y sugerencia:** las rayas amarillas son los momentos donde el sonido del video cambia fuerte (sube o baja de golpe, comparando el medio segundo de antes con el de después). Abajo del volumen dice cuántos caen justo en un cambio de parte de la canción. Si otro orden de los mismos bloques hace caer más, aparece una sugerencia con el orden; **USAR ESTE ORDEN** lo aplica y Deshacer lo vuelve atrás. Solo cambia el orden: los bloques, sus vueltas y el largo total quedan iguales (si todos los bloques duran lo mismo, el orden no mueve los cambios de parte y no hay sugerencia).
+- **Cortes:** las rayas amarillas son los momentos donde el sonido del video cambia fuerte, en volumen o en color (graves, medios y agudos se miran por separado), comparando el medio segundo de antes con el de después. Marca hasta 24. Abajo del volumen dice cuántos caen justo en un cambio de parte de la canción.
+- **Sugerencias** (aparecen solas si mejoran algo; **PROBAR** aplica y Deshacer vuelve atrás):
+  - la más liviana entre **otro orden** de los mismos bloques (mismo tempo) o **solo otro tempo** (misma canción), la que haga caer más momentos;
+  - **rearmar**: busca el tempo (entre 20 % menos y 25 % más que el actual) donde más momentos caen justo al empezar un compás y arma partes nuevas que empiezan en esos momentos, repitiendo los tracks de la canción en su orden (dos partes seguidas no repiten track). Se muestra si cae en más momentos que la liviana.
+  - Las partes duran compases enteros, así que los momentos que caen a mitad de compás con cualquier tempo no se pueden alcanzar. Dónde empieza la música no se toca.
 - **AJUSTAR TEMPO AL VIDEO** cambia el tempo para que la canción termine junto con el video (si queda entre 40 y 240).
 - **AUDIO PARA EL VIDEO** abre Descargar con **Para el video**: MP3 o WAV del mismo largo que el video, con silencio hasta donde empieza la música y cortado al final del video. Se pega debajo del video, desde el principio, en cualquier editor. Si la canción se repite, sigue hasta tapar el video; si no, termina con el platillo.
 - Con CANCIÓN apagado, la música es el patrón que se está editando en loop.

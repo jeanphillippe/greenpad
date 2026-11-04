@@ -129,6 +129,20 @@ svg{display:block}
 .splash:empty{display:none}
 .splash.mid{font-size:17px}.splash.long{font-size:14px}
 .dh .splash{right:-30px;bottom:-12px}
+/* logo también en tablets: parada, en la cabecera entre el tempo y las herramientas; acostada (o pantalla mediana),
+   al final de la fila de la canción (en bandejas, arriba, donde sobra lugar). En el teléfono solo en el menú. */
+.logo-s{display:none}
+@media (min-width:900px) and (max-width:1240px) and (min-height:521px){
+  #app:not(.v):not(.djv) .logo-s{display:block;flex:none;font-size:24px;margin:0 22px 0 6px}
+  #app.djv:not(.v) #top .logo{display:block}
+  .logo-s .splash{font-size:16px;bottom:-13px;right:-12px}
+}
+@media (min-width:600px){
+  #app.v #top{grid-template-areas:"lever tempo logo tools" "pats pats pats pats" "more more more vsw"}
+  #app.v.djv #top{grid-template-areas:"lever tempo logo tools" "more more more vsw"}
+  #app.v #top .logo{display:block;grid-area:logo;justify-self:center;align-self:center;font-size:28px;margin-bottom:8px}
+  #app.v #top .splash{font-size:16px;bottom:-14px;right:-10px}
+}
 @keyframes splash{from{transform:rotate(-14deg) scale(1)}to{transform:rotate(-14deg) scale(1)}}
 @media (prefers-reduced-motion:reduce){.splash{animation:none;transform:rotate(-14deg)}}
 .spacer{flex:1}
@@ -275,7 +289,7 @@ svg{display:block}
 .vsw button{width:32px;height:18px;border-radius:6px;background:var(--chip);color:var(--ink);display:grid;place-items:center;transition:background .15s,color .15s}
 .vsw button.on{background:var(--cy);color:var(--acc-ink)}
 .vsw svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8}
-@media (pointer:coarse){#app:not(.cmp) .vsw{flex-direction:row;gap:3px}.vsw button{width:38px;height:30px}.vsw svg{width:17px;height:17px}}
+@media (pointer:coarse){#app:not(.cmp) .vsw{gap:3px}.vsw button{width:40px;height:24px}.vsw svg{width:16px;height:16px}}
 .djv .patbox,.djv .sndbox,.djv .tone{display:none}
 .djv #board{display:none}
 .djv.v #top{grid-template-areas:"lever tempo tools tools" "more more more vsw"}
@@ -424,10 +438,13 @@ input.xf::-moz-range-thumb{width:30px;height:40px;border:0;border-radius:8px;bac
 .vd-vol input{width:100%;margin:0;accent-color:var(--cy);height:24px}
 .vd-info{margin:0;font-size:12px;line-height:1.45;color:var(--ink2)}
 .vd-info i{font-style:normal;color:#ffd84a;font-weight:800}
-.vd-sug{display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:12px;background:color-mix(in srgb,#ffd84a 12%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,#ffd84a 45%,transparent)}
+.vd-sug{display:flex;flex-direction:column;gap:12px;padding:10px;border-radius:12px;background:color-mix(in srgb,#ffd84a 12%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,#ffd84a 45%,transparent)}
 .vd-sug[hidden]{display:none}
+.vd-sg{display:flex;flex-direction:column;gap:8px}
+.vd-sg+.vd-sg{padding-top:12px;border-top:1px solid color-mix(in srgb,#ffd84a 30%,transparent)}
 .vd-sug p{margin:0;font-size:12px;line-height:1.45;color:var(--ink2)}
 .vd-sug b{color:var(--c,var(--cy))}
+.vd-sug i{font-style:normal;color:#ffd84a;font-weight:800}
 .vd-more{flex-direction:row;flex-wrap:wrap;gap:6px;margin-top:auto}
 .vd-more .mbt{flex:1 1 auto}
 .mbt.pri{background:var(--cy);color:var(--acc-ink);display:flex;align-items:center;justify-content:center;gap:6px}
@@ -795,6 +812,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <span id="songTime">0:00</span>
     <div class="sgwrap"><div id="songTrk"></div></div>
     <div class="sgtools" id="songTools"></div>
+    <div class="logo logo-s">GREEN<span>PAD</span><em class="splash" aria-hidden="true"></em></div>
     <div class="sgpop" id="songPop" hidden></div>
   </nav>
   <main id="stage"><div id="board" role="grid" aria-label="Secuenciador de 16 pasos"><div id="fx"></div></div><section id="dj" hidden aria-label="Bandejas"></section><section id="vid" hidden aria-label="Video">
@@ -805,7 +823,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <div class="vd-row vd-tr"><button class="vd-play" id="vdPlay" aria-label="Play"><svg class="ip" viewBox="0 0 24 24"><path d="M7 4.6v14.8c0 .8.9 1.3 1.6.8l11.6-7.4c.6-.4.6-1.3 0-1.7L8.6 3.8C7.9 3.3 7 3.8 7 4.6z"/></svg><svg class="ia" viewBox="0 0 24 24"><rect x="5.5" y="4" width="4.6" height="16" rx="1.3"/><rect x="13.9" y="4" width="4.6" height="16" rx="1.3"/></svg></button><span id="vdTime">0:00</span></div>
       <div class="vd-sec"><span class="lbl">VOLUMEN</span><label class="vd-vol"><span>VIDEO</span><input type="range" id="vdVolV" min="0" max="100" step="1"></label><label class="vd-vol"><span>MÚSICA</span><input type="range" id="vdVolM" min="0" max="100" step="1"></label></div>
       <div class="vd-sec"><span class="lbl">MÚSICA DESDE</span><div class="vd-row"><button class="mbt vd-n" id="vdOffM" aria-label="Música antes">−</button><b id="vdOff">0:00,00</b><button class="mbt vd-n" id="vdOffP" aria-label="Música después">+</button><button class="mbt" id="vdOffHere" title="La música empieza en este momento del video">ACÁ</button></div></div>
-      <div class="vd-sec"><p class="vd-info" id="vdCuts"></p><div class="vd-sug" id="vdSug" hidden><p id="vdSugT"></p><button class="mbt pri" id="vdSugGo">USAR ESTE ORDEN</button></div></div>
+      <div class="vd-sec"><p class="vd-info" id="vdCuts"></p><div class="vd-sug" id="vdSug" hidden></div></div>
       <div class="vd-sec vd-more"><button class="mbt" id="vdFit" title="Cambia el tempo para que la canción termine junto con el video">AJUSTAR TEMPO AL VIDEO</button><button class="mbt" id="vdNew">OTRO VIDEO</button><button class="mbt pri" id="vdDl"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v7.5M4.8 7l3.2 3.2L11.2 7"/><path d="M2.8 11.2v1.3a1.5 1.5 0 001.5 1.5h7.4a1.5 1.5 0 001.5-1.5v-1.3"/></svg>AUDIO PARA EL VIDEO</button></div>
     </div>
   </section><footer class="madeby madeby-end"><button class="about-l" data-about>ACERCA DE</button><a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" style="opacity:.8;max-height: 60px;margin-top: 15px;" alt="Hecho en La Pampa por Jean Phillippe Studio"></a></footer></main>
@@ -5157,8 +5175,10 @@ function vidPlay() {
 }
 // (re)engancha la música con el punto del video
 function vidGo() {
-  const v = vidV; v.playbackRate = 1; VD.anchor = null; VD.sig = vidSig();
-  if (!vidMusic(v.currentTime) && (P.playing || P.loading)) stop();
+  const v = vidV; v.playbackRate = 1;
+  if (P.playing || P.loading) stop();
+  VD.anchor = null; VD.sig = vidSig(); VD.drift = 0; VD.bad = 0;
+  VD.sync = { vt: v.currentTime }; // la música entra cuando el video ya está andando (ver vidTick)
   setLever('play');
   if (v.paused) {
     const pr = v.play();
@@ -5179,11 +5199,17 @@ function vidTick() {
   const v = vidV, c = AU.ctx;
   if (VD.run) {
     if (vidSig() !== VD.sig) { vidGo(); return; } // cambió la canción, el tempo o dónde empieza: se vuelve a enganchar
-    if (VD.anchor && P.playing && c && !v.seeking) {
-      const lat = c.outputLatency || c.baseLatency || 0, exp = VD.anchor.vt + (c.currentTime - lat - VD.anchor.ct), d = v.currentTime - exp;
-      if (Math.abs(d) > .35) { v.currentTime = Math.max(0, exp); v.playbackRate = 1; }
-      else { const r = Math.abs(d) < .03 ? 1 : Math.round(clamp(1 - d * 1.5, .85, 1.15) * 100) / 100; if (v.playbackRate !== r) v.playbackRate = r; }
-    } else if (v.playbackRate !== 1) v.playbackRate = 1;
+    const lat = c ? (c.outputLatency || c.baseLatency || 0) : 0;
+    if (VD.sync) {
+      // manda el video: cuando ya avanza, la música arranca justo en ese punto (contando lo que tarda en salir el sonido)
+      if (!v.paused && !v.seeking && v.readyState >= 3 && v.currentTime > VD.sync.vt + .02) { VD.sync = null; vidMusic(v.currentTime + .06 + lat); }
+    } else if (VD.anchor && P.playing && c && !v.paused && !v.seeking) {
+      // si con el tiempo se separan más de un octavo de segundo, se vuelve a enganchar la música (el video sigue igual)
+      const d = v.currentTime - (VD.anchor.vt + (c.currentTime - lat - VD.anchor.ct));
+      VD.drift = VD.drift * .9 + d * .1;
+      VD.bad = Math.abs(VD.drift) > .12 ? VD.bad + 1 : 0;
+      if (VD.bad > 30) { vidGo(); return; }
+    }
     if (!$('#playBtn').classList.contains('on')) setLever('play');
   }
   vidUI(); vidDraw();
@@ -5227,8 +5253,11 @@ function vidUI() {
       : VD.vw === 'grande' ? 'El video es muy pesado para dibujar su sonido en este equipo. La sincronía funciona igual.'
         : !C ? '' : !C.length ? 'El sonido del video no tiene cambios fuertes: no hay cortes para acomodar.'
           : `El sonido del video cambia fuerte en <i>${C.length}</i> ${C.length > 1 ? 'momentos' : 'momento'} (rayas amarillas)` + (hits != null ? `; ${hits} ${hits === 1 ? 'cae' : 'caen'} justo en un cambio de parte de la canción.` : '.'));
-  const sg = $('#vdSug'); sg.hidden = !VD.sug;
-  if (VD.sug) vtxt('#vdSugT', `Sugerencia: con el orden ${ordTxt(VD.sug.ord.map(i => S.song[i]))}, <i>${VD.sug.h}</i> de esos momentos caen en un cambio de parte (ahora ${hits}).`);
+  const sg = $('#vdSug'), su = VD.sug || []; sg.hidden = !su.length;
+  const few = (L) => ordTxt(L.slice(0, 9)) + (L.length > 9 ? ` · y ${L.length - 9} más` : '');
+  vtxt('#vdSug', su.map((x, k) => `<div class="vd-sg"><p>${x.kind === 'ord' ? `Cambiar el orden: ${few(x.ord.map(i => S.song[i]))}.`
+    : x.kind === 'bpm' ? `Tempo <b>${x.bpm}</b> (ahora ${S.bpm}), con la misma canción.`
+      : `Rearmar con tempo <b>${x.bpm}</b>, repitiendo tus tracks: ${few(x.song)}.`} Caen <i>${x.h}</i> de ${VD.nc} momentos en un cambio de parte (ahora ${hits}).</p><button class="mbt pri" data-k="${k}">PROBAR</button></div>`).join(''));
   const vv = $('#vdVolV'), vm = $('#vdVolM');
   if (document.activeElement !== vv) vv.value = Math.round(vidVolV() * 100);
   if (document.activeElement !== vm) vm.value = Math.round(S.vol * 100);
@@ -5293,57 +5322,98 @@ async function vidAudioWave(f) {
   } catch { if (id === VD.url) VD.vw = 'nada'; }
   vidDirty();
 }
-// cortes: momentos donde el volumen del video cambia fuerte (promedio de 0,4 s antes contra 0,4 s después)
+// cortes: momentos donde el sonido del video cambia fuerte, en volumen o en color (graves, medios y agudos por separado),
+// comparando el promedio de 0,4 s antes contra 0,4 s después
 function findCuts(b) {
-  const sr = b.sampleRate, hop = Math.round(sr * .02), n = Math.floor(b.length / hop), chs = [...Array(Math.min(2, b.numberOfChannels))].map((_, k) => b.getChannelData(k));
+  const sr = b.sampleRate, hop = Math.round(sr * .02), n = Math.floor(b.length / hop), c0 = b.getChannelData(0), c1 = b.numberOfChannels > 1 ? b.getChannelData(1) : null;
   if (n < 60) return [];
-  const e = new Float64Array(n + 1);
-  for (let i = 0; i < n; i++) { let s = 0; const o = i * hop; for (const d of chs) for (let j = 0; j < hop; j += 2) { const x = d[o + j]; s += x * x; } e[i + 1] = e[i] + Math.log10(1e-7 + s / (hop / 2 * chs.length)); }
-  const w = 20, nov = new Float32Array(n), mean = (a, z) => (e[z] - e[a]) / (z - a);
+  const aL = 1 - Math.exp(-2 * Math.PI * 200 / sr), aH = 1 - Math.exp(-2 * Math.PI * 2500 / sr), E = [0, 1, 2, 3].map(() => new Float64Array(n + 1)), lg = (x) => Math.log10(1e-6 + x / hop);
+  let l = 0, h = 0;
+  for (let i = 0; i < n; i++) {
+    let s0 = 0, s1 = 0, s2 = 0; const o = i * hop;
+    for (let k = 0; k < hop; k++) {
+      const x = c1 ? (c0[o + k] + c1[o + k]) * .5 : c0[o + k];
+      l += aL * (x - l); h += aH * (x - h);
+      const m = h - l, a = x - h; s0 += l * l; s1 += m * m; s2 += a * a;
+    }
+    E[0][i + 1] = E[0][i] + lg(s0 + s1 + s2); E[1][i + 1] = E[1][i] + lg(s0); E[2][i + 1] = E[2][i] + lg(s1); E[3][i + 1] = E[3][i] + lg(s2);
+  }
+  const w = 20, nov = new Float32Array(n), dif = (e, i) => Math.abs((e[i + w] - e[i]) - (e[i] - e[i - w])) / w;
   let sum = 0, sq = 0, cnt = 0;
-  for (let i = w; i < n - w; i++) { const v = Math.abs(mean(i, i + w) - mean(i - w, i)); nov[i] = v; sum += v; sq += v * v; cnt++; }
+  for (let i = w; i < n - w; i++) { const v = Math.max(dif(E[0], i), (dif(E[1], i) + dif(E[2], i) + dif(E[3], i)) / 3); nov[i] = v; sum += v; sq += v * v; cnt++; }
   if (!cnt) return [];
-  const mu = sum / cnt, sd = Math.sqrt(Math.max(0, sq / cnt - mu * mu)), thr = Math.max(mu + 1.6 * sd, .5); // .5 = unos 5 dB
+  const mu = sum / cnt, sd = Math.sqrt(Math.max(0, sq / cnt - mu * mu)), thr = Math.max(mu + sd, .3); // .3 = unos 3 dB
   const pk = [];
-  for (let i = w; i < n - w; i++) { if (nov[i] < thr) continue; let top = true; for (let k = Math.max(0, i - 37); k <= Math.min(n - 1, i + 37); k++) if (nov[k] > nov[i]) { top = false; break; } if (top) pk.push({ t: i * hop / sr, v: nov[i] }); }
-  return pk.sort((a, z) => z.v - a.v).slice(0, 16).map(x => +x.t.toFixed(2)).sort((a, z) => a - z);
+  for (let i = w; i < n - w; i++) { if (nov[i] < thr) continue; let top = true; for (let k = Math.max(0, i - 30); k <= Math.min(n - 1, i + 30); k++) if (nov[k] > nov[i]) { top = false; break; } if (top) pk.push({ t: i * hop / sr, v: nov[i] }); }
+  return pk.sort((a, z) => z.v - a.v).slice(0, 24).map(x => +x.t.toFixed(2)).sort((a, z) => a - z);
 }
-// ¿otro orden de los bloques hace caer más cambios de parte en los cortes del video?
+// Sugerencias para que más cambios de parte caigan justo en los cortes del video:
+//  1. liviana: otro orden de los mismos bloques, o solo otro tempo (lo que caiga en más momentos)
+//  2. rearmar: con el tempo que mejor encaja, partes nuevas que empiezan en los momentos, repitiendo los tracks de la canción
 function vidSuggest() {
-  VD.sug = null; VD.hits = null;
-  const cuts = (VD.cuts || []).filter(c => c > S.vid.off + .3 && c < VD.dur - .3), L = S.song, n = L.length;
+  VD.sug = []; VD.hits = null; VD.nc = 0;
+  const cuts = (VD.cuts || []).filter(c => c > S.vid.off + .3 && c < VD.dur - .3), L = S.song, n = L.length, B = S.bpm;
   if (!cuts.length || !songMode()) return vidDirtyUI();
-  const bs = barSec(), tol = clamp(bs / 8, .15, .35), key = (o) => o.map(i => L[i].p + 'x' + L[i].n).join(' ');
-  const score = (o) => {
-    const bd = []; let t = S.vid.off;
-    for (let k = 0; k < 400 && t < VD.dur; k++) { for (const i of o) { bd.push(t); t += L[i].n * bs; } if (!S.songLoop) break; }
-    bd.push(t);
-    let h = 0, s = 0;
-    for (const c of cuts) { let d = 1e9; for (const x of bd) { const q = Math.abs(c - x); if (q < d) d = q; } if (d <= tol) h++; s += Math.max(0, 1 - d / bs); }
-    return { h, s: h + s * .01 };
-  };
-  const id = [...Array(n)].map((_, i) => i), cur = score(id), k0 = key(id);
+  VD.nc = cuts.length;
+  const lo = Math.max(40, Math.round(B * .8)), hi = Math.min(240, Math.round(B * 1.25)), tolOf = (bs) => clamp(bs / 8, .12, .3);
+  const hitsFor = (bd, bs) => { const tol = tolOf(bs); let h = 0, s = 0; for (const c of cuts) { let d = 1e9; for (const x of bd) { const q = Math.abs(c - x); if (q < d) d = q; } if (d <= tol) h++; s += Math.max(0, 1 - d / bs); } return { h, s: h + s * .01 }; };
+  const bounds = (o, bs) => { const bd = []; let t = S.vid.off; for (let k = 0; k < 400 && t < VD.dur; k++) { for (const i of o) { bd.push(t); t += L[i].n * bs; } if (!S.songLoop) break; } bd.push(t); return bd; };
+  const score = (o, bs) => hitsFor(bounds(o, bs), bs);
+  const id = [...Array(n)].map((_, i) => i), bs0 = barSec(), cur = score(id, bs0), k0 = id.map(i => L[i].p + 'x' + L[i].n).join(' ');
   VD.hits = cur.h;
+  const light = [];
+  // 1a. otro orden, con el mismo tempo
   let best = null;
   const consider = (o) => {
-    const r = score(o); if (r.h <= cur.h) return;
+    const r = score(o, bs0); if (r.h <= cur.h) return;
     const moved = o.reduce((a, x, i) => a + (x !== i), 0);
-    if (!best || r.s > best.s + 1e-9 || (Math.abs(r.s - best.s) < 1e-9 && moved < best.moved)) { if (key(o) !== k0) best = { ord: o.slice(), h: r.h, s: r.s, moved }; }
+    if (!best || r.s > best.s + 1e-9 || (Math.abs(r.s - best.s) < 1e-9 && moved < best.moved)) { if (o.map(i => L[i].p + 'x' + L[i].n).join(' ') !== k0) best = { ord: o.slice(), h: r.h, s: r.s, moved }; }
   };
   if (n >= 2 && n <= 7) { // todos los órdenes posibles
     const a = id.slice(), c = Array(n).fill(0); consider(a);
     for (let i = 0; i < n;) { if (c[i] < i) { const j = i % 2 ? c[i] : 0; [a[i], a[j]] = [a[j], a[i]]; consider(a); c[i]++; i = 0; } else { c[i] = 0; i++; } }
-  } else if (n > 7) { // muchos bloques: se prueban cambios de a dos hasta que no mejora
+  } else if (n > 7) { // muchos bloques: cambios de a dos hasta que no mejora
     let o = id.slice(), sc = cur;
     for (let it = 0; it < 30; it++) {
       let bo = null, bsc = sc;
-      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) { const q = o.slice(); [q[i], q[j]] = [q[j], q[i]]; const r = score(q); if (r.s > bsc.s + 1e-9) { bsc = r; bo = q; } }
+      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) { const q = o.slice(); [q[i], q[j]] = [q[j], q[i]]; const r = score(q, bs0); if (r.s > bsc.s + 1e-9) { bsc = r; bo = q; } }
       if (!bo) break; o = bo; sc = bsc;
     }
     consider(o);
   }
-  VD.sug = best;
+  if (best) light.push({ kind: 'ord', h: best.h, ord: best.ord });
+  // 1b. solo otro tempo, con la misma canción
+  let bt = null;
+  for (let T = lo; T <= hi; T++) { if (T === B) continue; const r = score(id, 240 / T); if (r.h > cur.h && (!bt || r.h > bt.h || (r.h === bt.h && Math.abs(T - B) < Math.abs(bt.bpm - B)))) bt = { kind: 'bpm', h: r.h, bpm: T }; }
+  if (bt) light.push(bt);
+  light.sort((a, z) => z.h - a.h || (a.kind === 'ord' ? -1 : 1));
+  // 2. rearmar
+  const re = vidRearm(cuts, lo, hi, tolOf);
+  const top = light[0];
+  VD.sug = [top, re && re.h > cur.h && (!top || re.h > top.h) ? re : null].filter(Boolean);
   vidDirtyUI();
+}
+function vidRearm(cuts, lo, hi, tolOf) {
+  const B = S.bpm, off = S.vid.off, pats = S.song.map(b => b.p).filter((p, i, a) => i === 0 || p !== a[i - 1]);
+  if (!pats.length) return null;
+  let best = null;
+  for (let T = lo; T <= hi; T++) { // el tempo donde más momentos caen justo al empezar un compás
+    const bs = 240 / T, tol = tolOf(bs), ks = new Set(); let h = 0, err = 0;
+    for (const c of cuts) { const k = Math.round((c - off) / bs), e = Math.abs(c - off - k * bs); if (k >= 1 && e <= tol) { h++; ks.add(k); err += e; } }
+    const sc = h - Math.abs(T - B) / B * .5 - err * .05;
+    if (h && (!best || sc > best.sc)) best = { T, h, sc, ks: [...ks].sort((a, z) => a - z) };
+  }
+  if (!best) return null;
+  const bs = 240 / best.T, end = Math.max(1, Math.ceil((VD.dur - off) / bs - 1e-6)), marks = [0, ...best.ks.filter(k => k < end), end], song = [];
+  let pi = 0, prev = -1;
+  for (let j = 0; j < marks.length - 1; j++) {
+    let g = marks[j + 1] - marks[j], p = pats[pi % pats.length];
+    if (p === prev && pats.length > 1) p = pats[++pi % pats.length]; // dos partes seguidas no repiten track
+    pi++; prev = p;
+    while (g > 0) { const k = Math.min(16, g); song.push({ p, n: k }); g -= k; }
+  }
+  if (song.length > 48) return null;
+  return { kind: 'new', h: best.h, bpm: best.T, song };
 }
 function vidDirtyUI() { if (VD.on) requestAnimationFrame(() => { vidUI(); vidDraw(); }); }
 // la onda de la música: se mezcla aparte (liviano, sin conexión) cuando la canción cambia y no está sonando
@@ -5409,6 +5479,7 @@ vidV.addEventListener('loadedmetadata', () => {
 });
 vidV.addEventListener('seeked', vidDirty);
 vidV.addEventListener('ended', () => { if (VD.run) vidPause(); });
+vidV.addEventListener('waiting', () => { if (VD.run && !VD.sync) { if (P.playing || P.loading) stop(); VD.anchor = null; VD.sync = { vt: vidV.currentTime }; setLever('play'); } });
 vidV.addEventListener('error', () => { if (VD.url) toast('Este navegador no puede abrir ese video. Probá con un MP4.', 3200); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && VD.run) vidPause(); });
 // volumen del video aparte de la música: el sonido del video pasa por su propio control
@@ -5440,11 +5511,14 @@ function vidOff(t, quiet) {
 holdRepeat($('#vdOffM'), () => vidOff(S.vid.off - .05, true));
 holdRepeat($('#vdOffP'), () => vidOff(S.vid.off + .05, true));
 $('#vdOffHere').addEventListener('click', () => vidOff(vidV.currentTime));
-$('#vdSugGo').addEventListener('click', () => {
-  const sg = VD.sug; if (!sg) return;
-  pushUndo(); S.song = sg.ord.map(i => ({ p: S.song[i].p, n: S.song[i].n })); SG.sel = -1;
-  VD.sug = null; save(); renderSong();
-  toast('Orden cambiado. Si no te convence, Deshacer (la flecha de arriba o Ctrl+Z).', 2600);
+$('#vdSug').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-k]'), x = b && VD.sug && VD.sug[+b.dataset.k]; if (!x) return;
+  pushUndo();
+  if (x.kind === 'ord') S.song = x.ord.map(i => ({ p: S.song[i].p, n: S.song[i].n }));
+  if (x.kind === 'new') { S.song = x.song.map(y => ({ p: y.p, n: y.n })); S.songOn = true; }
+  if (x.bpm) setBpm(x.bpm);
+  SG.sel = -1; VD.sug = []; save(); renderSong();
+  toast(`${x.kind === 'ord' ? 'Orden cambiado' : x.kind === 'bpm' ? `Tempo ${x.bpm}` : 'Canción rearmada'}. Si no te convence, Deshacer (la flecha de arriba o Ctrl+Z).`, 2600);
 });
 $('#vdFit').addEventListener('click', () => {
   if (!songMode()) return toast('Prendé CANCIÓN y armá la canción para ajustar el tempo al video', 2400);
