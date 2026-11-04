@@ -181,12 +181,17 @@ MELODÍA   .... .... .... ....
 | Bandejas: crossfader | ← → (Shift: a la punta), ↓ al medio |
 | Bandejas: repetir 1/4, 1/8, 1/16 | mantener Z, X, C |
 | Bandejas: freno A / B | N / , |
+| Pantalla video (solo GREENPAD) | J |
+| Video: 1 segundo atrás / adelante | ← → (Shift: un compás) |
+| Video: marcar este momento | Enter |
 
 ## En el teléfono
 
 - Vertical: la grilla se gira (instrumentos en columnas, pasos hacia abajo) y ocupa todo el ancho. Si no entra de alto, se desplaza deslizando el dedo por los márgenes de los costados o por la franja entre batería y melódicos, y sigue sola a la reproducción. Horizontal: igual que la consola.
 - Tocar y arrastrar sobre los cuadros pinta o borra varios pasos.
 - Mantener apretado un ícono abre sus estilos; mantener apretado un paso melódico abre las notas.
+- No se hace zoom al tocar varias veces seguidas ni con dos dedos (en iPhone y iPad también).
+- Las tablets paradas usan la misma pantalla que el teléfono parado.
 - Bandejas en vertical: los dos discos arriba, la mezcla con el crossfader en el medio y los controles de cada bandeja abajo.
 - En iPhone, si no suena, revisar el interruptor de silencio.
 - Modo liviano (menú, Sonido): reverb más corta, menos sonidos superpuestos y la animación de fondo a la mitad de cuadros. Se activa solo si el reloj de audio se atrasa (el equipo no da abasto) y queda guardado en ese dispositivo.
@@ -304,6 +309,27 @@ Parado o acostado, la cabecera se compacta para que la grilla tenga más lugar:
 - La barra que dice **SONIDO · AMBIENTE · DESTIEMPO** muestra cómo está el patrón y, al tocarla, abre un panel con SONIDO, DESTIEMPO, AMBIENTE, **Sumar a la mezcla** (las casillas de los patrones), CADENA, Grabar en vivo y Grabar sonido. Borrar patrón (el tacho) queda siempre a la vista, junto al dado, la descarga y deshacer. Tocar la grilla o **Listo** lo cierra.
 - La canción ocupa una sola fila (el tiempo va dentro del botón CANCIÓN). Al tocar un bloque, sus herramientas aparecen en un globo debajo del bloque; **OK** lo cierra.
 
-### Service worker
+### Service worker y uso sin conexión
 
 `sw.js` guarda cada página con su dirección (`index.html` y `mini.html` no se pisan; antes guardaba cualquier página como `index.html`) y guarda las grabaciones en una caché aparte que no se borra al subir `VERSION`.
+
+Después de la primera carga (en https), la página baja de a poco, en segundo plano, todas las grabaciones que todavía no estaban guardadas (unos 7,5 MB; no lo hace con "ahorro de datos" prendido). Desde ahí la app funciona entera sin conexión, con todos los sonidos. La imagen de la firma también queda guardada.
+
+### Video
+
+El tercer botón del selector de pantalla (la cámara, debajo de grilla y bandejas; en el teléfono, a la derecha de la barra resumen) o la tecla `J` abre **Video**: sirve para ver en qué momento de un video cae cada parte de la canción, corregirla ahí mismo y bajar el audio justo para ese video.
+
+- **Elegir un video** del equipo (horizontal 16:9, vertical 9:16, cuadrado o cualquier otra medida: la pantalla se acomoda). No se sube a ningún lado. También se puede soltar el archivo sobre la página.
+- El video no se guarda: al recargar hay que elegirlo otra vez. Dónde empieza la música y las marcas sí quedan guardadas con el beat (y se mantienen si se elige el mismo archivo; con otro video arrancan de cero).
+- **Play** (el del video, el de arriba o Espacio) toca el video y la canción juntos. Manda el reloj de audio: si el video se adelanta o se atrasa, se acomoda solo (va un poco más rápido o más lento, o salta si la diferencia es grande).
+- **La tira de abajo:** arriba, cuadros del video; abajo, los bloques de la canción en el momento en que suenan (más claros si la canción se repite). Tocar o arrastrar arriba va a ese momento; arrastrar la franja de colores corre la música. Se ve por dónde va y dónde empieza la música.
+- **MÚSICA DESDE:** − y + la corren de a 0,05 segundos (mantener apretado para ir rápido); **ACÁ** la hace empezar en el momento que se ve.
+- **MARCAR** (o Enter) deja una marca blanca en ese momento del video (un corte, un golpe, un cambio de escena). Al tocar la tira cerca de una marca, va justo ahí. Tocarlo de nuevo sobre una marca la quita.
+- **EN ESTE MOMENTO** muestra qué bloque suena en el punto del video y deja corregirlo: las letras cambian el patrón de ese bloque, − y + le sacan o suman vueltas, **CORTAR ACÁ** lo parte en el compás más cercano (después se elige la letra de la parte nueva) y **EDITAR EN LA GRILLA** lleva a la grilla con ese patrón; el botón de la cámara vuelve al video en el mismo punto. Deshacer funciona igual que siempre.
+- **AJUSTAR TEMPO AL VIDEO** cambia el tempo para que la canción termine junto con el video (si queda entre 40 y 240).
+- **SONIDO DEL VIDEO** prende o apaga el audio original del video (solo para escuchar; no va en la descarga).
+- **AUDIO PARA EL VIDEO** abre Descargar con **Para el video**: MP3 o WAV del mismo largo que el video, con silencio hasta donde empieza la música y cortado al final del video. Se pega debajo del video, desde el principio, en cualquier editor. Si la canción se repite, sigue hasta tapar el video; si no, termina con el platillo.
+- Con CANCIÓN apagado, la tira muestra el patrón que se está editando en loop.
+
+### Nombre y firma
+En la página principal el nombre es **GREENPAD**, con GREEN en verde y PAD en el otro color (cabecera, menú, ayuda, video y al agregarla a la pantalla de inicio). La firma "Hecho en La Pampa por Jean Phillippe Studio" (con el enlace a jeanphillippe.com) va abajo de todo y centrada: en el teléfono parado, después de la grilla (se ve al hacer scroll); en la compu, debajo de la app (en pantallas grandes la app deja lugar y se ve sin scroll; en las más chicas, bajando un poco).

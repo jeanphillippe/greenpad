@@ -2,7 +2,7 @@
 <html lang="es" data-theme="night">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no">
 <title>GREENPAD</title>
 <meta name="description" content="GREENPAD: armá canciones con batería, bajo, guitarras, piano y vientos grabados de verdad. Funciona offline y guarda tus temas en el dispositivo.">
 <meta name="theme-color" content="#0f1612">
@@ -41,7 +41,7 @@
   --s0:#3ee08a; --s1:#2ee6d6; --s2:#c6f43a; --s3:#ffae5c; --s4:#9be7c4; --s5:#6fc3ff; --s6:#ff8fb1; --s7:#b49cff; --s8:#ffd166; --s9:#d9a77c; --s10:#7fd1e8; --s11:#cfe39a;
   --drawer:#111a15; --shadow:0 18px 50px rgba(0,0,0,.6);
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation} /* sin zoom por doble toque en teléfonos y tablets */
 html,body{margin:0;height:100%;background:var(--bg);overflow-x:hidden;overflow-y:auto;overscroll-behavior:none}
 body{font-family:var(--font);color:var(--ink2);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
   background:radial-gradient(120% 90% at 50% 0%,color-mix(in srgb,var(--bg) 70%,#fff 30%),var(--bg))}
@@ -262,14 +262,14 @@ svg{display:block}
 
 
 /* ---------- selector de pantalla ---------- */
-.vsw{display:flex;flex-direction:column;gap:3px;margin-left:8px}
-.vsw button{width:32px;height:26px;border-radius:7px;background:var(--chip);color:var(--ink);display:grid;place-items:center;transition:background .15s,color .15s}
+.vsw{display:flex;flex-direction:column;gap:2px;margin-left:8px}
+.vsw button{width:32px;height:18px;border-radius:6px;background:var(--chip);color:var(--ink);display:grid;place-items:center;transition:background .15s,color .15s}
 .vsw button.on{background:var(--cy);color:var(--acc-ink)}
-.vsw svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8}
-@media (pointer:coarse){.vsw button{width:38px;height:29px}}
+.vsw svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8}
+@media (pointer:coarse){#app:not(.cmp) .vsw{flex-direction:row;gap:3px}.vsw button{width:38px;height:30px}.vsw svg{width:17px;height:17px}}
 .djv .patbox,.djv .sndbox,.djv .tone{display:none}
 .djv #board{display:none}
-.djv.v #top{grid-template-areas:"lever tempo tools" "more more more"}
+.djv.v #top{grid-template-areas:"lever tempo tools tools" "more more more vsw"}
 .djv #song{display:none}
 
 /* ---------- bandejas ---------- */
@@ -380,6 +380,61 @@ input.xf::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:40px;ma
 input.xf::-moz-range-track{height:10px;border-radius:5px;background:linear-gradient(90deg,var(--s0),var(--line) 45% 55%,var(--s1))}
 input.xf::-moz-range-thumb{width:30px;height:40px;border:0;border-radius:8px;background:var(--ink2)}
 .v #stage.djs{align-items:flex-start}
+
+/* ---------- video (tercera pantalla) ---------- */
+.vidv #board{display:none}
+#vid{display:grid;grid-template-columns:minmax(0,1fr) 290px;grid-template-rows:minmax(0,1fr) auto;grid-template-areas:"scr side" "strip side";gap:12px 16px;width:100%;max-width:1360px;height:100%;align-items:center}
+#vid[hidden]{display:none}
+#vid .vd-pick{display:none}
+#vid.empty{grid-template-columns:100%;grid-template-rows:100%;grid-template-areas:"pick"}
+#vid.empty>:not(.vd-pick){display:none}
+#vid.empty .vd-pick{grid-area:pick;justify-self:center;display:flex;flex-direction:column;align-items:center;gap:10px;max-width:340px;padding:30px 26px;border-radius:20px;background:var(--head);box-shadow:inset 0 0 0 1.5px var(--line);color:var(--ink2);font-family:var(--font);text-align:center}
+.vd-pick svg{width:54px;height:54px;color:var(--cy)}
+.vd-pick b{font-size:16px}
+.vd-pick small{font-size:12px;line-height:1.45;color:var(--ink)}
+.vd-pick:active{transform:scale(.98)}
+.vd-scr{grid-area:scr;justify-self:center;position:relative;width:var(--vw,480px);height:var(--vh,270px);border-radius:14px;overflow:hidden;background:#000;box-shadow:0 0 0 1px var(--line);touch-action:manipulation}
+.vd-scr video{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000}
+.vd-ov{position:absolute;left:8px;top:8px;display:flex;align-items:center;gap:7px;pointer-events:none}
+.vd-ov b{min-width:30px;height:30px;padding:0 6px;border-radius:8px;display:grid;place-items:center;background:var(--c,var(--cy));color:var(--acc-ink);font-size:16px;font-weight:800;box-shadow:0 2px 10px rgba(0,0,0,.4)}
+.vd-ov b:empty{display:none}
+.vd-ov span{white-space:nowrap;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8)}
+.vd-big{position:absolute;inset:0;display:grid;place-items:center;color:#fff;background:rgba(0,0,0,.18);transition:opacity .2s}
+.vd-big svg{width:64px;height:64px;fill:currentColor;filter:drop-shadow(0 2px 10px rgba(0,0,0,.5))}
+.vd-run .vd-big{opacity:0}
+.vd-strip{grid-area:strip;position:relative;width:100%;height:84px;border-radius:12px;background:var(--pad);box-shadow:inset 0 0 0 1px var(--line);overflow:hidden;touch-action:none;cursor:pointer}
+.vd-strip canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.vd-side{grid-area:side;align-self:stretch;display:flex;flex-direction:column;gap:14px;overflow-y:auto;background:var(--head);border-radius:18px;padding:14px;box-shadow:inset 0 0 0 1px var(--line);min-height:0}
+.vd-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.vd-sec{display:flex;flex-direction:column;gap:7px}
+.vd-tr{gap:10px;flex-wrap:nowrap}
+.vd-play{width:44px;height:44px;border-radius:50%;background:var(--cy);color:var(--acc-ink);display:grid;place-items:center;flex:none}
+.vd-play svg{grid-area:1/1;width:20px;height:20px;fill:currentColor}
+.vd-play .ia,.vd-run .vd-play .ip{display:none}
+.vd-run .vd-play .ia{display:block}
+#vdTime{flex:1;font-size:13px;font-weight:700;color:var(--ink2);font-variant-numeric:tabular-nums;white-space:nowrap}
+.vd-nn{min-width:30px;text-align:center;font-size:13px;color:var(--ink2)}
+#vdOff{min-width:66px;text-align:center;font-size:14px;color:var(--cy);font-variant-numeric:tabular-nums}
+.vd-n{width:36px;padding:0;font-size:16px}
+.vd-blk{margin:0;font-size:12px;line-height:1.4;color:var(--ink2);min-height:17px}
+.vd-blk b{color:var(--c,var(--cy))}
+.vd-pats{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
+.vd-pats .dpb{width:auto}
+.vd-pats .dpb:disabled{opacity:.35}
+.vd-more{flex-direction:row;flex-wrap:wrap;gap:6px;margin-top:auto}
+.vd-more .mbt{flex:1 1 auto}
+.mbt.pri{background:var(--cy);color:var(--acc-ink);display:flex;align-items:center;justify-content:center;gap:6px}
+.mbt.pri svg{width:15px;height:15px}
+#vdSnd[aria-pressed="false"]{opacity:.55;text-decoration:line-through}
+@media (pointer:coarse){.vd-side .mbt{height:38px}}
+.v #vid{grid-template-columns:100%;grid-template-rows:auto auto auto;grid-template-areas:"scr" "strip" "side";height:auto;gap:10px;padding-bottom:6px}
+.v .vd-side{overflow:visible;padding:12px}
+.v .vd-strip{height:76px}
+.cmp:not(.v) #vid{grid-template-columns:minmax(0,1fr) 250px;gap:8px 10px}
+.cmp:not(.v) .vd-strip{height:58px}
+.cmp:not(.v) .vd-side{padding:10px;gap:10px}
+.vidv #vid.empty{grid-template-columns:100%;grid-template-rows:auto;grid-template-areas:"pick";align-content:center}
+.v #vid.empty{min-height:60vh}
 
 /* ---------- voice ---------- */
 .rb.mic.on{background:var(--red);color:#fff}
@@ -566,15 +621,17 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .cmp.djv .mp-mix{display:none}
 
 /* ---- cabecera compacta en el teléfono vertical ---- */
-.v #top{grid-template-columns:auto auto 1fr;grid-template-areas:"lever tempo tools" "pats pats pats" "more more more";gap:6px 10px;padding:6px 10px 7px;align-items:center}
-.v .leverbox{grid-area:lever;justify-self:start}
+.v #top{grid-template-columns:auto auto 1fr auto;grid-template-areas:"lever tempo tools tools" "pats pats pats pats" "more more more vsw";gap:6px 10px;padding:6px 10px 7px;align-items:center}
+.cmp .leverbox{display:contents}
+.cmp .pp{grid-area:lever}
+.cmp .vsw{grid-area:vsw;flex-direction:row;gap:4px;margin:0;justify-self:end}
+.v .pp{justify-self:start}
 .v .tempo{grid-area:tempo;gap:4px}
 .v .tools{grid-area:tools;max-width:none;flex-wrap:nowrap;justify-self:end;gap:6px}
 .v .pp{width:46px;height:46px}
 .v .pp svg{width:22px;height:22px}
-.v .vsw{margin-left:6px}
-.v .vsw button{width:34px;height:21px;border-radius:6px}
-.v .vsw svg{width:14px;height:14px}
+.v .vsw button{width:40px;height:30px;border-radius:9px}
+.v .vsw svg{width:16px;height:16px}
 .v #bpm{font-size:32px}
 .v .tcol .lbl{font-size:8px}
 .v .arrows .rb{width:22px;height:22px}
@@ -594,13 +651,12 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .cmp .sgt{height:38px;min-width:34px;padding:0 6px}
 .cmp .sgt[data-a="auto"]{font-size:9.5px;padding:0 5px}
 /* teléfono acostado: todo en una fila + barra resumen */
-.cmp:not(.v) #top{display:grid;grid-template-columns:auto auto 1fr auto;grid-template-areas:"lever tempo pats tools" "more more more more";gap:5px 12px;padding:5px 12px 6px;align-items:center;z-index:10}
+.cmp:not(.v) #top{display:grid;grid-template-columns:auto auto 1fr auto;grid-template-areas:"lever tempo pats tools" "more more more vsw";gap:5px 12px;padding:5px 12px 6px;align-items:center;z-index:10}
 .cmp:not(.v) .leverbox{grid-area:lever}
 .cmp:not(.v) .tempo{grid-area:tempo;gap:4px}
 .cmp:not(.v) .patbox{grid-area:pats;min-width:0}
 .cmp:not(.v) .tools{grid-area:tools;gap:6px}
-.cmp:not(.v) .vsw{flex-direction:row;margin-left:6px}
-.cmp:not(.v) .vsw button{width:32px;height:28px}
+.cmp:not(.v) .vsw button{width:34px;height:26px}
 .cmp:not(.v) #matrix,.cmp .grille,.cmp .logo,.cmp .spacer{display:none}
 .cmp:not(.v) .morebar{height:26px}
 .cmp:not(.v) .mpanel:not([hidden]){max-height:calc(var(--app-h,100vh) - 90px)}
@@ -614,14 +670,13 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .cmp:not(.v) #bpm{font-size:30px}
 .cmp:not(.v) .tcol .lbl{font-size:8px}
 .cmp:not(.v) .arrows .rb{width:20px;height:20px}
-.cmp:not(.v) .vsw button{width:30px;height:26px}
 .cmp:not(.v) #song{padding:4px 12px}
 .cmp:not(.v) .sgsw,.cmp:not(.v) .sgt,.cmp:not(.v) .sgwrap{height:34px}
 .cmp:not(.v) .sgsw{padding-top:5px}
 .cmp:not(.v) #songTime{bottom:7px}
 .cmp:not(.v) #stage{align-items:center;align-items:safe center}
 @media (max-width:385px){.v .tools{gap:5px}.v .tools .rb{width:28px;height:28px}}
-@media (max-width:350px){.v #top{gap:6px 6px;padding-left:8px;padding-right:8px}.v .tools .rb{width:26px!important;height:26px!important}.v .tools .rb svg{width:14px;height:14px}.v #bpm{font-size:26px}.v .arrows .rb{width:20px;height:20px}.v .tools{gap:3px}.v .vsw{margin-left:3px}.v .vsw button{width:28px}.cmp .sgsw{padding:0 6px;padding-top:7px}.cmp #songTime{width:84px;padding-left:32px}.cmp .sgt{min-width:30px}.cmp .sgt[data-a="auto"]{font-size:8.5px}}
+@media (max-width:350px){.v #top{gap:6px 6px;padding-left:8px;padding-right:8px}.v .tools .rb{width:26px!important;height:26px!important}.v .tools .rb svg{width:14px;height:14px}.v #bpm{font-size:26px}.v .arrows .rb{width:20px;height:20px}.v .tools{gap:3px}.v .vsw button{width:34px}.cmp .sgsw{padding:0 6px;padding-top:7px}.cmp #songTime{width:84px;padding-left:32px}.cmp .sgt{min-width:30px}.cmp .sgt[data-a="auto"]{font-size:8.5px}}
 
 /* ---- bandejas: grabaciones y mezcla ---- */
 .grabs{grid-area:gr;display:flex;gap:6px;align-items:center}
@@ -704,7 +759,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     </div>
     <div class="leverbox">
       <button id="playBtn" class="pp" aria-label="Play (Espacio)" title="Play / pausa (Espacio)"><svg class="ip" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.2v15.6c0 .8.9 1.3 1.6.9l12.4-7.8c.6-.4.6-1.4 0-1.8L8.1 3.3c-.7-.4-1.6.1-1.6.9z"/></svg><svg class="ia" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="5" height="16" rx="1.3"/><rect x="14" y="4" width="5" height="16" rx="1.3"/></svg></button>
-      <div class="vsw" role="tablist" aria-label="Pantalla"><button id="vGrid" class="on" role="tab" title="Grilla (B)" aria-label="Pantalla grilla"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></button><button id="vDj" role="tab" title="Bandejas (B)" aria-label="Pantalla bandejas"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="1.6"/><path d="M12.5 1.5l1.8 1.8-3.4 4.6" stroke-linecap="round"/></svg></button></div>
+      <div class="vsw" role="tablist" aria-label="Pantalla"><button id="vGrid" class="on" role="tab" title="Grilla (B)" aria-label="Pantalla grilla"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></button><button id="vDj" role="tab" title="Bandejas (B)" aria-label="Pantalla bandejas"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="1.6"/><path d="M12.5 1.5l1.8 1.8-3.4 4.6" stroke-linecap="round"/></svg></button><button id="vVid" role="tab" title="Video (J)" aria-label="Pantalla video"><svg viewBox="0 0 16 16" stroke-linejoin="round"><rect x="1.6" y="3.6" width="9.2" height="8.8" rx="1.8"/><path d="M10.8 7.1l3.6-2.1v6l-3.6-2.1"/></svg></button></div>
     </div>
     <button id="moreBtn" class="morebar" aria-expanded="false" aria-controls="morePanel" title="Sonido, ambiente, mezcla y herramientas del patrón">
       <span id="moreSum"></span><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
@@ -731,7 +786,17 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <div class="sgtools" id="songTools"></div>
     <div class="sgpop" id="songPop" hidden></div>
   </nav>
-  <main id="stage"><div id="board" role="grid" aria-label="Secuenciador de 16 pasos"><div id="fx"></div></div><section id="dj" hidden aria-label="Bandejas"></section><footer class="madeby madeby-end"><a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" style="opacity:.8;max-height: 60px;margin-top: 15px;" alt="Hecho en La Pampa por Jean Phillippe Studio"></a></footer></main>
+  <main id="stage"><div id="board" role="grid" aria-label="Secuenciador de 16 pasos"><div id="fx"></div></div><section id="dj" hidden aria-label="Bandejas"></section><section id="vid" hidden aria-label="Video">
+    <button class="vd-pick" id="vdPick"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="19" height="18" rx="3.5"/><path d="M22 13.5l7-4v13l-7-4"/><path d="M12.5 12v8M8.5 16h8"/></svg><b>Elegir un video</b><small>Horizontal, vertical o cuadrado. Queda en este equipo, no se sube a ningún lado.</small></button>
+    <div class="vd-scr"><video id="vdV" playsinline webkit-playsinline preload="auto"></video><div class="vd-ov"><b id="vdPat"></b><span id="vdBar"></span></div><button class="vd-big" id="vdBig" aria-label="Play"><svg viewBox="0 0 24 24"><path d="M7 4.6v14.8c0 .8.9 1.3 1.6.8l11.6-7.4c.6-.4.6-1.3 0-1.7L8.6 3.8C7.9 3.3 7 3.8 7 4.6z"/></svg></button></div>
+    <div class="vd-strip" id="vdStrip" aria-label="Línea de tiempo del video: tocá para ir a ese momento, arrastrá la música para correrla"><canvas id="vdC"></canvas></div>
+    <div class="vd-side">
+      <div class="vd-row vd-tr"><button class="vd-play" id="vdPlay" aria-label="Play"><svg class="ip" viewBox="0 0 24 24"><path d="M7 4.6v14.8c0 .8.9 1.3 1.6.8l11.6-7.4c.6-.4.6-1.3 0-1.7L8.6 3.8C7.9 3.3 7 3.8 7 4.6z"/></svg><svg class="ia" viewBox="0 0 24 24"><rect x="5.5" y="4" width="4.6" height="16" rx="1.3"/><rect x="13.9" y="4" width="4.6" height="16" rx="1.3"/></svg></button><span id="vdTime">0:00</span><button class="mbt" id="vdMark" title="Marcar este momento del video (Enter)">MARCAR</button></div>
+      <div class="vd-sec"><span class="lbl">MÚSICA DESDE</span><div class="vd-row"><button class="mbt vd-n" id="vdOffM" aria-label="Música antes">−</button><b id="vdOff">0:00,00</b><button class="mbt vd-n" id="vdOffP" aria-label="Música después">+</button><button class="mbt" id="vdOffHere" title="La música empieza en este momento del video">ACÁ</button></div></div>
+      <div class="vd-sec"><span class="lbl">EN ESTE MOMENTO</span><p id="vdBlk" class="vd-blk"></p><div class="vd-pats" id="vdPats"></div><div class="vd-row"><button class="mbt vd-n" id="vdLess" aria-label="Una vuelta menos">−</button><b id="vdN" class="vd-nn">×1</b><button class="mbt vd-n" id="vdMoreN" aria-label="Una vuelta más">+</button><button class="mbt" id="vdCut" title="Corta el bloque en el compás más cercano">CORTAR ACÁ</button></div><button class="mbt" id="vdEdit">EDITAR EN LA GRILLA</button></div>
+      <div class="vd-sec vd-more"><button class="mbt" id="vdFit" title="Cambia el tempo para que la canción termine junto con el video">AJUSTAR TEMPO AL VIDEO</button><button class="mbt" id="vdSnd" aria-pressed="true">SONIDO DEL VIDEO</button><button class="mbt" id="vdNew">CAMBIAR VIDEO</button><button class="mbt pri" id="vdDl"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v7.5M4.8 7l3.2 3.2L11.2 7"/><path d="M2.8 11.2v1.3a1.5 1.5 0 001.5 1.5h7.4a1.5 1.5 0 001.5-1.5v-1.3"/></svg>AUDIO PARA EL VIDEO</button></div>
+    </div>
+  </section><footer class="madeby madeby-end"><a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" style="opacity:.8;max-height: 60px;margin-top: 15px;" alt="Hecho en La Pampa por Jean Phillippe Studio"></a></footer></main>
 </div>
 
 <footer class="madeby madeby-page"><a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" style="opacity:.8;max-height: 60px;margin-top: 15px;" alt="Hecho en La Pampa por Jean Phillippe Studio"></a></footer>
@@ -803,6 +868,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <b>Grabar:</b> el botón del micrófono tiene 2 grabaciones de hasta 8 segundos. Podés recortar dónde empieza y dónde termina, hacerla más grave o más aguda, darla vuelta, ponerle eco o efecto robot, y elegir en qué instrumento usarla. La grabación queda en ese instrumento solo en el patrón que estás editando: en los otros patrones el instrumento sigue sonando normal, y cada patrón puede usar una grabación distinta. Siempre suena completa; en los melódicos además sube y baja según la altura de cada paso. En las bandejas, los botones 1 y 2 de GRABACIONES la tocan: mantenelos apretados para que suene mientras los tenés, o tocalos una vez para dejarla sonando.<br><br>
     <b>Patrones A a H:</b> 8 grillas distintas. Tocá la letra para editarla. Tildá la casilla de otra letra para que suene <b>mezclada</b> con la que estás editando (cada patrón guarda su propia mezcla, y se respeta en la canción y en las bandejas); sus notas se ven como fantasmas en la grilla. Con CADENA suenan uno detrás de otro.</p>
     <p class="tips"><b>Bandejas</b> (botón del disco al lado de Play, o tecla B): dos platos que suenan juntos, cada uno con el patrón que elijas. El crossfader pasa de uno al otro. Arrastrá un disco con el dedo o el mouse para hacer scratch; FRENO lo para como un tocadiscos y REBOBINAR lo tira para atrás. GRAVES, MEDIOS y AGUDOS cortan esa parte del sonido, FILTRO deja solo graves o solo agudos, y los íconos de abajo apagan instrumentos de esa bandeja. Cada bandeja toca su patrón y los que tenga tildados en su mezcla (se ven como +B +C al lado del nombre). En el centro: REVERB, ECO, LO-FI, VINILO (ruido de disco), MODO 90, GRABACIONES (1 y 2: mantener apretado para que suene mientras lo tenés, o tocar una vez para dejarla sonando; teclas O y P) y REPETIR (mantener apretado repite el último pedacito).</p>
+    <p class="tips"><b>Video</b> (botón de la cámara, o tecla J): elegí un video del equipo (horizontal, vertical o cuadrado; no se sube a ningún lado) y mirá en qué momento cae cada parte de la canción. Play toca los dos juntos. En la tira de abajo, arrastrá la franja de colores para correr la música; MARCAR deja una marca en un momento del video. EN ESTE MOMENTO cambia la letra o las vueltas del bloque que suena ahí, o lo corta. AUDIO PARA EL VIDEO baja un MP3 o WAV del mismo largo que el video, listo para pegarlo debajo en cualquier editor.</p>
     <h2 style="margin-top:18px">Atajos de teclado</h2>
     <div class="keys">
       <div>Play / pausa <kbd>Espacio</kbd></div>
@@ -837,6 +903,9 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <div>Bandejas: crossfader <kbd>←</kbd> <kbd>→</kbd> (<kbd>↓</kbd> al medio)</div>
       <div>Bandejas: repetir 1/4, 1/8, 1/16 <span>mantener <kbd>Z</kbd> <kbd>X</kbd> <kbd>C</kbd></span></div>
       <div>Bandejas: freno A / B <kbd>N</kbd> <kbd>,</kbd></div>
+      <div>Pantalla video <kbd>J</kbd></div>
+      <div>Video: 1 segundo atrás / adelante <kbd>←</kbd> <kbd>→</kbd> (<kbd>Shift</kbd>: un compás)</div>
+      <div>Video: marcar este momento <kbd>Enter</kbd></div>
     </div>
     <p class="tips">Si cambiás de patrón mientras suena, entra al terminar el compás; tocalo otra vez para saltar ya. En el teléfono, tocá y arrastrá sobre la grilla para pintar varios pasos. Podés soltar un .txt sobre la página para importarlo.</p>
     <div class="mrow"><button class="btn pri" data-close>Listo</button></div>
@@ -901,7 +970,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <input id="xName" class="xname" maxlength="60" autocomplete="off" placeholder="Título" aria-label="Título">
     <p class="hint" id="xSaved">Se guarda en Mis beats con este título.</p>
     <h4>QUÉ</h4>
-    <div class="seg" id="xWhat"><button data-v="song">Canción completa<small id="xSongT"></small></button><button data-v="pat">Patrón <b id="xPatL">A</b></button></div>
+    <div class="seg" id="xWhat"><button data-v="song">Canción completa<small id="xSongT"></small></button><button data-v="pat">Patrón <b id="xPatL">A</b></button><button data-v="vidv" hidden>Para el video<small id="xVidT"></small></button></div>
     <div class="seg" id="xLoops"><button data-n="1">1 vuelta</button><button data-n="2">2</button><button data-n="4">4</button><button data-n="8">8 vueltas</button></div>
     <h4>FORMATO</h4>
     <div class="xfmts">
@@ -930,6 +999,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="drop">Soltá el archivo para importarlo</div>
 <input type="file" id="file" accept=".txt,.json,text/plain,application/json" hidden>
+<input type="file" id="vdFile" accept="video/*" hidden>
 
 <script>
 (() => {
@@ -1001,7 +1071,7 @@ function rowsToPat(rows) {
 }
 function blank() {
   return withPS({ v: 7, id: null, name: 'Mi tema', bpm: 120, swing: 0, chain: false, vol: .8, cur: 0, dirty: false, key: 9,
-    song: [], songOn: false, songLoop: true, hum: .6,
+    song: [], songOn: false, songLoop: true, hum: .6, vid: { off: 0, m: [] },
     fx: { rev: 0, eco: 0, lofi: 0, vin: 0 }, dj: { a: 0, b: 1, x: 0, va: 1, vb: 1 },
     ps: Array.from({ length: NP }, () => ({ st: Array(NT).fill(0), lay: Array(NT).fill(0), sc: 2, mix: 0, smp: Array(NT).fill(null) })),
     tune: Array(NT).fill(0), lvl: Array(NT).fill(1),
@@ -1058,6 +1128,8 @@ function normalize(o) {
   d.song = (Array.isArray(o.song) ? o.song : []).filter(b => b && b.p != null).slice(0, 48).map(b => ({ p: clamp(b.p | 0, 0, NP - 1), n: clamp(b.n | 0 || 1, 1, 16) }));
   d.songOn = !!o.songOn && d.song.length > 0; d.songLoop = o.songLoop !== false;
   d.hum = o.hum == null ? .6 : clamp(+o.hum || 0, 0, 1);
+  const ov = o.vid || {}; // pantalla video: dónde empieza la música y las marcas
+  d.vid = { f: typeof ov.f === 'string' ? ov.f.slice(0, 200) : '', off: clamp(+ov.off || 0, 0, 36000), m: (Array.isArray(ov.m) ? ov.m : []).map(Number).filter(x => isFinite(x) && x >= 0).slice(0, 60) };
   d.id = typeof o.id === 'string' ? o.id : null;
   d.dirty = !!o.dirty;
   for (let t = 0; t < NT; t++) {
@@ -1926,6 +1998,7 @@ function defaultState() {
 const PREF = Object.assign({ theme: 'night' }, store.get(LS_PREF) || {});
 const P = { playing: false, paused: false, step: 0, next: 0, timer: 0, queue: [], vstep: -1, vt: 0, pat: S.cur, pending: -1, skip: new Set(), phs: -1, rec: false, recUndo: false, clip: null, taps: [] };
 const H = { u: [], r: [] };
+const VD = { on: false, el: null, url: null, dur: 0, ar: 16 / 9, run: false, anchor: null, sel: -1, seg: null, marks: [] }; // pantalla video
 const SH = { open: false, t: 0 }, keyHold = { t: 0, code: null };
 const NOTE = Array(NT).fill(1); // nota actual de cada instrumento melódico
 let modalAt = 0, saveT = 0;
@@ -2026,7 +2099,7 @@ function placeItems() {
 function layout() {
   const vw = document.documentElement.clientWidth, vh = window.innerHeight;
   app.style.height = vh + 'px'; document.documentElement.style.setProperty('--app-h', vh + 'px');
-  const vert = vw < vh && vw < 760;
+  const vert = vw < vh && vw < 900; // teléfono o tablet parados
   if (vert !== L.vert) { L.vert = vert; app.classList.toggle('v', vert); placeItems(); }
   const cmp = vert || (vh <= 520 && vw > vh); // teléfono parado o acostado: cabecera compacta
   if (cmp !== MORE.on) { app.classList.toggle('cmp', cmp); compactUI(cmp); }
@@ -2034,6 +2107,7 @@ function layout() {
   const aw = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
   const ah = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
   if (DJ.on) { layoutDJ(aw, ah); sizeMatrix(); return; }
+  if (VD.on) { layoutVid(aw, ah); sizeMatrix(); return; }
   // eje largo: cabecera(1.35) + 16 pasos + 3 separadores(.18) + 19 espacios(.09) + separación bateria/melódicos = 19.6
   // teléfono vertical: la grilla ocupa todo el ancho (con un margen chico a los costados y una franja en el medio
   // para desplazar con el dedo); si no entra de alto se desplaza
@@ -2297,7 +2371,7 @@ function play() {
     P.pat = S.song[P.si].p; SG.pl = -1; songEl.classList.add('pl'); renderSongPop();
   }
   P.paused = false;
-  P.next = c.currentTime + .06;
+  P.next = c.currentTime + .06 + (P.startIn || 0); P.startIn = 0; P.t0 = P.next; // video: la música puede arrancar un poco después
   warmDrums(); bankWarm(); tick(); setLever('play'); loop(); djKick();
 }
 function pause() {
@@ -2314,7 +2388,7 @@ function stop() {
   setPH(-1); setLever('stop'); renderPats(); drawMatrix();
   if (DJ.on) { DJ.els.forEach(E => { if (E.lit != null) E.leds[E.lit].classList.remove('on'); E.lit = null; }); renderDJ(); djKick(); }
 }
-function togglePlay() { P.playing ? pause() : play(); }
+function togglePlay() { if (VD.on && VD.url) return vidToggle(); P.playing ? pause() : play(); }
 function setLever(st) {
   const b = $('#playBtn'), on = st === 'play';
   b.classList.toggle('on', on); b.setAttribute('aria-label', on ? 'Pausa (Espacio)' : 'Play (Espacio)');
@@ -2432,7 +2506,7 @@ function renderSong() {
   });
   const bar = document.createElement('i'); bar.id = 'songBar'; songTrk.appendChild(bar);
   if (!(P.playing && songMode())) $('#songTime').textContent = S.song.length ? fmtT(songBars() * barSec()) : '0:00';
-  renderSongTools();
+  renderSongTools(); vidDirty();
 }
 function renderSongTools() {
   const T = $('#songTools'); if (!T) return;
@@ -2620,16 +2694,19 @@ const xEl = (id) => $('#' + id);
 function xBlocks() { return XP.what === 'song' && S.song.length ? S.song.map(b => ({ p: b.p, n: b.n })) : [{ p: S.cur, n: XP.loops }]; }
 function xDur(blocks) { let d = 0; for (const b of blocks) for (let r = 0; r < b.n; r++) for (let st = 0; st < STEPS; st++) d += stepDur(st); return d; }
 const safeName = () => (S.name || 'Mi tema').replace(/[\\/:*?"<>|]+/g, '').trim().slice(0, 60) || 'Mi tema';
-function openExport() {
+function openExport(forVid) {
   if (P.loading) return;
+  if (VD.run) vidPause();
   xEl('xName').value = S.name;
-  XP.what = S.song.length && S.songOn ? 'song' : S.song.length ? XP.what : 'pat';
+  XP.what = forVid === true && VD.url ? 'vidv' : S.song.length && S.songOn ? 'song' : S.song.length && XP.what !== 'vidv' ? XP.what : 'pat';
   xRender(); clearOut(); openModal('#export');
 }
 function xRender() {
   const hasSong = S.song.length > 0;
   xEl('xWhat').querySelector('[data-v="song"]').disabled = !hasSong;
-  if (!hasSong) XP.what = 'pat';
+  if (!hasSong && XP.what === 'song') XP.what = 'pat';
+  const vv = xEl('xWhat').querySelector('[data-v="vidv"]'); vv.hidden = !VD.url; if (!VD.url && XP.what === 'vidv') XP.what = hasSong ? 'song' : 'pat';
+  xEl('xVidT').textContent = VD.url ? ' ' + fmtT(VD.dur) : '';
   xEl('xSongT').textContent = hasSong ? ' ' + fmtT(xDur(S.song)) : '';
   xEl('xPatL').textContent = LET[S.cur];
   xEl('xWhat').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === XP.what));
@@ -2640,6 +2717,7 @@ function xRender() {
   document.querySelectorAll('#export .xfo').forEach(b => { b.disabled = XP.busy; });
   const vb = document.querySelector('#export .xfo[data-f="vid"]');
   if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) { vb.disabled = true; vb.querySelector('small').textContent = 'Este navegador no puede grabar video'; }
+  else if (XP.what === 'vidv') vb.disabled = true; // para el video se baja solo el audio
 }
 function clearOut() { if (XP.url) { URL.revokeObjectURL(XP.url); XP.url = null; } xEl('xOut').hidden = true; xEl('xOut').innerHTML = ''; xEl('xProg').hidden = true; }
 function xProgress(k, msg) { xEl('xProg').hidden = false; xEl('xProg').querySelector('i').style.width = Math.round(clamp(k, 0, 1) * 100) + '%'; xEl('xProg').querySelector('p').textContent = msg; }
@@ -3675,29 +3753,31 @@ async function doExport(f) {
   keepTitle();
   if (P.playing) stop();
   XP.busy = true; XP.cancel = false; clearOut(); xRender();
-  const blocks = xBlocks(), song = XP.what === 'song' && S.song.length > 0;
+  const vv = XP.what === 'vidv' && !!VD.url && f !== 'vid'; // audio del largo del video, con la música donde empieza en el video
+  const blocks = vv ? vidBlocks() : xBlocks(), song = vv ? songMode() : XP.what === 'song' && S.song.length > 0;
   if (f === 'vid' && xDur(blocks) > 240) toast('El video dura más de 4 minutos: va a tardar lo mismo que dura la canción', 3200);
   try {
     xProgress(.08, 'Mezclando…');
     const R = await renderOffline(blocks, song && !S.songLoop); // el platillo de cierre va solo si la canción no se repite, igual que al tocarla
+    if (vv) R.buf = fitToVideo(R.buf);
     let blob, ext;
     if (f === 'wav') { xProgress(.8, 'Armando el WAV…'); await new Promise(r => setTimeout(r, 0)); blob = toWav(R.buf); ext = 'wav'; }
     else if (f === 'mp3') { xProgress(.6, 'Pasando a MP3…'); blob = await toMp3(R.buf); ext = 'mp3'; }
     else { blob = await makeVideo(R); ext = /mp4/.test(blob.type) ? 'mp4' : 'webm'; }
     if (XP.cancel) return;
-    showOut(blob, `${safeName()}.${ext}`, f);
+    showOut(blob, `${safeName()}${vv ? ' (video)' : ''}.${ext}`, f, vv);
   } catch (e) {
     xEl('xProg').hidden = true;
     toast(e && e.message === 'lame' ? 'No se pudo cargar el conversor a MP3. Probá con WAV o revisá la conexión.' : 'No se pudo armar el archivo en este navegador. Probá con otro formato.', 3600);
   } finally { XP.busy = false; xRender(); }
 }
-function showOut(blob, name, f) {
+function showOut(blob, name, f, vv) {
   xEl('xProg').hidden = true;
   const url = XP.url = URL.createObjectURL(blob), out = xEl('xOut'), mb = (blob.size / 1048576).toFixed(1);
   out.innerHTML = (f === 'vid' ? `<video controls playsinline src="${url}"></video>` : `<audio controls src="${url}"></audio>`)
     + `<div class="row"><a class="btn pri" id="xDl" href="${url}">Descargar</a><button class="btn" id="xShare" hidden>Compartir</button></div><p class="hint" style="margin:0"></p>`;
   const a = out.querySelector('#xDl'); a.download = name;
-  out.querySelector('.hint').textContent = `${name} · ${mb} MB` + (f === 'vid' ? ' · En el iPhone, Compartir > Guardar video lo deja en Fotos.' : '');
+  out.querySelector('.hint').textContent = `${name} · ${mb} MB` + (f === 'vid' ? ' · En el iPhone, Compartir > Guardar video lo deja en Fotos.' : '') + (vv ? ` · Dura lo mismo que el video (${fmtT(VD.dur)}): ponelo debajo del video, desde el principio.` : '');
   const file = new File([blob], name, { type: blob.type });
   const sh = out.querySelector('#xShare');
   if (navigator.canShare && navigator.canShare({ files: [file] })) { sh.hidden = false; sh.addEventListener('click', () => navigator.share({ files: [file], title: S.name }).catch(() => {})); }
@@ -3750,7 +3830,7 @@ function soloToggle(t) {
 const bpmEl = $('#bpm');
 function setBpm(v, quiet) {
   v = Math.round(clamp(v, 40, 240)); if (v === S.bpm && !quiet) return;
-  S.bpm = v; bpmEl.textContent = v; if (!quiet) save();
+  S.bpm = v; bpmEl.textContent = v; if (!quiet) save(); vidDirty();
   if (AU.dly) AU.dly.delayTime.setTargetAtTime(Math.min(1.9, 60 / v * .75), AU.ctx.currentTime, .08);
 }
 function holdRepeat(btn, fn) {
@@ -4328,7 +4408,7 @@ function setTheme(v) {
   PREF.theme = v; store.set(LS_PREF, PREF);
   document.documentElement.dataset.theme = v;
   document.querySelector('meta[name="theme-color"]').content = v === 'night' ? '#0f1612' : '#e7ece8';
-  readColors(); drawMatrix(); syncDrawer();
+  readColors(); drawMatrix(); syncDrawer(); VD.col = null; vidDirty();
 }
 
 /* ================= toolbar & lever ================= */
@@ -4993,9 +5073,355 @@ addEventListener('keydown', (e) => {
 });
 addEventListener('keyup', (e) => { if (!(e.code in GPK)) return; const k = GPK[e.code]; if (gpKeyT[k]) { gpadUp(k, performance.now() - gpKeyT[k]); gpKeyT[k] = 0; } });
 setInterval(() => { if (!P.playing) sweepVoices(); }, 1500);
-$('#vGrid').addEventListener('click', () => setView(false));
-$('#vDj').addEventListener('click', () => setView(true));
+$('#vGrid').addEventListener('click', () => { setVid(false); setView(false); });
+$('#vDj').addEventListener('click', () => { setVid(false); setView(true); });
+$('#vVid').addEventListener('click', () => setVid(true));
 addEventListener('keyup', (e) => { if (DJ.rkey && e.code === DJ.rkey) { DJ.rkey = null; repeatOff(); } });
+
+/* ================= video: la música sobre un video =================
+   Se elige un video del equipo (no se sube a ningún lado). La tira de abajo muestra el video y, debajo,
+   los bloques de la canción en el momento en que suenan. Play toca los dos juntos: manda el reloj de audio
+   y el video se acomoda solo (un poco más rápido o más lento) si se corre. "Audio para el video" baja
+   la mezcla con el mismo largo del video y silencio hasta donde empieza la música. */
+const vidEl = $('#vid'), vidV = $('#vdV'), vidCv = $('#vdC'), vidStrip = $('#vdStrip');
+VD.el = vidV;
+function isVideoFile(f) { return !!f && (/^video\//.test(f.type) || /\.(mp4|m4v|mov|webm|ogv|3gp)$/i.test(f.name || '')); }
+const fmtOff = (x) => { x = Math.max(0, x); const m = Math.floor(x / 60); return `${m}:${(x - m * 60).toFixed(2).padStart(5, '0').replace('.', ',')}`; };
+// bloques de música a lo largo del video (si la canción se repite, sigue hasta tapar el video)
+function vidSegs() {
+  const bs = barSec(), D = VD.dur || 0, out = [];
+  let t = S.vid.off;
+  if (songMode()) {
+    for (let k = 0; k < 400; k++) {
+      for (let i = 0; i < S.song.length; i++) { const b = S.song[i]; out.push({ p: b.p, n: b.n, i, k, t0: t, t1: t + b.n * bs }); t += b.n * bs; }
+      if (!S.songLoop || t >= D) break;
+    }
+  } else { const n = Math.max(1, Math.ceil((D - t) / bs)); out.push({ p: S.cur, n, i: -1, k: 0, t0: t, t1: t + n * bs }); }
+  out.forEach((g, j) => { g.j = j; });
+  return out;
+}
+const vidSegAt = (vt) => vidSegs().find(g => vt >= g.t0 - 1e-6 && vt < g.t1 - 1e-6) || null;
+const vidSig = () => JSON.stringify([S.song, S.songOn, S.songLoop, S.bpm, S.swing, S.vid.off, songMode() ? -1 : S.cur]);
+// arranca la música en el punto del video vt (el que se ve ahora). Si ahí todavía no empezó, espera.
+function vidMusic(vt) {
+  const segs = vidSegs(), bs = barSec(), tt = Math.max(vt, S.vid.off);
+  let j = segs.findIndex(g => tt < g.t1 - 1e-6); if (j < 0) return false;
+  let g = segs[j], r = Math.max(0, Math.floor((tt - g.t0) / bs + 1e-9)), x = tt - g.t0 - r * bs, st = 0, cum = 0;
+  while (st < STEPS && cum < x - 1e-4) cum += stepDur(st++);
+  const at = tt + (cum - x); // momento del video en que entra ese paso
+  if (st >= STEPS) { st = 0; if (++r >= g.n) { r = 0; g = segs[++j]; if (!g) return false; } }
+  stop();
+  P.paused = true; P.step = st;
+  if (g.i >= 0) { P.si = g.i; P.sr = r; } else if (S.cur !== g.p) S.cur = g.p;
+  P.startIn = Math.max(0, at - vt); P.waited = true; play(); P.waited = false;
+  if (!P.playing) return false;
+  VD.anchor = { ct: P.t0, vt: at };
+  return true;
+}
+function vidPlay() {
+  if (!VD.url) return pickVideo();
+  const c = ensureAudio(); if (!c) return;
+  const v = vidV;
+  if (v.ended || v.currentTime >= VD.dur - .05) v.currentTime = 0;
+  const pr = v.play(); if (pr && pr.catch) pr.catch(() => {}); // en el mismo toque: así el iPhone deja reproducirlo
+  VD.run = true; vidEl.classList.add('vd-run'); setLever('play');
+  const w = bankWhenReady(5000);
+  if (w) { // la primera vez espera las grabaciones, igual que Play
+    v.pause(); const tk = VD.tk = (VD.tk || 0) + 1; $('#playBtn').classList.add('wait'); toast('Afinando la banda…', 1500);
+    w.then(() => { $('#playBtn').classList.remove('wait'); if (tk === VD.tk && VD.run) vidGo(); });
+    return;
+  }
+  vidGo();
+}
+// (re)engancha la música con el punto del video
+function vidGo() {
+  const v = vidV; v.playbackRate = 1; VD.anchor = null; VD.sig = vidSig();
+  if (!vidMusic(v.currentTime) && (P.playing || P.loading)) stop();
+  setLever('play');
+  if (v.paused) {
+    const pr = v.play();
+    if (pr && pr.catch) pr.catch((e) => { if (e && e.name === 'NotAllowedError' && !v.muted) { v.muted = true; v.play().catch(() => {}); toast('El navegador no dejó arrancar el video con sonido: suena sin el audio del video', 2800); } });
+  }
+  vidLoop();
+}
+function vidPause() {
+  VD.tk = (VD.tk || 0) + 1; VD.run = false; VD.anchor = null;
+  vidV.pause(); vidV.playbackRate = 1; vidEl.classList.remove('vd-run'); $('#playBtn').classList.remove('wait');
+  if (P.playing || P.loading) stop(); else setLever('stop');
+  vidDirty();
+}
+function vidToggle() { ensureAudio(); VD.run ? vidPause() : vidPlay(); }
+function vidLoop() { if (!VD.raf) VD.raf = requestAnimationFrame(vidTick); }
+function vidTick() {
+  VD.raf = 0; if (!VD.on) return;
+  const v = vidV, c = AU.ctx;
+  if (VD.run) {
+    if (vidSig() !== VD.sig) { vidGo(); return; } // cambió la canción, el tempo o dónde empieza: se vuelve a enganchar
+    if (VD.anchor && P.playing && c && !v.seeking) {
+      const lat = c.outputLatency || c.baseLatency || 0, exp = VD.anchor.vt + (c.currentTime - lat - VD.anchor.ct), d = v.currentTime - exp;
+      if (Math.abs(d) > .35) { v.currentTime = Math.max(0, exp); v.playbackRate = 1; }
+      else { const r = Math.abs(d) < .03 ? 1 : Math.round(clamp(1 - d * 1.5, .85, 1.15) * 100) / 100; if (v.playbackRate !== r) v.playbackRate = r; }
+    } else if (v.playbackRate !== 1) v.playbackRate = 1;
+    if (!$('#playBtn').classList.contains('on')) setLever('play');
+  }
+  vidUI(); vidDraw();
+  if (VD.run) vidLoop();
+}
+function vidSeek(t, snap) {
+  const D = VD.dur; t = clamp(t, 0, Math.max(0, D - .02));
+  if (snap) { const W = vidStrip.clientWidth || 1, near = S.vid.m.concat(S.vid.off).find(m => Math.abs(m - t) / D * W < 8); if (near != null) t = near; }
+  vidV.currentTime = t;
+  if (VD.run) vidGo(); else vidDirty();
+}
+// al moverse con la música quieta: el patrón de ese momento queda elegido para editarlo
+function vidFollow() {
+  if (VD.run) return;
+  const g = vidSegAt(vidV.currentTime);
+  if (g && S.cur !== g.p) selectPattern(g.p);
+  vidDirty();
+}
+function vidDirty() { if (VD.on && !VD.dq) VD.dq = requestAnimationFrame(() => { VD.dq = 0; vidUI(); vidDraw(); }); }
+const vtxt = (id, html) => { const el = $(id); if (el && el.__h !== html) { el.__h = html; el.innerHTML = html; } };
+function vidUI() {
+  if (!VD.on || !VD.url) return;
+  const vt = vidV.currentTime || 0, bs = barSec(), g = VD.seg = vidSegAt(vt);
+  vtxt('#vdTime', `${fmtT(Math.floor(vt))} / ${fmtT(Math.floor(VD.dur))}`);
+  vtxt('#vdOff', fmtOff(S.vid.off));
+  const ov = $('#vdPat');
+  if (g) {
+    const r = Math.floor((vt - g.t0) / bs);
+    vtxt('#vdBlk', g.i >= 0 ? `Bloque ${g.i + 1} de ${S.song.length}: patrón <b style="--c:var(--s${g.p})">${LET[g.p]}</b>, vuelta ${r + 1} de ${g.n}${g.k ? ' (la canción se repite)' : ''}` : `Patrón <b style="--c:var(--s${g.p})">${LET[g.p]}</b> en loop. Prendé CANCIÓN para armar partes.`);
+    vtxt('#vdPat', LET[g.p]); ov.style.setProperty('--c', `var(--s${g.p})`);
+    vtxt('#vdBar', `compás ${Math.floor((vt - S.vid.off) / bs) + 1}`);
+    vtxt('#vdN', `×${g.n}`);
+  } else {
+    vtxt('#vdBlk', vt < S.vid.off ? 'Acá todavía no empezó la música.' : 'Acá ya terminó la canción. Sumá bloques con <b>+</b> o prendé repetir.');
+    vtxt('#vdPat', ''); vtxt('#vdBar', ''); vtxt('#vdN', '×0');
+  }
+  const blk = !!(g && g.i >= 0);
+  $('#vdPats').querySelectorAll('.dpb').forEach((b, i) => { b.classList.toggle('on', !!g && g.p === i); b.classList.toggle('has', hasNotes(i)); b.disabled = !blk; });
+  ['#vdCut', '#vdLess', '#vdMoreN'].forEach(id => { $(id).disabled = !blk; });
+  vtxt('#vdEdit', `EDITAR ${LET[g ? g.p : S.cur]} EN LA GRILLA`);
+  $('#vdSnd').setAttribute('aria-pressed', !vidV.muted);
+  vtxt('#vdMark', S.vid.m.some(m => Math.abs(m - vt) < .15) ? 'QUITAR MARCA' : 'MARCAR');
+}
+function vidColors() {
+  const cs = getComputedStyle(document.documentElement), v = (k) => cs.getPropertyValue(k).trim();
+  VD.col = { s: [...Array(NP)].map((_, i) => v('--s' + i)), line: v('--line'), ink: v('--ink'), ink2: v('--ink2'), ph: v('--phon'), acc: v('--acc-ink'), pad: v('--pad') };
+}
+function vidDraw() {
+  if (!VD.on || !VD.url) return;
+  const W = vidStrip.clientWidth, H = vidStrip.clientHeight; if (!W || !H) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1), cv = vidCv;
+  if (cv.width !== Math.round(W * dpr) || cv.height !== Math.round(H * dpr)) { cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr); }
+  const g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, W, H);
+  if (!VD.col) vidColors();
+  const C = VD.col, D = VD.dur || 1, X = (t) => t / D * W, h1 = Math.round(H * .54), y2 = h1 + 3, h2 = H - y2 - 3, bs = barSec();
+  // arriba: cuadros del video
+  if (VD.strip) g.drawImage(VD.strip, 0, 0, W, h1); else { g.fillStyle = '#000'; g.fillRect(0, 0, W, h1); }
+  // abajo: la música
+  const xo = X(S.vid.off);
+  g.fillStyle = C.line; g.globalAlpha = .5; g.fillRect(0, y2, xo, h2); g.globalAlpha = 1;
+  g.font = `800 ${Math.round(Math.min(13, h2 * .5))}px ${VFONT}`; g.textBaseline = 'middle';
+  for (const sg of vidSegs()) {
+    if (sg.t0 >= D) break;
+    const x0 = X(sg.t0), x1 = Math.min(W + 6, X(sg.t1)), w = Math.max(1, x1 - x0 - 2);
+    g.globalAlpha = sg.k ? .45 : .92; g.fillStyle = C.s[sg.p]; rrect(g, x0 + 1, y2, w, h2, Math.min(5, w / 2)); g.fill();
+    g.globalAlpha = .3; g.fillStyle = C.acc;
+    for (let r = 1; r < sg.n; r++) { const x = X(sg.t0 + r * bs); if (x > W) break; g.fillRect(x, y2 + h2 * .6, 1, h2 * .4); }
+    g.globalAlpha = 1;
+    if (w > 15) { g.fillStyle = C.acc; g.fillText(LET[sg.p] + (sg.n > 1 && w > 40 ? ` ×${sg.n}` : ''), x0 + 6, y2 + h2 / 2 + .5); }
+    if (VD.seg && sg.j === VD.seg.j) { g.strokeStyle = C.ink2; g.lineWidth = 2; rrect(g, x0 + 2, y2 + 1, Math.max(1, w - 2), h2 - 2, Math.min(4, w / 2)); g.stroke(); }
+  }
+  // dónde empieza la música (se arrastra)
+  g.fillStyle = C.ph; g.fillRect(xo - 1, y2 - 3, 2, h2 + 6);
+  g.beginPath(); g.moveTo(xo - 1, y2 - 3); g.lineTo(xo + 6, y2 - 3); g.lineTo(xo - 1, y2 + 4); g.closePath(); g.fill();
+  // marcas
+  g.fillStyle = '#fff';
+  for (const m of S.vid.m) { const x = X(m); g.globalAlpha = .9; g.fillRect(x - 1, 0, 2, h1); g.beginPath(); g.moveTo(x - 5, 0); g.lineTo(x + 5, 0); g.lineTo(x, 6); g.closePath(); g.fill(); }
+  g.globalAlpha = 1;
+  // por dónde va
+  const xp = X(vidV.currentTime || 0); g.fillStyle = C.ph; g.shadowColor = C.ph; g.shadowBlur = 6; g.fillRect(xp - 1.25, 0, 2.5, H); g.shadowBlur = 0;
+}
+// cuadritos del video para la tira (con un segundo video escondido, sin tocar el que se ve)
+async function vidThumbs() {
+  const tk = VD.thk = (VD.thk || 0) + 1, W = vidStrip.clientWidth, H = vidStrip.clientHeight;
+  if (!VD.url || !W || !VD.dur) return;
+  const dpr = Math.min(2, window.devicePixelRatio || 1), cw = Math.round(W * dpr), ch = Math.round(H * .54 * dpr);
+  const cv = document.createElement('canvas'); cv.width = cw; cv.height = ch; const g = cv.getContext('2d');
+  g.fillStyle = '#000'; g.fillRect(0, 0, cw, ch);
+  const tw = ch * VD.ar, n = Math.max(1, Math.ceil(cw / tw));
+  const tv = document.createElement('video'); tv.muted = true; tv.playsInline = true; tv.setAttribute('playsinline', ''); tv.preload = 'auto'; tv.src = VD.url;
+  const once = (ev, ms) => new Promise((res) => { const f = () => { tv.removeEventListener(ev, f); res(true); }; tv.addEventListener(ev, f); setTimeout(() => { tv.removeEventListener(ev, f); res(false); }, ms); });
+  if (tv.readyState < 1) await once('loadedmetadata', 5000);
+  VD.strip = cv;
+  for (let i = 0; i < n && tk === VD.thk; i++) {
+    tv.currentTime = clamp((i + .5) * tw / cw * VD.dur, 0, Math.max(0, VD.dur - .05));
+    await once('seeked', 3000);
+    if (tk !== VD.thk) break;
+    try { g.drawImage(tv, i * tw, 0, tw, ch); } catch {}
+    vidDirty();
+  }
+  tv.removeAttribute('src'); try { tv.load(); } catch {}
+}
+function layoutVid(aw, ah) {
+  vidEl.classList.toggle('empty', !VD.url);
+  if (!VD.url) { // el video no se guarda: después de recargar hay que elegirlo otra vez (el inicio y las marcas sí quedan)
+    const nm = S.vid.f ? S.vid.f.replace(/:\d+$/, '') : '';
+    vtxt('#vdPick small', nm ? `Volvé a elegir “${nm.replace(/[<>&]/g, '')}”: dónde empieza la música y las marcas quedaron guardadas.` : 'Horizontal, vertical o cuadrado. Queda en este equipo, no se sube a ningún lado.');
+    return;
+  }
+  const vert = L.vert, short = !vert && ah < 440, stripH = vert ? 76 : short ? 58 : 84;
+  const mw = vert ? aw : aw - (short ? 260 : 306), mh = vert ? clamp(ah - stripH - 250, 170, ah * .55) : ah - stripH - (short ? 8 : 12);
+  let w = Math.max(80, mw), h = w / VD.ar; if (h > mh) { h = Math.max(80, mh); w = h * VD.ar; }
+  vidEl.style.setProperty('--vw', Math.floor(w) + 'px'); vidEl.style.setProperty('--vh', Math.floor(h) + 'px');
+  requestAnimationFrame(() => { const W = vidStrip.clientWidth; if (W && Math.abs(W - (VD.thW || 0)) > 4) { VD.thW = W; vidThumbs(); } vidDraw(); });
+}
+function setVid(on) {
+  if (on === VD.on) return;
+  if (on && DJ.on) setView(false);
+  ensureAudio();
+  if (!on && VD.run) vidPause();
+  if (on && (P.playing || P.loading)) stop();
+  VD.on = on; setMore(false);
+  app.classList.toggle('vidv', on); vidEl.hidden = !on; board.hidden = on;
+  $('#vGrid').classList.toggle('on', !on && !DJ.on); $('#vVid').classList.toggle('on', on);
+  if (on) { if (S.song.length && !S.songOn) { S.songOn = true; save(); } SG.sel = -1; renderSong(); VD.col = null; }
+  else { renderAll(true); setPH(-1); }
+  layout(); vidDirty();
+  if (on && !store.get(LS_PREF + '.vid1')) { store.set(LS_PREF + '.vid1', 1); toast('Video: elegí un video y mirá en qué momento cae cada parte de la canción. Después bajá el audio justo para ese video.', 4600); }
+}
+function pickVideo() { $('#vdFile').click(); }
+function vidLoad(f) {
+  if (!isVideoFile(f)) return toast('Ese archivo no es un video', 2000);
+  if (VD.run) vidPause();
+  if (VD.url) URL.revokeObjectURL(VD.url);
+  const id = `${f.name}:${f.size}`;
+  if (S.vid.f !== id) { S.vid = { f: id, off: 0, m: [] }; save(); } // otro video: arranca de cero (el mismo video conserva inicio y marcas)
+  VD.url = URL.createObjectURL(f); VD.dur = 0; VD.strip = null; VD.thW = 0; VD.thk = (VD.thk || 0) + 1;
+  vidV.muted = !!PREF.vmute; vidV.src = VD.url; vidV.load();
+}
+vidV.addEventListener('loadedmetadata', () => {
+  VD.dur = isFinite(vidV.duration) ? vidV.duration : 0;
+  VD.ar = vidV.videoWidth && vidV.videoHeight ? vidV.videoWidth / vidV.videoHeight : 16 / 9;
+  if (S.vid.off >= VD.dur) S.vid.off = 0;
+  try { vidV.currentTime = .001; } catch {} // el iPhone muestra el primer cuadro
+  layout(); vidDirty(); xRender();
+  const shape = VD.ar > 1.15 ? 'horizontal' : VD.ar < .87 ? 'vertical' : 'cuadrado';
+  toast(`Video ${shape} de ${fmtT(VD.dur)}. Play toca el video con la música. Abajo, arrastrá la franja de colores para correr la música.`, 4200);
+});
+vidV.addEventListener('seeked', vidDirty);
+vidV.addEventListener('ended', () => { if (VD.run) vidPause(); });
+vidV.addEventListener('error', () => { if (VD.url) toast('Este navegador no puede abrir ese video. Probá con un MP4.', 3200); });
+document.addEventListener('visibilitychange', () => { if (document.hidden && VD.run) vidPause(); });
+$('#vdFile').addEventListener('change', (e) => { const f = e.target.files && e.target.files[0]; e.target.value = ''; if (f) vidLoad(f); });
+$('#vdPick').addEventListener('click', pickVideo);
+$('#vdNew').addEventListener('click', pickVideo);
+$('#vdBig').addEventListener('click', vidToggle);
+$('#vdPlay').addEventListener('click', vidToggle);
+$('#vdDl').addEventListener('click', () => openExport(true));
+$('#vdSnd').addEventListener('click', () => { vidV.muted = !vidV.muted; PREF.vmute = vidV.muted; store.set(LS_PREF, PREF); vidDirty(); toast(vidV.muted ? 'Video sin sonido: se escucha solo la música' : 'Se escucha el video y la música', 1500); });
+function vidOff(t, quiet) {
+  S.vid.off = clamp(t, 0, Math.max(0, VD.dur - .1)); save(); vidDirty();
+  if (!quiet) toast(`La música empieza en ${fmtOff(S.vid.off)} del video`, 1300);
+}
+holdRepeat($('#vdOffM'), () => vidOff(S.vid.off - .05, true));
+holdRepeat($('#vdOffP'), () => vidOff(S.vid.off + .05, true));
+$('#vdOffHere').addEventListener('click', () => vidOff(vidV.currentTime));
+function vidMark() {
+  const vt = vidV.currentTime, M = S.vid.m, k = M.findIndex(m => Math.abs(m - vt) < .15);
+  if (k >= 0) { M.splice(k, 1); toast('Marca quitada', 1000); }
+  else if (M.length >= 60) return toast('Ya hay 60 marcas');
+  else { M.push(+vt.toFixed(3)); M.sort((a, b) => a - b); toast(`Marca en ${fmtOff(vt)}. Al tocar la tira cerca de una marca, se va justo ahí.`, 2200); }
+  save(); vidDirty();
+}
+$('#vdMark').addEventListener('click', vidMark);
+// herramientas del bloque que suena en ese momento del video
+function vidBlockAct(fn) {
+  const g = VD.seg; if (!g || g.i < 0 || !S.song[g.i]) return;
+  pushUndo(); fn(S.song, g); save(); renderSong(); vidDirty();
+}
+(() => {
+  const box = $('#vdPats');
+  for (let i = 0; i < NP; i++) {
+    const b = document.createElement('button'); b.className = 'dpb'; b.textContent = LET[i]; b.style.setProperty('--c', `var(--s${i})`);
+    b.setAttribute('aria-label', `Este bloque toca el patrón ${LET[i]}`);
+    b.addEventListener('click', () => vidBlockAct((L, g) => { L[g.i].p = i; if (!VD.run && S.cur !== i) selectPattern(i); toast(`Bloque ${g.i + 1}: ahora toca ${LET[i]}${hasNotes(i) ? '' : ' (todavía está vacío)'}`, 1600); }));
+    box.appendChild(b);
+  }
+})();
+$('#vdLess').addEventListener('click', () => vidBlockAct((L, g) => { L[g.i].n = Math.max(1, L[g.i].n - 1); }));
+$('#vdMoreN').addEventListener('click', () => vidBlockAct((L, g) => { L[g.i].n = Math.min(16, L[g.i].n + 1); }));
+$('#vdCut').addEventListener('click', () => {
+  const g = VD.seg; if (!g || g.i < 0) return;
+  const bs = barSec(), r = Math.round((vidV.currentTime - g.t0) / bs);
+  if (r <= 0 || r >= g.n) return toast('Acá ya empieza un bloque', 1500);
+  if (S.song.length >= 48) return toast('La canción ya tiene 48 bloques');
+  vidBlockAct((L) => { L.splice(g.i, 1, { p: g.p, n: r }, { p: g.p, n: g.n - r }); });
+  vidSeek(g.t0 + r * bs + .01);
+  toast(`Cortado en la vuelta ${r + 1}: tocá una letra para que desde acá suene otro patrón`, 2600);
+});
+$('#vdEdit').addEventListener('click', () => {
+  const g = VD.seg, p = g ? g.p : S.cur;
+  setVid(false); if (S.cur !== p) selectPattern(p);
+  toast(`Editando el patrón ${LET[p]}. Para volver al video, el botón de la cámara (J)`, 2400);
+});
+$('#vdFit').addEventListener('click', () => {
+  if (!songMode()) return toast('Prendé CANCIÓN y armá la canción para ajustar el tempo al video', 2400);
+  const len = VD.dur - S.vid.off; if (len < 1) return;
+  const bpm = Math.round(240 * songBars() / len);
+  if (bpm < 40 || bpm > 240) return toast(`Haría falta un tempo de ${bpm}: sumá o sacá vueltas a los bloques y probá de nuevo`, 3000);
+  pushUndo(); setBpm(bpm);
+  toast(`Tempo ${bpm}: la canción termina junto con el video`, 2200);
+});
+// tira: tocar o arrastrar arriba va a ese momento; arrastrar la franja de la música la corre
+vidStrip.addEventListener('pointerdown', (e) => {
+  if (!VD.url || !VD.dur) return;
+  e.preventDefault(); try { vidStrip.setPointerCapture(e.pointerId); } catch {}
+  const r = vidStrip.getBoundingClientRect(), D = VD.dur, tAt = (x) => clamp((x - r.left) / r.width * D, 0, D);
+  const lane2 = e.clientY - r.top > r.height * .54, st = { x0: e.clientX, off0: S.vid.off, mode: lane2 ? 'tap' : 'seek', was: VD.run };
+  if (st.was) vidPause();
+  if (!lane2) vidSeek(tAt(e.clientX), true);
+  const mv = (ev) => {
+    if (st.mode === 'tap' && Math.abs(ev.clientX - st.x0) > 6) st.mode = 'off';
+    if (st.mode === 'off') vidOff(st.off0 + (ev.clientX - st.x0) / r.width * D, true);
+    else if (st.mode === 'seek') vidSeek(tAt(ev.clientX), true);
+  };
+  const up = (ev) => {
+    vidStrip.removeEventListener('pointermove', mv); vidStrip.removeEventListener('pointerup', up); vidStrip.removeEventListener('pointercancel', up);
+    if (st.mode === 'tap') vidSeek(tAt(ev.clientX), true);
+    if (st.mode === 'off') toast(`La música empieza en ${fmtOff(S.vid.off)} del video`, 1300);
+    vidFollow();
+    if (st.was) vidPlay();
+  };
+  vidStrip.addEventListener('pointermove', mv); vidStrip.addEventListener('pointerup', up); vidStrip.addEventListener('pointercancel', up);
+});
+function vidKeys(e) {
+  const c = e.code, ae = document.activeElement;
+  if (!VD.url) return false;
+  if (c === 'ArrowLeft' || c === 'ArrowRight') { e.preventDefault(); vidSeek(vidV.currentTime + (c === 'ArrowRight' ? 1 : -1) * (e.shiftKey ? barSec() : 1)); vidFollow(); return true; }
+  if (c === 'Enter') { if (ae && ae.tagName === 'BUTTON') return false; e.preventDefault(); vidMark(); return true; }
+  if (['ArrowUp', 'ArrowDown', 'Delete', 'Backspace', 'KeyX'].includes(c)) { e.preventDefault(); return true; } // en video no se edita la grilla escondida
+  return false;
+}
+// el audio para el video: la canción (o el patrón en loop) desde donde empieza hasta el final del video
+function vidBlocks() {
+  const need = Math.max(1, Math.ceil((VD.dur - S.vid.off) / barSec() - 1e-6)), out = [];
+  let left = need;
+  for (const g of vidSegs()) { if (left <= 0) break; const n = Math.min(g.n, left); out.push({ p: g.p, n }); left -= n; }
+  return out;
+}
+function fitToVideo(buf) {
+  const sr = buf.sampleRate, n = Math.max(1, Math.round(VD.dur * sr)), ch = buf.numberOfChannels;
+  const out = ensureAudio().createBuffer(ch, n, sr), sh = Math.round((S.vid.off - .05) * sr); // renderOffline deja .05 s antes del primer golpe
+  const f = Math.min(n, Math.round(.03 * sr));
+  for (let k = 0; k < ch; k++) {
+    const a = buf.getChannelData(k), b = out.getChannelData(k), i0 = Math.max(0, -sh), i1 = Math.min(a.length, n - sh);
+    if (i1 > i0) b.set(a.subarray(i0, i1), i0 + sh);
+    for (let i = 0; i < f; i++) b[n - 1 - i] *= i / f; // sin clic al cortar
+  }
+  return out;
+}
 
 /* ================= toast ================= */
 let toastT = 0;
@@ -5007,7 +5433,7 @@ addEventListener('keydown', (e) => {
   if (isField(document.activeElement)) { if (e.key === 'Escape') { document.activeElement.blur(); closeAll(); } return; }
   const mod = e.ctrlKey || e.metaKey, k = e.key, code = e.code;
   if (k === 'Escape' && moreOpen() && !anyOpen()) { setMore(false); return; }
-  if (k === 'Escape') { if (notesEl.classList.contains('on')) closeNotes(); else if (anyOpen()) closeAll(); else stop(); return; }
+  if (k === 'Escape') { if (notesEl.classList.contains('on')) closeNotes(); else if (anyOpen()) closeAll(); else if (VD.run) vidPause(); else stop(); return; }
   if (SH.open && !mod && styleKeys(e)) return;
   if (!mod && $('#voice').classList.contains('on')) {
     if (code === 'Space') { e.preventDefault(); VE.rec ? stopRec() : startRec(); return; }
@@ -5015,8 +5441,10 @@ addEventListener('keydown', (e) => {
   }
   if (anyOpen() && !(k === '?' || k === 'm' || k === 'M')) return;
   const dig = /^(Digit|Numpad)([1-8])$/.exec(code);
-  if (!mod && code === 'KeyB') { setView(!DJ.on); return; }
+  if (!mod && code === 'KeyB') { if (VD.on) setVid(false); else setView(!DJ.on); return; }
+  if (!mod && code === 'KeyJ') { setVid(!VD.on); return; }
   if (!mod && DJ.on && !dig && djKeys(e)) return;
+  if (!mod && VD.on && !dig && vidKeys(e)) return;
   if (mod) {
     const kk = k.toLowerCase();
     if (kk === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
@@ -5090,6 +5518,7 @@ addEventListener('dragleave', () => { if (--dragN <= 0) { dragN = 0; drop.classL
 addEventListener('drop', (e) => {
   e.preventDefault(); dragN = 0; drop.classList.remove('on');
   const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (!f) return;
+  if (isVideoFile(f)) { setVid(true); vidLoad(f); return; }
   f.text().then(importText);
 });
 document.addEventListener('visibilitychange', () => { if (document.hidden) saveNow(); });
@@ -5121,8 +5550,27 @@ bankWarm(true);
 if (!store.get(LS_PREF + '.seen1')) { store.set(LS_PREF + '.seen1', 1); setTimeout(() => toast('GREENPAD: instrumentos grabados de verdad y modo CANCIÓN. Tocá Play para escuchar el primer tema.', 4600), 600); }
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
 
+// sin zoom con dos dedos (iPhone y iPad no respetan user-scalable=no)
+['gesturestart', 'gesturechange'].forEach(ev => document.addEventListener(ev, (e) => e.preventDefault(), { passive: false }));
+document.addEventListener('touchmove', (e) => { if (e.touches.length > 1 && e.cancelable) e.preventDefault(); }, { passive: false });
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+  navigator.serviceWorker.ready.then(() => setTimeout(offlineWarm, 5000)).catch(() => {});
+}
+// sin conexión: después de la primera carga baja de a poco las grabaciones que faltan (el service worker las guarda),
+// así después suenan todas aunque no haya internet
+function offlineWarm() {
+  const sw = navigator.serviceWorker;
+  if (!sw.controller) { sw.addEventListener('controllerchange', () => setTimeout(offlineWarm, 3000), { once: true }); return; }
+  if (!window.caches || (navigator.connection && navigator.connection.saveData)) return;
+  const files = [...new Set(Object.values(BANK).flatMap(sp => sp.d ? sp.d.flat() : sp.z.map(z => z[1])))];
+  caches.open('greenpad-sonidos-v1').then(c => c.keys()).then(ks => {
+    const have = new Set(ks.map(r => decodeURIComponent(new URL(r.url).pathname.split('/').pop())));
+    const miss = files.filter(f => !have.has(f));
+    let i = 0;
+    const next = () => { if (i >= miss.length || !navigator.onLine) return; const f = miss[i++]; fetch(BANK_URL + f).then(r => r.arrayBuffer()).catch(() => {}).finally(() => setTimeout(next, 40)); };
+    for (let k = 0; k < 3; k++) next();
+  }).catch(() => {});
 }
 window.__greenpad = { get S() { return S; }, P, AU, DJ, VG, DR, KS, WD, POLY, BK, SG, bankWhenReady, humanize, get MAXV() { return MAXV; }, setLite, toText, parseAny, encodeLink, playTrack, applyFx };
 })();

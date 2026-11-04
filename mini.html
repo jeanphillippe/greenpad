@@ -2,7 +2,7 @@
 <html lang="es" data-theme="night">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no">
 <title>Greenpad</title>
 <meta name="description" content="Greenpad: caja de ritmos y secuenciador de 16 pasos con batería, bajo, guitarra, acordes y melodía. Funciona offline y guarda tus beats en el dispositivo.">
 <meta name="theme-color" content="#0f1612">
@@ -41,7 +41,7 @@
   --s0:#3ee08a; --s1:#2ee6d6; --s2:#c6f43a; --s3:#ffae5c; --s4:#9be7c4; --s5:#6fc3ff; --s6:#ff8fb1; --s7:#b49cff;
   --drawer:#111a15; --shadow:0 18px 50px rgba(0,0,0,.6);
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation} /* sin zoom por doble toque en teléfonos y tablets */
 html,body{margin:0;height:100%;background:var(--bg);overflow:hidden;overscroll-behavior:none}
 body{font-family:var(--font);color:var(--ink2);-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
   background:radial-gradient(120% 90% at 50% 0%,color-mix(in srgb,var(--bg) 70%,#fff 30%),var(--bg))}
@@ -3161,6 +3161,9 @@ if (/^#b=/.test(location.hash)) {
 if (!store.get(LS_PREF + '.seen5')) { store.set(LS_PREF + '.seen5', 1); store.set(LS_PREF + '.seen4', 1); setTimeout(() => toast('Nuevo: BANDEJAS. Tocá el disco al lado de Play (o la tecla B) para mezclar dos patrones como un DJ, con scratch y efectos.', 4600), 600); }
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
 
+// sin zoom con dos dedos (iPhone y iPad no respetan user-scalable=no)
+['gesturestart', 'gesturechange'].forEach(ev => document.addEventListener(ev, (e) => e.preventDefault(), { passive: false }));
+document.addEventListener('touchmove', (e) => { if (e.touches.length > 1 && e.cancelable) e.preventDefault(); }, { passive: false });
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
