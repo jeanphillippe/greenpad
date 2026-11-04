@@ -1,0 +1,4 @@
+# Frases que aparecen sobre el logo de GREENPAD, inclinadas y en amarillo.
+# Una por línea. Cada vez que se abre la app sale una distinta (tocarla pasa a la siguiente).
+# Las líneas que empiezan con # no se muestran. Conviene que sean cortas (hasta unas 25 letras).
+A gente ajuda

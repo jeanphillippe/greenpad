@@ -1,6 +1,6 @@
 // Greenpad service worker. Subí VERSION en cada release para renovar la caché.
-const VERSION = 'greenpad-v1.11.0';
-const ASSETS = ['./', './index.html', './mini.html', './manifest.webmanifest', './banda.webmanifest', './lame.min.js', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png'];
+const VERSION = 'greenpad-v1.12.0';
+const ASSETS = ['./', './index.html', './mini.html', './manifest.webmanifest', './banda.webmanifest', './lame.min.js', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './caveat-bold.woff2', './frases.txt'];
 const SOUNDS = 'greenpad-sonidos-v1'; // las grabaciones de Banda (no cambian entre versiones)
 
 self.addEventListener('install', (e) => {
@@ -36,6 +36,11 @@ self.addEventListener('fetch', (e) => {
         .then((res) => { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); return res; })
         .catch(() => caches.match(req).then((hit) => hit || caches.match('./index.html')))
     );
+    return;
+  }
+  // frases del logo: red primero (así se ven las nuevas apenas se suben), caché si no hay conexión
+  if (new URL(req.url).pathname.endsWith('/frases.txt')) {
+    e.respondWith(fetch(req).then((res) => { if (res.ok) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put('./frases.txt', copy)); } return res; }).catch(() => caches.match('./frases.txt')));
     return;
   }
   // grabaciones: se guardan la primera vez que se usan, así después suenan sin conexión

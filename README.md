@@ -183,7 +183,6 @@ MELODÍA   .... .... .... ....
 | Bandejas: freno A / B | N / , |
 | Pantalla video (solo GREENPAD) | J |
 | Video: 1 segundo atrás / adelante | ← → (Shift: un compás) |
-| Video: marcar este momento | Enter |
 
 ## En el teléfono
 
@@ -217,6 +216,8 @@ Versión pensada para armar canciones enteras con instrumentos grabados de verda
 | `sonidos/` | 330 grabaciones mp3 (unos 7,5 MB). Solo se bajan las que usa el tema, y quedan guardadas para usar sin conexión |
 | `sonidos/CREDITOS.txt` | De dónde sale cada grabación y su licencia |
 | `lame.min.js` | Conversor a MP3 para Descargar (lamejs, LGPL 3.0) |
+| `frases.txt` | Frases que aparecen sobre el logo (una por línea) |
+| `caveat-bold.woff2` | Letra de la frase del logo (Caveat Bold, SIL Open Font License 1.1) |
 
 Para probar en local hace falta el servidor (`python3 -m http.server 8080`): abriendo el archivo directo, el navegador no deja leer la carpeta `sonidos/` y suena el sintetizado.
 
@@ -317,19 +318,23 @@ Después de la primera carga (en https), la página baja de a poco, en segundo p
 
 ### Video
 
-El tercer botón del selector de pantalla (la cámara, debajo de grilla y bandejas; en el teléfono, a la derecha de la barra resumen) o la tecla `J` abre **Video**: sirve para ver en qué momento de un video cae cada parte de la canción, corregirla ahí mismo y bajar el audio justo para ese video.
+El tercer botón del selector de pantalla (la cámara, debajo de grilla y bandejas; en el teléfono, a la derecha de la barra resumen) o la tecla `J` abre **Video**: muestra un video en sincronía con la canción y baja el audio justo para ese video. La canción se sigue armando y viendo arriba, en la línea de tiempo (la rayita marca por dónde va el video, también con la música quieta).
 
 - **Elegir un video** del equipo (horizontal 16:9, vertical 9:16, cuadrado o cualquier otra medida: la pantalla se acomoda). No se sube a ningún lado. También se puede soltar el archivo sobre la página.
-- El video no se guarda: al recargar hay que elegirlo otra vez. Dónde empieza la música y las marcas sí quedan guardadas con el beat (y se mantienen si se elige el mismo archivo; con otro video arrancan de cero).
-- **Play** (el del video, el de arriba o Espacio) toca el video y la canción juntos. Manda el reloj de audio: si el video se adelanta o se atrasa, se acomoda solo (va un poco más rápido o más lento, o salta si la diferencia es grande).
-- **La tira de abajo:** arriba, cuadros del video; abajo, los bloques de la canción en el momento en que suenan (más claros si la canción se repite). Tocar o arrastrar arriba va a ese momento; arrastrar la franja de colores corre la música. Se ve por dónde va y dónde empieza la música.
+- El video no se guarda: al recargar hay que elegirlo otra vez. Dónde empieza la música sí queda guardado con el beat (si se elige el mismo archivo; con otro video arranca de cero).
+- **Play** (el del video, el de arriba o Espacio) toca el video y la canción juntos. Manda el reloj de audio: si el video se adelanta o se atrasa, se acomoda solo.
+- **Ondas:** arriba, el sonido del video; abajo, la música con el color de cada parte de la canción (la onda de la música se recalcula sola un momento después de cada cambio, con la música quieta). Tocar o arrastrar arriba va a ese momento; arrastrar la onda de la música la corre.
+- **VOLUMEN:** uno para el video y otro para la música (el de la música es el mismo "Volumen general" del menú). Ninguno cambia la descarga.
 - **MÚSICA DESDE:** − y + la corren de a 0,05 segundos (mantener apretado para ir rápido); **ACÁ** la hace empezar en el momento que se ve.
-- **MARCAR** (o Enter) deja una marca blanca en ese momento del video (un corte, un golpe, un cambio de escena). Al tocar la tira cerca de una marca, va justo ahí. Tocarlo de nuevo sobre una marca la quita.
-- **EN ESTE MOMENTO** muestra qué bloque suena en el punto del video y deja corregirlo: las letras cambian el patrón de ese bloque, − y + le sacan o suman vueltas, **CORTAR ACÁ** lo parte en el compás más cercano (después se elige la letra de la parte nueva) y **EDITAR EN LA GRILLA** lleva a la grilla con ese patrón; el botón de la cámara vuelve al video en el mismo punto. Deshacer funciona igual que siempre.
+- **Cortes y sugerencia:** las rayas amarillas son los momentos donde el sonido del video cambia fuerte (sube o baja de golpe, comparando el medio segundo de antes con el de después). Abajo del volumen dice cuántos caen justo en un cambio de parte de la canción. Si otro orden de los mismos bloques hace caer más, aparece una sugerencia con el orden; **USAR ESTE ORDEN** lo aplica y Deshacer lo vuelve atrás. Solo cambia el orden: los bloques, sus vueltas y el largo total quedan iguales (si todos los bloques duran lo mismo, el orden no mueve los cambios de parte y no hay sugerencia).
 - **AJUSTAR TEMPO AL VIDEO** cambia el tempo para que la canción termine junto con el video (si queda entre 40 y 240).
-- **SONIDO DEL VIDEO** prende o apaga el audio original del video (solo para escuchar; no va en la descarga).
 - **AUDIO PARA EL VIDEO** abre Descargar con **Para el video**: MP3 o WAV del mismo largo que el video, con silencio hasta donde empieza la música y cortado al final del video. Se pega debajo del video, desde el principio, en cualquier editor. Si la canción se repite, sigue hasta tapar el video; si no, termina con el platillo.
-- Con CANCIÓN apagado, la tira muestra el patrón que se está editando en loop.
+- Con CANCIÓN apagado, la música es el patrón que se está editando en loop.
+- En el iPhone el volumen del video se maneja desde la app (el sonido del video pasa por el mismo motor de audio que la música).
+
+### Frase sobre el logo
+
+Sobre el logo (arriba a la derecha en la compu, y en el menú) aparece una frase inclinada en amarillo que late, como la de Minecraft. Las frases están en `frases.txt`, una por línea (las líneas vacías o que empiezan con `#` no cuentan). Cada vez que se abre la app sale una distinta de la vez anterior, y tocarla pasa a la siguiente. Para sumar frases alcanza con editar `frases.txt` en el repo: no hace falta tocar `index.html` ni subir `VERSION` (el service worker lo pide siempre a la red primero). Si no se puede leer el archivo, sale "A gente ajuda". La letra es Caveat Bold (`caveat-bold.woff2`, licencia SIL Open Font 1.1 en `caveat-OFL.txt`), guardada en el repo para que funcione sin conexión.
 
 ### Nombre y firma
 En la página principal el nombre es **GREENPAD**, con GREEN en verde y PAD en el otro color (cabecera, menú, ayuda, video y al agregarla a la pantalla de inicio). La firma "Hecho en La Pampa por Jean Phillippe Studio" (con el enlace a jeanphillippe.com) va abajo de todo y centrada: en el teléfono parado, después de la grilla (se ve al hacer scroll); en la compu, debajo de la app (en pantallas grandes la app deja lugar y se ve sin scroll; en las más chicas, bajando un poco).
