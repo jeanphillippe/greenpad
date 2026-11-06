@@ -538,7 +538,8 @@ input.xf::-moz-range-thumb{width:30px;height:40px;border:0;border-radius:8px;bac
 .seg{display:flex;background:var(--chip);border-radius:10px;padding:3px;gap:3px}
 .seg button{flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:600;color:var(--ink)}
 .seg button.on{background:var(--pad);color:var(--ink2);box-shadow:0 1px 3px rgba(0,0,0,.12)}
-#xQual button{padding:8px 3px;white-space:nowrap;min-width:0}
+#xQual{flex-wrap:wrap}
+#xQual button{padding:8px 3px;white-space:nowrap;min-width:0;flex:1 0 22%}
 @media (max-width:350px){#xQual button{font-size:11.5px}}
 .sl{display:grid;grid-template-columns:1fr auto;align-items:center;font-size:13px;margin-top:14px;gap:4px 8px}
 .sl output{font-variant-numeric:tabular-nums;color:var(--ink)}
@@ -748,8 +749,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .xout video{width:100%;max-height:46vh;border-radius:12px;background:#000;object-fit:contain}
 .xout .row{display:flex;gap:8px}
 .xout .row .btn{flex:1}
-</style>
-<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-TNBX6VG2"></script>
+</style><script async src="https://www.googletagmanager.com/gtm.js?id=GTM-TNBX6VG2"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -1015,9 +1015,8 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <button class="xfo" data-f="vid"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="4" y="1.5" width="8" height="13" rx="1.8"/><path d="M7 6v4l3-2z" fill="currentColor"/></svg><span><b>Video vertical 9:16</b><small>Para historias y reels, con visualización</small></span></button>
     </div>
     <h4>ESTILO DEL VIDEO</h4>
-    <div class="seg" id="xQual"><button data-q="0">Caracol</button><button data-q="1">Revista</button><button data-q="2">Neón</button><button data-q="3">Flor</button><button data-q="4">Flor 3D</button></div>
+    <div class="seg" id="xQual"><button data-q="0">Caracol</button><button data-q="1">Revista</button><button data-q="2">Neón</button><button data-q="3">Flor</button><button data-q="4">Flor 3D</button><button data-q="5">Grilla</button><button data-q="6">Marea</button></div>
     <p class="hint" id="xQualH"></p>
-    <label class="tg" style="margin-top:8px"><input type="checkbox" id="xLite"> Liviano: 540 × 960, para teléfonos viejos o si sale entrecortado</label>
     <div class="xprog" id="xProg" hidden><div class="xbar"><i></i></div><p></p></div>
     <div class="xout" id="xOut" hidden></div>
     <div class="mrow"><button class="btn" id="xClose">Cerrar</button></div>
@@ -2756,7 +2755,7 @@ function xRender() {
   xEl('xWhat').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === XP.what));
   xEl('xLoops').hidden = XP.what !== 'pat';
   xEl('xLoops').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.n === XP.loops));
-  const qi = vstyle(); xEl('xQual').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.q === qi)); xEl('xQualH').textContent = VSTY[qi].d; xEl('xLite').checked = !!PREF.vlite;
+  const qi = vstyle(); xEl('xQual').querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.q === qi)); xEl('xQualH').textContent = VSTY[qi].d;
   xEl('xSaved').textContent = S.id ? 'Está en Mis beats: el título se guarda ahí.' : 'Al descargar se guarda en Mis beats con este título.';
   document.querySelectorAll('#export .xfo').forEach(b => { b.disabled = XP.busy; });
   const vb = document.querySelector('#export .xfo[data-f="vid"]');
@@ -2846,16 +2845,18 @@ async function toMp3(buf) {
   return new Blob(parts, { type: 'audio/mpeg' });
 }
 /* ---- video 9:16 ---- */
-// cinco estilos de video, cada uno con su versión liviana (540 × 960, 24 cuadros) para teléfonos viejos
+// siete estilos de video, en 720 × 1280 a 30 cuadros
 const VSTY = [
   { n: 'Caracol', d: 'Una espiral que sigue la música, con la onda del sonido enroscada. Va con cualquier tema.' },
   { n: 'Revista', d: 'Papel, tinta y tipografía grande, como una tapa de revista. Ideal para temas con guitarras y banda.' },
   { n: 'Neón', d: 'Brillos, chispas y anillos que giran. Para trap y electrónica.' },
   { n: 'Flor', d: 'Una flor de bordes bien marcados que se abre con el bombo y mueve cada pétalo con el sonido, sobre un fondo oscuro que cambia despacio.' },
   { n: 'Flor 3D', d: 'Un loto en 3D armado con Fibonacci y la proporción áurea: 21 pétalos en tres capas. Con poco sonido queda cerrado como un capullo abultado de puntas finas y con mucho sonido se abre del todo; las puntas se doblan con la música, más las del centro. Cada pétalo va de un tono claro en el centro a uno profundo afuera, y el bombo larga olas de luz. Tallo largo. Barras de fondo como en Revista.' },
+  { n: 'Grilla', d: 'Revista impresa en papel oscuro: tempo grande, círculo de semitono y la onda del sonido. Atrás, en segundo plano, la grilla con los íconos de cada instrumento: cada golpe ilumina su celda, su columna y su ícono.' },
+  { n: 'Marea', d: 'Líneas de tinta que rodean una esfera de cromo fija, en diagonal, sobre un fondo degradado pintado con aerógrafo. Cada sonido larga olas desde la esfera con su color y su forma: el bombo olas grandes, el hi-hat rizos chicos, el bajo un oleaje largo.' },
 ];
 const vstyle = () => clamp(PREF.vsty == null ? 0 : PREF.vsty, 0, VSTY.length - 1);
-const vq = () => PREF.vlite ? { n: 'liviano', w: 540, h: 960, fps: 24, br: 2.5e6, lite: true } : { n: 'normal', w: 720, h: 1280, fps: 30, br: 5e6, lite: false };
+const vq = () => ({ n: 'normal', w: 720, h: 1280, fps: 30, br: 5e6, lite: false }); // siempre 720 × 1280 a 30 cuadros
 const VCOL = ['#3ee08a', '#2ee6d6', '#c6f43a', '#ffae5c', '#9be7c4', '#6fc3ff', '#ff8fb1', '#b49cff'];
 const PCOL = ['#e4572e', '#2a9d8f', '#e9b44c', '#3d5a80', '#c8553d', '#6a994e', '#9a348e', '#1b998b']; // tintas de imprenta para Revista
 const VFONT = '"Avenir Next","Avenir","Segoe UI",Roboto,"Helvetica Neue",system-ui,sans-serif';
@@ -2878,6 +2879,7 @@ function drawVideoFrame(g, W0, H0, R, now, st) {
   while (st.si + 1 < steps.length && steps[st.si + 1].t <= now) st.si++;
   while (st.ei < ev.length && ev[st.ei].t <= now) {
     const tr = ev[st.ei].tr; st.lv[tr] = 1;
+    if (st.hits) st.hits.push(ev[st.ei]);
     if (tr === 0) { st.kick = 1; st.burst += 14; }
     else if (tr === 1) st.snare = 1;
     st.ei++;
@@ -2894,6 +2896,8 @@ function drawVideoFrame(g, W0, H0, R, now, st) {
   else if (st.style === 1) drawRevista(g, R, st, V);
   else if (st.style === 3) drawFlor(g, R, st, V);
   else if (st.style === 4) drawFlor3D(g, R, st, V);
+  else if (st.style === 5) drawGrilla(g, R, st, V);
+  else if (st.style === 6) drawMarea(g, R, st, V);
   else drawNeon(g, R, st, V);
   g.setTransform(1, 0, 0, 1, 0, 0);
   if (st.logo && st.style !== 0) g.drawImage(st.logo, 0, H0 - st.logo.height); // en Caracol el logo va arriba
@@ -2933,12 +2937,12 @@ function vProgress(g, R, now, x0, y, w, h, colors, dim) {
 
 /* ---- Caracol: anillo de barras que crecen en espiral, pasos alrededor y los instrumentos con su ícono ---- */
 // íconos de los instrumentos (los mismos de la grilla), apagado y encendido con su color
-function iconImgs(scale) {
+function iconImgs(scale, off = '#557566', on = VCOL) {
   const mk = (k, color) => new Promise((res) => {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="${64 * scale}" height="${64 * scale}" fill="none" stroke="${color}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">${ICONS[k]}</svg>`;
     const im = new Image(); im.onload = () => res(im); im.onerror = () => res(null); im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
   });
-  return Promise.all(TR.map((tr, t) => Promise.all([mk(tr.ic, '#557566'), mk(tr.ic, VCOL[t])])));
+  return Promise.all(TR.map((tr, t) => Promise.all([mk(tr.ic, off), mk(tr.ic, on[t])])));
 }
 function drawCaracol(g, R, st, V) {
   const { W, H, TAU, now, cur, col, bass } = V, lite = st.q.lite;
@@ -2997,18 +3001,22 @@ function drawCaracol(g, R, st, V) {
   g.fillStyle = '#ffffff'; g.fillRect(bx + bw * kk - 2, by - 8, 4, 38);
 }
 
-/* ---- Revista: papel, tinta, semitono y tipografía grande ---- */
-function drawRevista(g, R, st, V) {
-  const { W, H, TAU, beats, p, bass, mid } = V, q = st.q, ink = '#16130f', acc = PCOL[p % 8], acc2 = PCOL[(p + 4) % 8];
-  if (!st.bg) { // papel con grano, hecho una sola vez
+// papel con grano (Revista y Grilla), hecho una sola vez
+function paperBg(st, W, H) {
+  if (!st.bg) {
     const b = document.createElement('canvas'); b.width = W; b.height = H; const x = b.getContext('2d');
     x.fillStyle = '#efe8da'; x.fillRect(0, 0, W, H);
     for (let i = 0; i < 16000; i++) { x.fillStyle = Math.random() < .5 ? `rgba(60,40,20,${Math.random() * .06})` : `rgba(255,255,255,${Math.random() * .12})`; x.fillRect(Math.random() * W, Math.random() * H, 1.4, 1.4); }
     const vg = x.createRadialGradient(W / 2, H / 2, H * .3, W / 2, H / 2, H * .75); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(80,55,25,.18)'); x.fillStyle = vg; x.fillRect(0, 0, W, H);
     st.bg = b;
   }
+  return st.bg;
+}
+/* ---- Revista: papel, tinta, semitono y tipografía grande ---- */
+function drawRevista(g, R, st, V) {
+  const { W, H, TAU, beats, p, bass, mid } = V, q = st.q, ink = '#16130f', acc = PCOL[p % 8], acc2 = PCOL[(p + 4) % 8];
   g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
-  g.drawImage(st.bg, 0, 0, W, H);
+  g.drawImage(paperBg(st, W, H), 0, 0, W, H);
   const M = 48;
   // fondo: barras verticales de lado a lado que suben desde abajo con el sonido (graves a la izquierda, agudos a la derecha).
   // Son 7 (cada una junta varias frecuencias), en naranja suave; al máximo llegan al alto de la pantalla.
@@ -3073,6 +3081,324 @@ function drawRevista(g, R, st, V) {
   if ('letterSpacing' in g) g.letterSpacing = '0px';
   vProgress(g, R, V.now, M, H - 196, W - 2 * M, 6, PCOL, (c) => c + '33');
   g.textAlign = 'center';
+}
+
+/* ---- Grilla: Revista impresa en papel oscuro, con la grilla del track en segundo plano ----
+   Adelante, como en Revista: el tempo en números grandes, el círculo de semitono y la onda del sonido.
+   Atrás y en tono bajo, la grilla como en el teléfono parado: íconos arriba, 16 pasos hacia abajo y las notas de la parte que suena.
+   En reposo casi no se ve; cada golpe la ilumina: la celda salta con un anillo, la columna se enciende y el ícono se prende. */
+const PCOLL = PCOL.map(c => mixHex(c, '#ffffff', .25)); // tintas de imprenta más claras, para papel oscuro
+function drawGrilla(g, R, st, V) {
+  const { W, H, TAU, now, beats, p, bass, mid, cur } = V, q = st.q, cream = '#efe6d2', acc = PCOLL[p % 8], acc2 = PCOLL[(p + 4) % 8];
+  if (!st.bgD) { // papel oscuro con grano, hecho una sola vez
+    const b = document.createElement('canvas'); b.width = W; b.height = H; const x = b.getContext('2d');
+    x.fillStyle = '#131b16'; x.fillRect(0, 0, W, H);
+    for (let i = 0; i < 22000; i++) { x.fillStyle = Math.random() < .55 ? `rgba(255,240,210,${Math.random() * .05})` : `rgba(0,0,0,${Math.random() * .25})`; x.fillRect(Math.random() * W, Math.random() * H, 1.4, 1.4); }
+    const vg = x.createRadialGradient(W / 2, H * .45, H * .2, W / 2, H * .45, H * .8); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.45)'); x.fillStyle = vg; x.fillRect(0, 0, W, H);
+    st.bgD = b;
+  }
+  g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  g.drawImage(st.bgD, 0, 0, W, H);
+  const M = 48, s = cur && !cur.end ? cur.s : -1;
+  // una luz del color de la parte detrás del círculo, que late con los graves
+  { const lg = g.createRadialGradient(W / 2, 650, 40, W / 2, 650, 470); lg.addColorStop(0, acc); lg.addColorStop(1, 'rgba(0,0,0,0)');
+    g.globalAlpha = .1 + bass * .12 + st.k * .08; g.fillStyle = lg; g.fillRect(0, 100, W, 1020); g.globalAlpha = 1; }
+
+  /* --- segundo plano: la grilla --- */
+  if (st.gp !== p) { st.gp = p; st.gT = now; } // al cambiar de parte, las notas nuevas aparecen de arriba hacia abajo
+  const pats = [p, ...mixedFor(p)], val = (t, k) => { for (const pp of pats) { const v = S.pats[pp][t][k]; if (v) return v; } return 0; };
+  g.font = `italic 700 64px ${VSERIF}`;
+  const tl = wrapLines(g, S.name || 'Mi tema', W - 2 * M, 2), ty = H - 250 - (tl.length - 1) * 66;
+  const gx0 = 64, gx1 = W - 40, gap = 6, mg = 18, cw = (gx1 - gx0 - 7 * gap - (mg - gap)) / 8;
+  const gy0 = 344, gy1 = Math.min(1000, ty - 60), rg = 5, gg = 12, rh = (gy1 - gy0 - 15 * rg - 3 * gg) / 16;
+  const cx = (t) => gx0 + t * (cw + gap) + (t >= 4 ? mg - gap : 0), cy = (k) => gy0 + k * (rh + rg) + (k >> 2) * gg, cr = Math.min(cw, rh) * .3;
+  // fila del paso actual, apenas marcada
+  if (s >= 0) { g.fillStyle = cream; g.globalAlpha = .06; g.fillRect(gx0 - 14, cy(s) - 3, gx1 - gx0 + 22, rh + 6); g.globalAlpha = 1; }
+  // columnas que se encienden con su instrumento
+  g.globalCompositeOperation = 'lighter';
+  for (let t = 0; t < NT; t++) {
+    const lv = st.lv[t]; if (lv < .04 || S.mutes[t]) continue;
+    const x = cx(t), bg = g.createLinearGradient(0, 262, 0, gy1); bg.addColorStop(0, PCOLL[t]); bg.addColorStop(1, 'rgba(0,0,0,0)');
+    g.globalAlpha = lv * .2; g.fillStyle = bg; g.fillRect(x - 4, 262, cw + 8, gy1 - 262);
+  }
+  g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+  for (let t = 0; t < NT; t++) {
+    const mute = S.mutes[t], col = PCOLL[t], lv = mute ? 0 : st.lv[t], x = cx(t);
+    for (let k = 0; k < STEPS; k++) {
+      const y = cy(k), v = val(t, k), ap = clamp((now - st.gT) * 7 - k * .14, 0, 1), hit = k === s && v && lv > .02, mx = x + cw / 2, my = y + rh / 2;
+      g.globalAlpha = mute ? .4 : 1;
+      g.strokeStyle = 'rgba(239,230,210,.08)'; g.lineWidth = 1.2; rrect(g, x, y, cw, rh, 7); g.stroke();
+      if (!v || ap <= 0) continue;
+      const e = hit ? lv : 0, pop = 1 + e * .22, w = cw * pop, h = rh * pop, x0 = mx - w / 2, y0 = my - h / 2;
+      if (hit) { // brillo alrededor de la celda que suena
+        const hg = g.createRadialGradient(mx, my, 0, mx, my, cw * 1.3); hg.addColorStop(0, col); hg.addColorStop(1, 'rgba(0,0,0,0)');
+        g.globalCompositeOperation = 'lighter'; g.globalAlpha = e * .55; g.fillStyle = hg; g.fillRect(mx - cw * 1.3, my - cw * 1.3, cw * 2.6, cw * 2.6); g.globalCompositeOperation = 'source-over';
+      }
+      g.globalAlpha = (mute ? .4 : 1) * ap * (.2 + e * .8);
+      g.fillStyle = col; rrect(g, x0, y0, w, h, 7); g.fill();
+      g.fillStyle = hit ? '#131b16' : 'rgba(239,230,210,.5)';
+      if (TR[t].mel) { const fh = clamp(v / 8, .15, 1); g.save(); g.beginPath(); g.rect(mx - cr * 2, my + cr * pop * (1 - 2 * fh), cr * 4, 2 * cr * pop * fh); g.clip(); g.beginPath(); g.arc(mx, my, cr * pop, 0, TAU); g.fill(); g.restore(); }
+      else { g.beginPath(); g.arc(mx, my, cr * pop, 0, TAU); g.fill(); }
+      if (hit) { // anillo que se abre desde la celda
+        const ex = (1 - e) * 34; g.globalAlpha = e * .9; g.strokeStyle = col; g.lineWidth = 3; rrect(g, x0 - ex, y0 - ex * .7, w + 2 * ex, h + 1.4 * ex, 10 + ex * .4); g.stroke();
+      }
+    }
+    g.globalAlpha = 1;
+  }
+  // íconos arriba de cada columna: tenues, y se prenden con su color al sonar
+  g.font = `800 11px ${VHEAVY}`; g.textAlign = 'center'; if ('letterSpacing' in g) g.letterSpacing = '1px';
+  for (let t = 0; t < NT; t++) {
+    const mute = S.mutes[t], lv = mute ? 0 : st.lv[t], x = cx(t) + cw / 2, ic = st.icons && st.icons[t], sz = 40 * (1 + lv * .35), iy = 290;
+    if (lv > .04) { const hg = g.createRadialGradient(x, iy, 0, x, iy, 44); hg.addColorStop(0, PCOLL[t]); hg.addColorStop(1, 'rgba(0,0,0,0)'); g.globalCompositeOperation = 'lighter'; g.globalAlpha = lv * .5; g.fillStyle = hg; g.fillRect(x - 44, iy - 44, 88, 88); g.globalCompositeOperation = 'source-over'; }
+    g.globalAlpha = mute ? .12 : .3; if (ic && ic[0]) g.drawImage(ic[0], x - sz / 2, iy - sz / 2, sz, sz);
+    if (ic && ic[1] && lv > .03) { g.globalAlpha = Math.min(1, lv * 1.4); g.drawImage(ic[1], x - sz / 2, iy - sz / 2, sz, sz); }
+    g.globalAlpha = mute ? .12 : .25 + lv * .6; g.fillStyle = cream; g.fillText(TR[t].name, x, 330);
+    g.globalAlpha = 1; st.lv[t] *= .88;
+  }
+  if ('letterSpacing' in g) g.letterSpacing = '0px';
+
+  /* --- primer plano: como Revista --- */
+  g.fillStyle = cream; g.fillRect(M, 56, W - 2 * M, 3); g.fillRect(M, 64, W - 2 * M, 1);
+  // tempo en números grandes, en contorno, que se llenan con el bombo
+  g.save();
+  g.font = `900 205px ${VHEAVY}`; g.textAlign = 'right'; g.textBaseline = 'alphabetic'; if ('letterSpacing' in g) g.letterSpacing = '-10px';
+  const sx = Math.sin(beats * TAU / 16) * 10, bx = W - M + 8 + sx;
+  g.lineWidth = 3; g.strokeStyle = cream; g.strokeText(String(S.bpm), bx, 250);
+  g.fillStyle = acc; g.globalAlpha = .92; g.save(); g.beginPath(); g.rect(0, 250 - 205 * (.15 + st.k * .3), W, 300); g.clip(); g.fillText(String(S.bpm), bx, 250); g.restore();
+  if ('letterSpacing' in g) g.letterSpacing = '4px';
+  g.globalAlpha = 1; g.font = `800 20px ${VHEAVY}`; g.fillStyle = cream; g.textAlign = 'left'; g.fillText('BPM', M, 100);
+  g.globalAlpha = .6; g.fillText(`TRACK ${LET[p]}`, M, 126);
+  g.restore();
+  // círculo de semitono: los puntos crecen con las frecuencias y giran despacio
+  const ccx = W * .5, ccy = 650, Rr = 230 + bass * 22 + st.k * 10, sp = 15, rot = beats * TAU / 64;
+  g.fillStyle = acc; g.globalAlpha = .95; g.beginPath();
+  for (let y = -Rr; y <= Rr; y += sp) for (let x = -Rr; x <= Rr; x += sp) {
+    const d = Math.hypot(x, y); if (d > Rr) continue;
+    const a = Math.atan2(y, x) + rot, bin = 2 + Math.floor((d / Rr) * 120), v = st.fd[bin] / 255;
+    const rr = sp * .5 * (.2 + .8 * Math.min(1, v * 1.1 + (1 - d / Rr) * .2)) * (.62 + .38 * Math.sin(d * .055 - beats * TAU / 2 + Math.cos(a) * .4));
+    if (rr < .6) continue;
+    g.moveTo(ccx + x + rr, ccy + y); g.arc(ccx + x, ccy + y, rr, 0, TAU);
+  }
+  g.fill(); g.globalAlpha = 1;
+  g.strokeStyle = cream; g.lineWidth = 1.5; g.beginPath(); g.arc(ccx, ccy, 252, 0, TAU); g.stroke();
+  for (let k = 0; k < STEPS; k++) {
+    const a = -Math.PI / 2 + k / STEPS * TAU, r1 = 262, r2 = k === s ? 296 : k % 4 === 0 ? 278 : 270;
+    g.lineWidth = k === s ? 5 : 2; g.strokeStyle = k === s ? acc2 : cream;
+    g.beginPath(); g.moveTo(ccx + Math.cos(a) * r1, ccy + Math.sin(a) * r1); g.lineTo(ccx + Math.cos(a) * r2, ccy + Math.sin(a) * r2); g.stroke();
+  }
+  // la onda del sonido, recta, cruzando el centro del círculo
+  { const td = st.td, N = 200, amp = 48 + mid * 44, stp = td.length / N;
+    g.beginPath();
+    for (let i = 0; i <= N; i++) { const v = (td[Math.floor(i * stp) % td.length] - 128) / 128, x = M + (W - 2 * M) * i / N, y = ccy + v * amp; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.strokeStyle = '#131b16'; g.lineWidth = 11; g.lineJoin = 'round'; g.lineCap = 'round'; g.globalAlpha = .6; g.stroke();
+    g.strokeStyle = cream; g.lineWidth = 5; g.globalAlpha = 1; g.stroke(); }
+  // título en serif itálica sobre una franja de papel, y la barra de avance
+  const tg = g.createLinearGradient(0, ty - 80, 0, H - 150);
+  tg.addColorStop(0, 'rgba(19,27,22,0)'); tg.addColorStop(.3, 'rgba(19,27,22,.85)'); tg.addColorStop(.8, 'rgba(19,27,22,.85)'); tg.addColorStop(1, 'rgba(19,27,22,0)');
+  g.fillStyle = tg; g.fillRect(0, ty - 80, W, H - 150 - ty + 80);
+  g.fillStyle = cream; g.textAlign = 'left'; g.font = `italic 700 64px ${VSERIF}`; if ('letterSpacing' in g) g.letterSpacing = '-1px';
+  tl.forEach((l, i) => g.fillText(l, M, ty + i * 66));
+  if ('letterSpacing' in g) g.letterSpacing = '0px';
+  vProgress(g, R, now, M, H - 196, W - 2 * M, 6, PCOLL.map(c => c.replace('rgb(', 'rgba(').replace(')', ',1)')), (c) => c.replace(',1)', ',.25)'));
+  g.textAlign = 'center';
+}
+
+/* ---- Marea: líneas de tinta que rodean una esfera fija, en perspectiva diagonal, con acabado de aerógrafo ----
+   La esfera está en el origen (0,0,0) y el eje X cruza la pantalla en diagonal por el medio. Las líneas son líneas de corriente:
+   rodean la esfera y nunca se tocan. Fondo en degradado pintado, con grano. Cada golpe larga un anillo de olas que sale de la esfera:
+   cada instrumento con su alto, velocidad y largo de onda, empujando más hacia su lado, y las crestas toman su color. */
+const MAREA = [ // a: alto · v: velocidad · w: ancho del frente · k: largo de onda · life: cuánto dura (s)
+  { a: 34, v: 430, w: 95, k: .021, life: 2.6 }, // bombo: ola grande y lenta
+  { a: 20, v: 640, w: 46, k: .045, life: 1.5 },  // caja
+  { a: 6, v: 860, w: 26, k: .09, life: .8 },     // hi-hat: rizos chicos y rápidos
+  { a: 11, v: 700, w: 34, k: .062, life: 1.1 },  // percu
+  { a: 24, v: 320, w: 130, k: .015, life: 3 },   // bajo: oleaje largo
+  { a: 13, v: 540, w: 56, k: .036, life: 1.8 },  // guitarra
+  { a: 15, v: 430, w: 84, k: .027, life: 2.2 },  // acordes
+  { a: 12, v: 600, w: 44, k: .05, life: 1.7 },   // melodía
+];
+function mareaInit(lite) {
+  const Rs = 185, Re = Rs * 1.06, D = Math.PI / 180;
+  const C = { Rs, Re, yaw: 34 * D, el: 36 * D, roll: -17 * D, Dc: 1500, F: 1250, fx: 360, fy: 640 };
+  const ce = Math.cos(C.el), cyw = Math.cos(C.yaw);
+  // separación entre líneas que crece con la distancia: en pantalla quedan parejas, un poco más juntas al fondo
+  const cs = [], dz0 = lite ? 64 : 46;
+  for (let c = -760; c < 3600;) { cs.push(c); c += dz0 * Math.max(.55, (C.Dc + c * ce * cyw) / C.Dc) * .82; }
+  const NPt = lite ? 80 : 120;
+  C.lines = cs.map((c0) => {
+    const c = Math.abs(c0) < 6 ? 6 * Math.sign(c0 || 1) : c0, depth = C.Dc + c * ce * cyw, X = 820 * depth / C.F / cyw + 500;
+    const xs = new Float32Array(NPt), zs = new Float32Array(NPt), dd = new Float32Array(NPt), an = new Float32Array(NPt);
+    for (let i = 0; i < NPt; i++) {
+      const x = -X + 2 * X * i / (NPt - 1), sg = Math.sign(c);
+      // línea de corriente alrededor de un cilindro: z(1 − Re²/(x²+z²)) = c, resuelta con Newton
+      let z = sg * Math.max(Math.abs(c), Math.sqrt(Math.max(0, Re * Re - x * x)) + Math.abs(c) * .5 + 1);
+      for (let it = 0; it < 12; it++) {
+        const r2 = x * x + z * z, f = z - Re * Re * z / r2 - c, fp = 1 - Re * Re * (x * x - z * z) / (r2 * r2);
+        let nz = z - f / (Math.abs(fp) < .05 ? .05 * Math.sign(fp || 1) : fp);
+        if (Math.sign(nz) !== sg || nz * nz + x * x < Re * Re) nz = (z + sg * Math.sqrt(Math.max(Re * Re - x * x, 0) + 1)) / 2;
+        z = nz;
+      }
+      xs[i] = x; zs[i] = z; dd[i] = Math.hypot(x, z); an[i] = Math.atan2(z, x);
+    }
+    return { c, xs, zs, dd, an };
+  }).sort((a, b) => b.c - a.c); // del fondo hacia adelante
+  return C;
+}
+function drawMarea(g, R, st, V) {
+  const { W, H, TAU, now, beats, col, bass, mid } = V;
+  const C = st.ma || (st.ma = mareaInit(false));
+  if (!st.hits) st.hits = [];
+  // olas nuevas: una por instrumento y por golpe
+  const rings = C.rings || (C.rings = []);
+  for (const e of st.hits) { rings.push({ t: e.t, tr: e.tr }); if (rings.length > 30) rings.shift(); }
+  st.hits.length = 0;
+  for (let i = rings.length - 1; i >= 0; i--) if (now - rings[i].t > MAREA[rings[i].tr].life) rings.splice(i, 1);
+  const RG = rings.map((r) => {
+    const m = MAREA[r.tr], age = Math.max(0, now - r.t), u = age / m.life;
+    return { r: C.Re + m.v * age, w: m.w, k: m.k, A: m.a * (1 - Math.exp(-age * 30)) * Math.pow(1 - u, 1.6), dir: r.tr * TAU / 8 + .4, rgb: hexRgb(VCOL[r.tr]) };
+  }).filter(r => r.A > .3);
+  // cámara fija: la esfera en el origen y el eje X cruzando en diagonal
+  const cyw = Math.cos(C.yaw), syw = Math.sin(C.yaw), ce = Math.cos(C.el), se = Math.sin(C.el), roll = C.roll, fx = W / 2, fy = H * .5 + 20;
+  const proj = (x, y, z) => { const xr = x * cyw - z * syw, zr = x * syw + z * cyw, d = C.Dc + zr * ce - y * se, s = C.F / d; return [fx + xr * s, fy - (y * ce + zr * se) * s, d, s]; };
+  // fondo: degradado pintado con aerógrafo, claro y cálido al fondo, verde profundo adelante
+  const far = mixHex('#eef0c2', col, .12), midc = mixHex('#86d3b3', col, .3), near = mixHex('#164c3d', col, .18);
+  const wg = g.createLinearGradient(0, -220, 0, H + 260); wg.addColorStop(0, far); wg.addColorStop(.42, midc); wg.addColorStop(1, near);
+  g.save();
+  g.translate(W / 2, H / 2); g.rotate(roll); g.translate(-W / 2, -H / 2);
+  g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
+  g.fillStyle = wg; g.fillRect(-400, -400, W + 800, H + 800);
+  const ink = hexRgb('#0b1d16'), hiB = hexRgb('#f4fff6');
+  const flow = beats * TAU / 8, swell = .25 + bass * .9, rip = 1.6 + mid * 3.2;
+  const n0 = C.lines[0].xs.length, sx = new Float32Array(n0), sy = new Float32Array(n0), ssc = new Float32Array(n0), hR = new Float32Array(n0), hG = new Float32Array(n0), hB = new Float32Array(n0), hI = new Float32Array(n0), hh = new Float32Array(n0);
+  const seg = 5;
+  let sphereDone = false;
+  const drawShadow = () => { // sombra suave de la esfera sobre el fondo, entre las líneas de atrás y las de adelante
+    sphereDone = true;
+    const [sx0, sy0, , s] = proj(0, 0, 0), r = C.Rs * s, sg = g.createRadialGradient(sx0, sy0 + r * .1, r * .5, sx0, sy0 + r * .1, r * 1.6);
+    sg.addColorStop(0, 'rgba(6,20,15,.4)'); sg.addColorStop(1, 'rgba(6,20,15,0)'); g.fillStyle = sg; g.beginPath(); g.ellipse(sx0, sy0 + r * .1, r * 1.6, r * 1.1, 0, 0, TAU); g.fill();
+  };
+  const drawSphere = () => { // el obstáculo: una esfera de cromo pintada con aerógrafo, fija en el centro; va encima de todo
+    const yc = -C.Rs * .28, [ox, oy, , s] = proj(0, yc, 0), r = C.Rs * s;
+    // solo se ve lo que queda arriba del agua
+    const rw = Math.sqrt(C.Rs * C.Rs - yc * yc), wl = [];
+    for (let i = 0; i < 72; i++) { const a = i / 72 * TAU; wl.push(proj(Math.cos(a) * rw, 0, Math.sin(a) * rw)); }
+    let iL = 0, iR = 0; wl.forEach((q, i) => { if (q[0] < wl[iL][0]) iL = i; if (q[0] > wl[iR][0]) iR = i; });
+    const m1 = wl[(iL + ((iR - iL + 72) % 72 >> 1)) % 72], fw = m1[1] > (wl[iL][1] + wl[iR][1]) / 2;
+    const arc = (cb) => { for (let k = 0; k <= 72; k++) { const i = fw ? (iL + k) % 72 : (iL - k + 72) % 72; cb(wl[i], k); if (i === iR) break; } };
+    g.save(); g.beginPath(); g.moveTo(wl[iL][0] - 400, wl[iL][1]); arc((q) => g.lineTo(q[0], q[1]));
+    g.lineTo(wl[iR][0] + 400, wl[iR][1]); g.lineTo(wl[iR][0] + 400, -3000); g.lineTo(wl[iL][0] - 400, -3000); g.closePath(); g.clip();
+    g.beginPath(); g.arc(ox, oy, r, 0, TAU); g.clip();
+    // la luz viene de arriba a la izquierda de la pantalla, aunque la imagen esté girada
+    g.save(); g.translate(ox, oy); g.rotate(-roll);
+    // cromo: cielo claro arriba que baja a un horizonte brillante, y abajo el agua oscura reflejada
+    const hy = r * .08, sky = g.createLinearGradient(0, -r, 0, hy);
+    sky.addColorStop(0, mixHex('#0d3a2e', col, .35)); sky.addColorStop(.55, mixHex('#9fdcc0', col, .2)); sky.addColorStop(1, '#fbf6dc');
+    g.fillStyle = sky; g.fillRect(-r, -r, 2 * r, r + hy);
+    const gr = g.createLinearGradient(0, hy, 0, r); gr.addColorStop(0, '#07130f'); gr.addColorStop(.5, mixHex('#1d5546', col, .2)); gr.addColorStop(1, mixHex('#4fa487', col, .3));
+    g.fillStyle = gr; g.beginPath(); g.moveTo(-r, hy); g.quadraticCurveTo(0, hy + r * .16, r, hy); g.lineTo(r, r); g.lineTo(-r, r); g.closePath(); g.fill();
+    g.strokeStyle = '#fffbe6'; g.lineWidth = 2.2; g.globalAlpha = .9; g.beginPath(); g.moveTo(-r, hy); g.quadraticCurveTo(0, hy + r * .16, r, hy); g.stroke(); g.globalAlpha = 1;
+    // volumen: borde oscuro, como pintado, y un brillo grande y suave
+    const ed = g.createRadialGradient(-r * .25, -r * .3, r * .3, 0, 0, r); ed.addColorStop(0, 'rgba(0,0,0,0)'); ed.addColorStop(.75, 'rgba(0,0,0,.08)'); ed.addColorStop(1, 'rgba(4,14,10,.6)');
+    g.fillStyle = ed; g.fillRect(-r, -r, 2 * r, 2 * r);
+    const hl = g.createRadialGradient(-r * .38, -r * .45, 0, -r * .38, -r * .45, r * .45); hl.addColorStop(0, 'rgba(255,255,255,.85)'); hl.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = hl; g.fillRect(-r, -r, 2 * r, 2 * r);
+    // con el bombo, el borde se prende con el color de la parte
+    if (st.k > .03) { g.strokeStyle = col; g.globalAlpha = st.k * .8; g.lineWidth = 6; g.beginPath(); g.arc(0, 0, r - 3, 0, TAU); g.stroke(); g.globalAlpha = 1; }
+    g.restore(); g.restore();
+    g.strokeStyle = '#0b1d16'; g.lineWidth = 3; g.beginPath(); g.arc(ox, oy, r, 0, TAU); g.save(); g.beginPath(); g.moveTo(wl[iL][0] - 400, wl[iL][1]); arc((q) => g.lineTo(q[0], q[1])); g.lineTo(wl[iR][0] + 400, wl[iR][1]); g.lineTo(wl[iR][0] + 400, -3000); g.lineTo(wl[iL][0] - 400, -3000); g.closePath(); g.clip(); g.beginPath(); g.arc(ox, oy, r, 0, TAU); g.stroke(); g.restore();
+    // destello en estrella sobre el brillo, más grande con el bombo
+    const a = -roll - 2.25, gx = ox + Math.cos(a) * r * .55, gy = oy + Math.sin(a) * r * .55, sz = 28 + st.k * 44 + bass * 8;
+    g.save(); g.translate(gx, gy); g.rotate(-roll); g.globalCompositeOperation = 'lighter'; g.fillStyle = '#ffffff';
+    for (const [an, l, w] of [[0, sz, 3], [Math.PI / 2, sz, 3], [Math.PI / 4, sz * .42, 1.8], [-Math.PI / 4, sz * .42, 1.8]]) { g.save(); g.rotate(an); g.globalAlpha = .85; g.beginPath(); g.moveTo(-l, 0); g.quadraticCurveTo(0, -w, l, 0); g.quadraticCurveTo(0, w, -l, 0); g.fill(); g.restore(); }
+    g.restore();
+  };
+  for (const L of C.lines) {
+    if (!sphereDone && L.c < 0) drawShadow();
+    const n = L.xs.length;
+    let dmid = 0, vis = 0;
+    for (let i = 0; i < n; i++) {
+      const x = L.xs[i], z = L.zs[i], d = L.dd[i], a = L.an[i];
+      // la corriente: las líneas ondulan despacio con el pulso, los graves las hinchan y los medios les suman rizos
+      let h = Math.sin(x * .021 - flow + L.c * .013) * rip + Math.sin(d * .0105 - beats * TAU / 16) * 7 * swell;
+      let cr = 0, cg = 0, cb = 0, ci = 0;
+      for (const o of RG) {
+        const dx = d - o.r; if (dx > 2.6 * o.w || dx < -3.4 * o.w) continue;
+        const env = Math.exp(-(dx * dx) / (o.w * o.w)) * Math.sqrt(C.Re / Math.max(d, C.Re)), dw = .45 + .55 * (1 + Math.cos(a - o.dir)) / 2;
+        const v = o.A * env * dw * Math.cos(o.k * dx); h += v;
+        const m = Math.abs(v); cr += o.rgb[0] * m; cg += o.rgb[1] * m; cb += o.rgb[2] * m; ci += m;
+      }
+      const P = proj(x, h, z);
+      sx[i] = P[0]; sy[i] = P[1]; ssc[i] = P[3]; hh[i] = h; hI[i] = ci;
+      if (ci > 0) { hR[i] = cr / ci; hG[i] = cg / ci; hB[i] = cb / ci; }
+      if (P[2] > 150) vis++;
+      if (i === n >> 1) dmid = P[2];
+    }
+    if (vis < 2) continue;
+    const fog = clamp(1 - (dmid - 3100) / 1700, 0, 1);
+    if (fog <= 0) continue;
+    // franja de fondo debajo de la línea: tapa lo que queda atrás, así las líneas nunca se cruzan
+    g.beginPath(); g.moveTo(sx[0], sy[0]);
+    for (let i = 1; i < n; i++) g.lineTo(sx[i], sy[i]);
+    for (let i = n - 1; i >= 0; i--) g.lineTo(sx[i], sy[i] + Math.max(10, 70 * ssc[i]));
+    g.closePath(); g.fillStyle = wg; g.fill();
+    // la línea de tinta: una cinta de grosor variable (más gruesa cerca y en las crestas)
+    const wd = new Float32Array(n), nx = new Float32Array(n), ny = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const I = Math.min(1, hI[i] / 14), up = clamp(hh[i] / 30, -1, 1);
+      wd[i] = Math.max(.9, 7.2 * ssc[i] * (1 + Math.max(0, up) * .55 + I * .4));
+      const a0 = Math.max(0, i - 1), a1 = Math.min(n - 1, i + 1), tx = sx[a1] - sx[a0], ty = sy[a1] - sy[a0], tl = Math.hypot(tx, ty) || 1;
+      nx[i] = ty / tl; ny[i] = -tx / tl; if (ny[i] > 0) { nx[i] = -nx[i]; ny[i] = -ny[i]; } // normal hacia arriba
+    }
+    g.globalAlpha = fog; g.fillStyle = '#0b1d16'; g.beginPath();
+    for (let i = 0; i < n; i++) { const h2 = wd[i] / 2, x = sx[i] + nx[i] * h2, y = sy[i] + ny[i] * h2; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+    for (let i = n - 1; i >= 0; i--) { const h2 = wd[i] / 2; g.lineTo(sx[i] - nx[i] * h2, sy[i] - ny[i] * h2); }
+    g.closePath(); g.fill();
+    // filo de luz arriba: blanco suave, que toma el color del instrumento en las crestas
+    g.lineCap = 'butt'; g.lineJoin = 'round';
+    for (let i0 = 0; i0 < n - 1; i0 += seg) {
+      const i1 = Math.min(n - 1, i0 + seg), im = (i0 + i1) >> 1, I = Math.min(1, hI[im] / 14), up = clamp(hh[im] / 30, -1, 1);
+      let lr = hiB[0], lg = hiB[1], lb = hiB[2];
+      if (I > 0) { lr += (hR[im] - lr) * I; lg += (hG[im] - lg) * I; lb += (hB[im] - lb) * I; }
+      g.globalAlpha = fog * Math.min(1, .3 + .5 * Math.max(0, up) + .5 * I); g.strokeStyle = `rgb(${lr | 0},${lg | 0},${lb | 0})`; g.lineWidth = Math.max(.5, wd[im] * .3);
+      g.beginPath();
+      for (let i = i0; i <= i1; i++) { const o = wd[i] * .22, x = sx[i] + nx[i] * o, y = sy[i] + ny[i] * o; i === i0 ? g.moveTo(x, y) : g.lineTo(x, y); }
+      g.stroke();
+    }
+    g.globalAlpha = 1;
+  }
+  if (!sphereDone) drawShadow();
+  drawSphere();
+  g.restore();
+  // grano de aerógrafo y viñeta, hechos una sola vez
+  if (!st.grain) {
+    const mk = () => { const b = document.createElement('canvas'); b.width = W; b.height = H; const x = b.getContext('2d');
+      for (let i = 0; i < 26000; i++) { x.fillStyle = Math.random() < .5 ? `rgba(255,250,230,${Math.random() * .1})` : `rgba(0,10,6,${Math.random() * .14})`; x.fillRect(Math.random() * W, Math.random() * H, 1.5, 1.5); }
+      const vg = x.createRadialGradient(W / 2, H * .5, H * .25, W / 2, H * .5, H * .78); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(3,14,10,.42)'); x.fillStyle = vg; x.fillRect(0, 0, W, H);
+      return b; };
+    st.grain = [mk(), mk()];
+  }
+  { const tg = g.createLinearGradient(0, 0, 0, 330); tg.addColorStop(0, far); tg.addColorStop(.45, far); tg.addColorStop(1, 'rgba(238,240,194,0)');
+    g.globalAlpha = .9; g.fillStyle = tg; g.fillRect(0, 0, W, 330); g.globalAlpha = 1; }
+  g.drawImage(st.grain[st.fr & 1], 0, 0, W, H);
+  drawMareaText(g, R, V);
+}
+// título, BPM y partes de la canción
+function drawMareaText(g, R, V) {
+  const { W, H, now, col } = V;
+  const fb = g.createLinearGradient(0, H - 300, 0, H); fb.addColorStop(0, 'rgba(4,16,12,0)'); fb.addColorStop(1, 'rgba(4,16,12,.8)');
+  g.fillStyle = fb; g.fillRect(0, H - 300, W, 300);
+  g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+  g.font = `800 52px ${VFONT}`; g.fillStyle = '#0b1d16';
+  const tl = wrapLines(g, S.name || 'Mi tema', W - 120, 2);
+  tl.forEach((l, i) => g.fillText(l, W / 2, 128 + i * 60));
+  g.font = `800 24px ${VFONT}`; if ('letterSpacing' in g) g.letterSpacing = '3px';
+  g.fillStyle = mixHex(col, '#0b1d16', .62); g.fillText(`${S.bpm} BPM`, W / 2, 128 + tl.length * 60 - 8); if ('letterSpacing' in g) g.letterSpacing = '0px';
+  const bx = 70, bw = W - 140, by = H - 176, tot = R.blocks.reduce((a, b) => a + b.n, 0) || 1, kk = clamp(now / R.dur, 0, 1); let xx = bx;
+  g.save(); rrect(g, bx, by, bw, 10, 5); g.clip();
+  R.blocks.forEach((b) => { const w = bw * b.n / tot; g.fillStyle = VCOL[b.p % 8] + '40'; g.fillRect(xx, by, w - 2, 10); xx += w; });
+  g.beginPath(); g.rect(bx, by - 2, bw * kk, 14); g.clip(); xx = bx;
+  R.blocks.forEach((b) => { const w = bw * b.n / tot; g.fillStyle = VCOL[b.p % 8]; g.fillRect(xx, by, w - 2, 10); xx += w; });
+  g.restore();
 }
 
 /* ---- Neón: brillos, chispas y anillos ---- */
@@ -3766,9 +4092,11 @@ async function makeVideo(R) {
   const src = c.createBufferSource(); src.buffer = R.buf; src.connect(dest); src.connect(an);
   const mon = c.createGain(); mon.gain.value = .9; src.connect(mon); mon.connect(c.destination); // se escucha mientras se graba
   const st = { si: 0, ei: 0, lv: new Float32Array(NT), an, fd: new Uint8Array(an.frequencyBinCount), td: new Uint8Array(an.fftSize).fill(128), k: 0, kick: 0, snare: 0, burst: 0, pt: [], q, lastT: -1, style: vstyle() };
-  const lc = document.createElement('canvas'); lc.width = W; lc.height = Math.round(150 * sc); const lg = lc.getContext('2d'); lg.scale(sc, sc); drawLogo(lg, 720, 150, await loadImg('icon-512.png'), st.style === 1); // en papel, el logo va en tinta
+  const lc = document.createElement('canvas'); lc.width = W; lc.height = Math.round(150 * sc); const lg = lc.getContext('2d'); lg.scale(sc, sc); drawLogo(lg, 720, 150, await loadImg('icon-512.png'), st.style === 1); // en papel claro, el logo va en tinta
   st.logo = lc;
   if (st.style === 0) st.icons = await iconImgs(sc);
+  else if (st.style === 5) st.icons = await iconImgs(sc, '#efe6d2', PCOLL);
+  if (st.style === 6) st.hits = [];
   g.fillStyle = '#050907'; g.fillRect(0, 0, W, H);
   drawVideoFrame(g, W, H, R, 0, st);
   const vs = cv.captureStream(q.fps), stream = new MediaStream([...vs.getVideoTracks(), ...dest.stream.getAudioTracks()]);
@@ -3781,7 +4109,7 @@ async function makeVideo(R) {
       if (XP.cancel) return res();
       const now = c.currentTime - t0;
       if (now - st.lastT >= 1 / q.fps - .006) { st.lastT = now; drawVideoFrame(g, W, H, R, Math.max(0, now), st); } // solo los cuadros que se graban
-      xProgress(.2 + .8 * clamp(now / total, 0, 1), `Grabando el video ${VSTY[st.style].n}${q.lite ? ' liviano' : ''}… ${fmtT(Math.max(0, now))} / ${fmtT(total)}. Dejá la pantalla prendida.`);
+      xProgress(.2 + .8 * clamp(now / total, 0, 1), `Grabando el video ${VSTY[st.style].n}… ${fmtT(Math.max(0, now))} / ${fmtT(total)}. Dejá la pantalla prendida.`);
       if (now >= total) return res();
       requestAnimationFrame(tick);
     };
@@ -3830,7 +4158,6 @@ function showOut(blob, name, f, vv) {
 }
 xEl('xWhat').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b || b.disabled || XP.busy) return; XP.what = b.dataset.v; clearOut(); xRender(); });
 xEl('xQual').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b || XP.busy) return; PREF.vsty = +b.dataset.q; store.set(LS_PREF, PREF); xRender(); });
-xEl('xLite').addEventListener('change', (e) => { PREF.vlite = e.target.checked; store.set(LS_PREF, PREF); });
 xEl('xLoops').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b || XP.busy) return; XP.loops = +b.dataset.n; clearOut(); xRender(); });
 document.querySelectorAll('#export .xfo').forEach(b => b.addEventListener('click', () => doExport(b.dataset.f)));
 xEl('xName').addEventListener('change', () => { if (!XP.busy) keepTitle(); });
