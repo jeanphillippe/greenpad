@@ -541,6 +541,7 @@ input.xf::-moz-range-thumb{width:30px;height:40px;border:0;border-radius:8px;bac
 #xQual{flex-wrap:wrap}
 #xQual button{padding:8px 3px;white-space:nowrap;min-width:0;flex:1 0 22%}
 @media (max-width:350px){#xQual button{font-size:11.5px}}
+#xQual button[data-q="6"]{white-space:normal;line-height:1.15}
 .sl{display:grid;grid-template-columns:1fr auto;align-items:center;font-size:13px;margin-top:14px;gap:4px 8px}
 .sl output{font-variant-numeric:tabular-nums;color:var(--ink)}
 .sl input{grid-column:1/-1;width:100%;accent-color:var(--cy)}
@@ -749,7 +750,40 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .xout video{width:100%;max-height:46vh;border-radius:12px;background:#000;object-fit:contain}
 .xout .row{display:flex;gap:8px}
 .xout .row .btn{flex:1}
-</style><script async src="https://www.googletagmanager.com/gtm.js?id=GTM-TNBX6VG2"></script>
+
+/* ---- intro: la primera vez que se abre ---- */
+#intro{z-index:35;display:block;padding:0;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  background:color-mix(in srgb,var(--body) 45%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.2);backdrop-filter:blur(18px) saturate(1.2);transition:opacity .35s}
+.in-box{min-height:100%;width:100%;margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;
+  padding:calc(env(safe-area-inset-top) + 28px) 24px calc(env(safe-area-inset-bottom) + 28px)}
+.in-logo{position:relative;font-weight:800;font-size:clamp(46px,14vw,78px);letter-spacing:-.04em;line-height:1;color:var(--cy)}
+.in-logo span{color:var(--ink2)}
+.in-logo .splash{font-size:24px;right:-16px;bottom:-15px;pointer-events:none}
+.in-txt{margin:26px 0 0;max-width:400px;font-size:16px;line-height:1.55;color:var(--ink2);cursor:pointer;border-radius:10px}
+.in-txt p{margin:0 0 10px}
+.in-txt p:last-child{margin:0}
+.in-txt .more{color:var(--cy);font-weight:800;letter-spacing:.06em}
+.in-sp{flex:none;height:10px}
+.in-lbl{font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--ink)}
+.in-sty{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(100%,420px);margin-top:-6px}
+.in-sty button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:14px 4px;border-radius:16px;background:color-mix(in srgb,var(--pad) 72%,transparent);box-shadow:inset 0 0 0 1.5px var(--line);color:var(--ink2);transition:transform .12s,box-shadow .15s,color .15s}
+.in-sty button b{font-size:18px;font-weight:800}
+.in-sty button small{font-size:11.5px;color:var(--ink)}
+.in-sty button.on{box-shadow:inset 0 0 0 2.5px var(--cy);color:var(--cy);background:color-mix(in srgb,var(--cy) 14%,var(--pad))}
+.in-play{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:280px;height:64px;margin-top:8px;border-radius:32px;background:var(--cy);color:var(--acc-ink);font-size:20px;font-weight:800;letter-spacing:.14em;box-shadow:0 8px 26px color-mix(in srgb,var(--cy) 40%,transparent);transition:transform .12s}
+.in-play svg{width:24px;height:24px;fill:currentColor}
+.in-sty button:active,.in-play:active{transform:scale(.95)}
+#intro.nost .in-lbl,#intro.nost .in-sty{display:none}
+#intro.on .in-box>*{animation:inUp .55s cubic-bezier(.2,.9,.25,1) both}
+#intro.on .in-box>:nth-child(2){animation-delay:.08s}
+#intro.on .in-box>:nth-child(4){animation-delay:.16s}
+#intro.on .in-box>:nth-child(5){animation-delay:.2s}
+#intro.on .in-box>:nth-child(6){animation-delay:.26s}
+@keyframes inUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#intro.on .in-box>*{animation:none}}
+@media (max-height:600px){.in-box{gap:12px}.in-txt{font-size:15px}.in-play{height:56px}}
+</style>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-TNBX6VG2"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -899,7 +933,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 <div id="help" class="modal" aria-hidden="true">
   <div class="card">
     <h2>Cómo se usa</h2>
-    <p class="tips" style="margin-top:0"><b style="color:var(--cy)">GREEN<span style="color:var(--ink)">PAD</span>:</b> los instrumentos son grabaciones de verdad (batería, bajo, guitarras, piano, saxo, vibráfono y más). <b>DESTIEMPO</b> hace que cada golpe salga un poco corrido y con fuerza distinta, como tocado por una persona. SONIDO cambia todo el track a Banda, Acústico (con aire de sala), Noventa (grabación gastada) o Electro (los sintetizados).<br><br><b>Canción:</b> la barra de abajo de la cabecera es la línea de tiempo. Elegí un track y tocá <b>+</b> (o la tecla G) para sumarlo; cada bloque dice cuántas veces se repite. Tocá un bloque para elegirlo: aparecen botones para moverlo, repetirlo más o menos veces, duplicarlo o quitarlo, y Play arranca desde ahí. <b>AUTO</b> arma una canción con intro, verso y estribillo usando los tracks que tengan notas. Con <b>CANCIÓN</b> prendido (tecla L), Play toca el tema entero; mientras suena, tocar un bloque salta a ese bloque al terminar el compás. El botón de las flechas repite la canción; si está apagado, termina con un platillo.<br><br><b>Descargar</b> (botón verde de la flecha, al lado del dado): elegí la canción completa o un track, y bajala como audio MP3, WAV o como video vertical 9:16 con visualización. El tema queda guardado en Mis beats con el título que pongas. El video tarda lo mismo que dura la canción.<br><br><b>No hace falta saber música.</b> Elegí un ejemplo del menú o tocá el dado para inventar un track, y después cambiá lo que quieras.<br><br>
+    <p class="tips" style="margin-top:0"><b style="color:var(--cy)">GREEN<span style="color:var(--ink)">PAD</span>:</b> los instrumentos son grabaciones de verdad (batería, bajo, guitarras, piano, saxo, vibráfono y más). <b>DESTIEMPO</b> hace que cada golpe salga un poco corrido y con fuerza distinta, como tocado por una persona. SONIDO cambia todo el track a Banda, Acústico (con aire de sala), Noventa (grabación gastada) o Electro (los sintetizados).<br><br><b>Canción:</b> la barra de abajo de la cabecera es la línea de tiempo. Elegí un track y tocá <b>+</b> (o la tecla G) para sumarlo; cada bloque dice cuántas veces se repite. Tocá un bloque para elegirlo: aparecen botones para moverlo, repetirlo más o menos veces, duplicarlo o quitarlo, y Play arranca desde ahí. <b>AUTO</b> arma una canción con intro, verso y estribillo usando los tracks que tengan notas. Con <b>CANCIÓN</b> prendido (tecla L), Play toca el tema entero; mientras suena, tocar un bloque salta a ese bloque al terminar el compás. El botón de las flechas repite la canción; si está apagado, termina con el último compás y se frena.<br><br><b>Descargar</b> (botón verde de la flecha, al lado del dado): elegí la canción completa o un track, y bajala como audio MP3, WAV o como video vertical 9:16 con visualización. El tema queda guardado en Mis beats con el título que pongas. El video tarda lo mismo que dura la canción.<br><br><b>No hace falta saber música.</b> Elegí un ejemplo del menú o tocá el dado para inventar un track, y después cambiá lo que quieras.<br><br>
     <b>Instrumentos:</b> arriba la batería (bombo, caja, hi-hat, percusión) y abajo los melódicos (bajo, guitarra, acordes, melodía). Tocá un ícono para escucharlo; mantenelo apretado (o clic derecho) para elegir su estilo, volumen, inventar una línea nueva o usar una grabación. El <b>+</b> de cada estilo lo suma como capa.<br><br>
     <b>Altura:</b> en los melódicos, cuanto más lleno está el círculo, más agudo suena. Mantené apretado un paso (o clic derecho) para elegir la altura; en la compu también con la rueda del mouse o Shift + ↑ ↓. <b>AMBIENTE</b> elige qué notas usan bajo, guitarra, acordes y melodía: el mismo track suena oscuro, triste, alegre, etc. La batería no cambia, y todas las alturas combinan entre sí. Cada track (A a H) guarda su propio AMBIENTE y su propio SONIDO, igual que los estilos que elijas para cada instrumento.<br><br>
     <b>Grabar:</b> el botón del micrófono tiene 2 grabaciones de hasta 8 segundos. Podés recortar dónde empieza y dónde termina, hacerla más grave o más aguda, darla vuelta, ponerle eco o efecto robot, y elegir en qué instrumento usarla. La grabación queda en ese instrumento solo en el track que estás editando: en los otros tracks el instrumento sigue sonando normal, y cada track puede usar una grabación distinta. Siempre suena completa; en los melódicos además sube y baja según la altura de cada paso. En las bandejas, los botones 1 y 2 de GRABACIONES la tocan: mantenelos apretados para que suene mientras los tenés, o tocalos una vez para dejarla sonando.<br><br>
@@ -1015,7 +1049,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
       <button class="xfo" data-f="vid"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"><rect x="4" y="1.5" width="8" height="13" rx="1.8"/><path d="M7 6v4l3-2z" fill="currentColor"/></svg><span><b>Video vertical 9:16</b><small>Para historias y reels, con visualización</small></span></button>
     </div>
     <h4>ESTILO DEL VIDEO</h4>
-    <div class="seg" id="xQual"><button data-q="0">Caracol</button><button data-q="1">Revista</button><button data-q="2">Neón</button><button data-q="3">Flor</button><button data-q="4">Flor 3D</button><button data-q="5">Grilla</button><button data-q="6">Marea</button></div>
+    <div class="seg" id="xQual"><button data-q="0">Caracol</button><button data-q="1">Revista</button><button data-q="2">Neón</button><button data-q="3">Flor</button><button data-q="4">Flor 3D</button><button data-q="5">Grilla</button><button data-q="6">Diente de león</button></div>
     <p class="hint" id="xQualH"></p>
     <div class="xprog" id="xProg" hidden><div class="xbar"><i></i></div><p></p></div>
     <div class="xout" id="xOut" hidden></div>
@@ -1036,6 +1070,17 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <h2>Pegar beat en texto</h2>
     <textarea id="pasteArea" spellcheck="false" placeholder="Pegá acá el texto exportado de Greenpad (o un enlace)"></textarea>
     <div class="mrow"><button class="btn" data-close>Cancelar</button><button class="btn pri" id="pasteGo">Importar</button></div>
+  </div>
+</div>
+
+<div id="intro" class="modal" role="dialog" aria-modal="true" aria-label="Bienvenida a GREENPAD" aria-hidden="true">
+  <div class="in-box">
+    <div class="in-logo">GREEN<span>PAD</span><em class="splash" aria-hidden="true"></em></div>
+    <div class="in-txt" id="inTxt" role="button" tabindex="0" aria-expanded="false" title="Tocá para leer más"></div>
+    <div class="in-sp"></div>
+    <span class="in-lbl">ELEGÍ UN ESTILO</span>
+    <div class="in-sty" id="inSty" role="radiogroup" aria-label="Estilo para empezar"></div>
+    <button class="in-play" id="inPlay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.2v15.6c0 .8.9 1.3 1.6.9l12.4-7.8c.6-.4.6-1.4 0-1.8L8.1 3.3c-.7-.4-1.6.1-1.6.9z"/></svg>PLAY</button>
   </div>
 </div>
 
@@ -2024,6 +2069,7 @@ function presetSt(pr, t) {
 }
 
 /* ================= state ================= */
+const FRESH0 = !store.get(LS_STATE); // primera vez en este equipo: todavía no hay nada guardado
 let S = normalize(store.get(LS_STATE)) || defaultState();
 function defaultState() {
   // primer tema: verso, estribillo y puente, ya armados como canción
@@ -2369,8 +2415,8 @@ function barEnd() {
 function tick() {
   const c = AU.ctx;
   while (P.next < c.currentTime + lookahead()) {
-    if (P.songEnd) { // terminó la canción: platillo final y stop
-      finale(P.next); const ms = Math.max(0, (P.next - c.currentTime) * 1000);
+    if (P.songEnd) { // terminó la canción: deja sonar lo último y se frena (sin agregar nada: el cierre lo arma quien hace el tema)
+      const ms = Math.max(0, (P.next - c.currentTime) * 1000);
       P.songEnd = false; clearTimeout(P.endT); P.endT = setTimeout(() => { stop(); toast('Fin del tema. Play para escucharlo de nuevo', 1800); }, ms + 60);
       return;
     }
@@ -2602,7 +2648,7 @@ function songAct(a) {
   const L = S.song, i = SG.sel;
   if (a === 'add') return songAdd(S.cur);
   if (a === 'auto') return autoSong();
-  if (a === 'loop') { S.songLoop = !S.songLoop; save(); renderSong(); return toast(S.songLoop ? 'Al terminar, la canción vuelve a empezar' : 'Al terminar, la canción cierra con un platillo y se frena', 1900); }
+  if (a === 'loop') { S.songLoop = !S.songLoop; save(); renderSong(); return toast(S.songLoop ? 'Al terminar, la canción vuelve a empezar' : 'Al terminar, la canción se frena', 1900); }
   if (i < 0 || !L[i]) return;
   pushUndo();
   if (a === 'minus') L[i].n = Math.max(1, L[i].n - 1);
@@ -2654,12 +2700,6 @@ function songNext() {
   }
   if (P.si >= L.length) P.si = 0;
   P.pat = L[P.si].p;
-}
-// cierre: platillo y bombo en el primer tiempo después del último compás
-function finale(t) {
-  const c = AU.ctx; if (!c) return;
-  smpHit(c, AU.master, t, 1.1, 'pc_crash', .5) || OLDV[3][7].f(c, AU.master, t, 1);
-  smpHit(c, AU.master, t, 1.1, 'bd_banda', 1) || OLDV[0][0].f(c, AU.master, t, 1);
 }
 function songPos(it) {
   if (it.si == null || !S.songOn) return;
@@ -2784,12 +2824,12 @@ function scheduleOffline(p, st, t, ev) {
     }
   }
 }
-async function renderOffline(blocks, finaleOn, rate) { // rate: mezcla liviana y sin barra de progreso (la onda de la pantalla video)
+async function renderOffline(blocks, rate) { // rate: mezcla liviana y sin barra de progreso (la onda de la pantalla video)
   const c = ensureAudio(); if (!c) throw new Error('audio');
   const prog = rate ? () => {} : xProgress;
   const w = bankWhenReady(20000); if (w) { prog(.05, 'Afinando la banda…'); await w; }
   const OC = window.OfflineAudioContext || window.webkitOfflineAudioContext; if (!OC) throw new Error('offline');
-  const sr = rate || 44100, dur = xDur(blocks), tail = finaleOn ? 3.2 : 2.2;
+  const sr = rate || 44100, dur = xDur(blocks), tail = 2.2;
   const oc = new OC(2, Math.ceil((dur + .05 + tail) * sr), sr);
   const keep = Object.assign({}, AU), vgL = VG.live, vgK = VG.keys, mv = MAXV, ev = [], steps = [];
   try {
@@ -2801,7 +2841,6 @@ async function renderOffline(blocks, finaleOn, rate) { // rate: mezcla liviana y
     buildFxCore(oc); AU.master = AU.fxIn; applyFx();
     let t = .05;
     blocks.forEach((b, bi) => { for (let r = 0; r < b.n; r++) for (let st = 0; st < STEPS; st++) { steps.push({ t, p: b.p, bi, r, s: st }); scheduleOffline(b.p, st, t, ev); t += stepDur(st); } });
-    if (finaleOn) finale(t);
     steps.push({ t, end: true });
   } finally {
     for (const k of Object.keys(AU)) if (!(k in keep)) delete AU[k];
@@ -2853,7 +2892,7 @@ const VSTY = [
   { n: 'Flor', d: 'Una flor de bordes bien marcados que se abre con el bombo y mueve cada pétalo con el sonido, sobre un fondo oscuro que cambia despacio.' },
   { n: 'Flor 3D', d: 'Un loto en 3D armado con Fibonacci y la proporción áurea: 21 pétalos en tres capas. Con poco sonido queda cerrado como un capullo abultado de puntas finas y con mucho sonido se abre del todo; las puntas se doblan con la música, más las del centro. Cada pétalo va de un tono claro en el centro a uno profundo afuera, y el bombo larga olas de luz. Tallo largo. Barras de fondo como en Revista.' },
   { n: 'Grilla', d: 'Revista impresa en papel oscuro: tempo grande, círculo de semitono y la onda del sonido. Atrás, en segundo plano, la grilla con los íconos de cada instrumento: cada golpe ilumina su celda, su columna y su ícono.' },
-  { n: 'Marea', d: 'Líneas de tinta que rodean una esfera de cromo fija, en diagonal, sobre un fondo degradado pintado con aerógrafo. Cada sonido larga olas desde la esfera con su color y su forma: el bombo olas grandes, el hi-hat rizos chicos, el bajo un oleaje largo.' },
+  { n: 'Diente de león', d: 'Un diente de león de tallo verde sobre tinta flotando en agua, como una hidroimpresión. Cada golpe deja caer una gota del color de su instrumento que empuja la tinta, los graves la hacen girar y cada compás la peina. La flor sigue la canción: capullo, flor amarilla, se cierra, bola de semillas y al final el viento se las lleva.' },
 ];
 const vstyle = () => clamp(PREF.vsty == null ? 0 : PREF.vsty, 0, VSTY.length - 1);
 const vq = () => ({ n: 'normal', w: 720, h: 1280, fps: 30, br: 5e6, lite: false }); // siempre 720 × 1280 a 30 cuadros
@@ -2897,7 +2936,7 @@ function drawVideoFrame(g, W0, H0, R, now, st) {
   else if (st.style === 3) drawFlor(g, R, st, V);
   else if (st.style === 4) drawFlor3D(g, R, st, V);
   else if (st.style === 5) drawGrilla(g, R, st, V);
-  else if (st.style === 6) drawMarea(g, R, st, V);
+  else if (st.style === 6) drawDiente(g, R, st, V);
   else drawNeon(g, R, st, V);
   g.setTransform(1, 0, 0, 1, 0, 0);
   if (st.logo && st.style !== 0) g.drawImage(st.logo, 0, H0 - st.logo.height); // en Caracol el logo va arriba
@@ -3203,201 +3242,342 @@ function drawGrilla(g, R, st, V) {
   g.textAlign = 'center';
 }
 
-/* ---- Marea: líneas de tinta que rodean una esfera fija, en perspectiva diagonal, con acabado de aerógrafo ----
-   La esfera está en el origen (0,0,0) y el eje X cruza la pantalla en diagonal por el medio. Las líneas son líneas de corriente:
-   rodean la esfera y nunca se tocan. Fondo en degradado pintado, con grano. Cada golpe larga un anillo de olas que sale de la esfera:
-   cada instrumento con su alto, velocidad y largo de onda, empujando más hacia su lado, y las crestas toman su color. */
-const MAREA = [ // a: alto · v: velocidad · w: ancho del frente · k: largo de onda · life: cuánto dura (s)
-  { a: 34, v: 430, w: 95, k: .021, life: 2.6 }, // bombo: ola grande y lenta
-  { a: 20, v: 640, w: 46, k: .045, life: 1.5 },  // caja
-  { a: 6, v: 860, w: 26, k: .09, life: .8 },     // hi-hat: rizos chicos y rápidos
-  { a: 11, v: 700, w: 34, k: .062, life: 1.1 },  // percu
-  { a: 24, v: 320, w: 130, k: .015, life: 3 },   // bajo: oleaje largo
-  { a: 13, v: 540, w: 56, k: .036, life: 1.8 },  // guitarra
-  { a: 15, v: 430, w: 84, k: .027, life: 2.2 },  // acordes
-  { a: 12, v: 600, w: 44, k: .05, life: 1.7 },   // melodía
+/* ---- Diente de león: un diente de león sobre tinta flotando en agua, como una hidroimpresión ----
+   Fondo: capas de tinta (negro, blanco, lavanda, violeta, fucsia y algún toque cálido) que flotan como en la
+   hidroimpresión, con una franja fucsia gruesa en diagonal. La tinta se mueve con la música: cada golpe deja caer una
+   gota del color de su instrumento que empuja la tinta que ya estaba (así se forman los anillos y las vetas), los
+   graves la hacen girar alrededor de la flor y al empezar cada compás un peine invisible la arrastra en una dirección.
+   Adelante, el diente de león con su tallo verde, y su vida sigue la canción: arranca como capullo, se abre la flor
+   amarilla (144 pétalos finos en 6 anillos), a mitad del tema se cierra, se abre la bola de semillas (144 semillas en
+   espiral áurea, cada una con su vilano) y al final el viento se las lleva todas. Cada instrumento tiene su gajo de
+   pétalos y de semillas: cuando suena, ese gajo se prende con su color y cambia de forma. Con la bola abierta, la caja
+   y los melódicos sueltan semillas que se vuelan; esas vuelven a crecer, hasta el final. */
+const DLC = ['#ff2e93', '#fff1df', '#d6c8ff', '#ffb067', '#9d6bff', '#ff7a8a', '#c49bff', '#ffd76a']; // un color por instrumento, en la paleta del póster
+const DLF = [ // forma del vilano al sonar: o apertura · l largo de los pelitos · c rulo · j temblor · r largo de la semilla · fly semillas que se vuelan
+  { o: 1.35, l: 1.3, c: 0, j: 0, r: 1.1, fly: 0 },    // bombo: paraguas grande y abierto
+  { o: .5, l: 1.75, c: 0, j: 0, r: 1.12, fly: 2 },    // caja: estrella de puntas largas
+  { o: 1.55, l: .7, c: 0, j: 1, r: 1, fly: 0 },       // hi-hat: chiquito y tiembla
+  { o: 1.15, l: 1.1, c: .6, j: .5, r: 1.05, fly: 0 }, // percu
+  { o: 1.7, l: 1.4, c: 0, j: 0, r: 1.07, fly: 0 },    // bajo: ancho y chato
+  { o: .9, l: 1.35, c: 1.1, j: 0, r: 1.08, fly: 1 },  // guitarra: pelitos con rulo
+  { o: 1.25, l: 1.2, c: -.9, j: 0, r: 1.06, fly: 1 }, // acordes: rulo para el otro lado
+  { o: .8, l: 1.5, c: 1.4, j: 0, r: 1.1, fly: 1 },    // melodía
 ];
-function mareaInit(lite) {
-  const Rs = 185, Re = Rs * 1.06, D = Math.PI / 180;
-  const C = { Rs, Re, yaw: 34 * D, el: 36 * D, roll: -17 * D, Dc: 1500, F: 1250, fx: 360, fy: 640 };
-  const ce = Math.cos(C.el), cyw = Math.cos(C.yaw);
-  // separación entre líneas que crece con la distancia: en pantalla quedan parejas, un poco más juntas al fondo
-  const cs = [], dz0 = lite ? 64 : 46;
-  for (let c = -760; c < 3600;) { cs.push(c); c += dz0 * Math.max(.55, (C.Dc + c * ce * cyw) / C.Dc) * .82; }
-  const NPt = lite ? 80 : 120;
-  C.lines = cs.map((c0) => {
-    const c = Math.abs(c0) < 6 ? 6 * Math.sign(c0 || 1) : c0, depth = C.Dc + c * ce * cyw, X = 820 * depth / C.F / cyw + 500;
-    const xs = new Float32Array(NPt), zs = new Float32Array(NPt), dd = new Float32Array(NPt), an = new Float32Array(NPt);
-    for (let i = 0; i < NPt; i++) {
-      const x = -X + 2 * X * i / (NPt - 1), sg = Math.sign(c);
-      // línea de corriente alrededor de un cilindro: z(1 − Re²/(x²+z²)) = c, resuelta con Newton
-      let z = sg * Math.max(Math.abs(c), Math.sqrt(Math.max(0, Re * Re - x * x)) + Math.abs(c) * .5 + 1);
-      for (let it = 0; it < 12; it++) {
-        const r2 = x * x + z * z, f = z - Re * Re * z / r2 - c, fp = 1 - Re * Re * (x * x - z * z) / (r2 * r2);
-        let nz = z - f / (Math.abs(fp) < .05 ? .05 * Math.sign(fp || 1) : fp);
-        if (Math.sign(nz) !== sg || nz * nz + x * x < Re * Re) nz = (z + sg * Math.sqrt(Math.max(Re * Re - x * x, 0) + 1)) / 2;
-        z = nz;
-      }
-      xs[i] = x; zs[i] = z; dd[i] = Math.hypot(x, z); an[i] = Math.atan2(z, x);
+const DLD = [ // gotas de tinta por golpe · r: radio · c: tintas que va alternando · sp: dónde cae (0 junto a la flor, 1 lejos) · p: probabilidad
+  { r: 46, c: ['#f4eeff', '#ff2e93', '#c9b3f5', '#5b2ea6'], sp: .4, p: 1 },   // bombo: gotas grandes, anillos alrededor de la flor
+  { r: 26, c: ['#f4eeff', '#0a0510', '#ff7ab8'], sp: .9, p: 1 },             // caja
+  { r: 10, c: ['#0a0510', '#f4eeff'], sp: 1.2, p: .35 },                     // hi-hat: salpicaduras chicas
+  { r: 15, c: ['#ff8a3d', '#ffd76a'], sp: 1.1, p: .8 },                      // percu: toques cálidos
+  { r: 40, c: ['#3b1a6e', '#9d6bff', '#0a0510'], sp: .8, p: 1 },             // bajo
+  { r: 26, c: ['#ff2e93', '#ffc2e3', '#0a0510'], sp: 1, p: 1 },              // guitarra
+  { r: 32, c: ['#b48cff', '#e4d8ff', '#3b1a6e'], sp: .9, p: 1 },             // acordes
+  { r: 20, c: ['#ffd76a', '#ff5fae', '#f4eeff'], sp: 1.1, p: 1 },            // melodía
+];
+const smooth01 = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
+const inkEdge = (c) => { const [r, g, b] = hexRgb(c); return r * .3 + g * .59 + b * .11 > 120 ? '#0a0510' : '#f4eeff'; };
+/* tinta sobre agua: cada mancha es un polígono cerrado [x0, y0, x1, y1, …], y la más nueva va arriba.
+   Una gota en (x, y) empuja toda la tinta: cada punto se aleja así |P − c|² = |P − c|² + r² (marmolado matemático). */
+function inkDrop(C, x, y, r2) {
+  for (const k of C.ink) { const P = k.p; for (let i = 0; i < P.length; i += 2) { const dx = P[i] - x, dy = P[i + 1] - y, s = Math.sqrt(1 + r2 / Math.max(dx * dx + dy * dy, 1e-4)); P[i] = x + dx * s; P[i + 1] = y + dy * s; } }
+}
+// peine: arrastra la tinta en la dirección (mx, my) a lo largo de una línea (o de varias paralelas, separadas sp);
+// cuanto más lejos de la línea, menos
+function inkTine(C, lx, ly, mx, my, z, c, sp) {
+  const nx = -my, ny = mx, k = Math.LN2 / c;
+  for (const q of C.ink) { const P = q.p; for (let i = 0; i < P.length; i += 2) {
+    let d = (P[i] - lx) * nx + (P[i + 1] - ly) * ny; if (sp) d -= sp * Math.round(d / sp);
+    const s = z * Math.exp(-Math.abs(d) * k); if (s > .02 || s < -.02) { P[i] += mx * s; P[i + 1] += my * s; } } }
+}
+// remolino: gira la tinta alrededor de (cx, cy), más rápido cerca del centro
+function inkSwirl(C, cx, cy, w, sg) {
+  const k2 = 1 / (2 * sg * sg);
+  for (const q of C.ink) { const P = q.p; for (let i = 0; i < P.length; i += 2) { const dx = P[i] - cx, dy = P[i + 1] - cy, a = w * Math.exp(-(dx * dx + dy * dy) * k2); if (a > 1e-4 || a < -1e-4) { const c = Math.cos(a), s = Math.sin(a); P[i] = cx + dx * c - dy * s; P[i + 1] = cy + dx * s + dy * c; } } }
+}
+// ordena los puntos (agrega donde la tinta se estiró, saca donde se juntó) y borra lo que ya no se ve
+function inkTidy(C, W, H) {
+  const m = 16, vis = [];
+  for (const q of C.ink) {
+    const P = q.p, n = P.length, Q = []; let v = false;
+    for (let i = 0; i < n; i += 2) {
+      const x = P[i], y = P[i + 1];
+      if (n > 120 && Q.length > 4) { const ax = x - Q[Q.length - 2], ay = y - Q[Q.length - 1]; if (ax * ax + ay * ay < 6.25) continue; }
+      Q.push(x, y); if (!v && x > -m && x < W + m && y > -m && y < H + m) v = true;
+      const j = (i + 2) % n, bx = P[j] - x, by = P[j + 1] - y, d = Math.hypot(bx, by);
+      if (d > 10 && Q.length < 1600) { const s = Math.ceil(d / 8); for (let t = 1; t < s; t++) Q.push(x + bx * t / s, y + by * t / s); }
     }
-    return { c, xs, zs, dd, an };
-  }).sort((a, b) => b.c - a.c); // del fondo hacia adelante
+    q.p = Q; vis.push(v);
+  }
+  // una mancha que ya no se ve: si tapa toda la pantalla, pasa a ser el fondo y lo de abajo se borra; si no, se borra
+  const inside = (P, x, y) => { let c = false; for (let i = 0, j = P.length - 2; i < P.length; j = i, i += 2) if ((P[i + 1] > y) !== (P[j + 1] > y) && x < (P[j] - P[i]) * (y - P[i + 1]) / (P[j + 1] - P[i + 1]) + P[i]) c = !c; return c; };
+  let cut = -1;
+  for (let i = C.ink.length - 1; i >= 0; i--) if (!vis[i] && inside(C.ink[i].p, W / 2, H / 2)) { cut = i; break; }
+  if (cut >= 0) C.base = C.ink[cut].c;
+  C.ink = C.ink.filter((q, i) => i > cut && vis[i]);
+}
+function dlDrop(C, tr, now) {
+  const d = DLD[tr], TAU = Math.PI * 2;
+  if (Math.random() > d.p || now - (C.ld[tr] || -9) < .12 || C.ink.length > 260) return;
+  C.ld[tr] = now;
+  const a = tr * TAU / 8 + now * .07 + (Math.random() - .5) * 1.4, rr = d.sp * (140 + Math.random() * 300);
+  const x = C.cx + Math.cos(a) * rr, y = C.cy + Math.sin(a) * rr * 1.35, col = d.c[(C.dn[tr] = (C.dn[tr] || 0) + 1) % d.c.length], p = [];
+  for (let k = 0; k < 40; k++) p.push(x + Math.cos(k / 40 * TAU) * .5, y + Math.sin(k / 40 * TAU) * .5);
+  C.ink.push({ p, c: col, e: inkEdge(col) });
+  C.drops.push({ x, y, r2: d.r * d.r * (.7 + Math.random() * .6), t: now, f: 0 });
+}
+function dlInit(W, H) {
+  const C = { cx: W / 2, cy: H * .47, fl: [], last: 0, ink: [], drops: [], tines: [], ld: [], dn: [], base: '#2a1450', bar: '' };
+  // la película de tinta del principio: franjas en diagonal (con la fucsia gruesa) ya marmoladas por unas gotas y un remolino
+  { const fa = -.86, ux = Math.cos(fa), uy = Math.sin(fa), nx = -uy, ny = ux, cols = ['#7a4fd0', '#0a0510', '#c9b3f5', '#3b1a6e', '#f4eeff', '#5b2ea6', '#0a0510', '#b48cff', '#e4d8ff', '#3b1a6e'];
+    const band = (o0, o1, col) => { const p = [], L = 900;
+      for (let s = -L; s <= L; s += 12) p.push(C.cx + ux * s + nx * o0, C.cy + uy * s + ny * o0);
+      for (let s = L; s >= -L; s -= 12) p.push(C.cx + ux * s + nx * o1, C.cy + uy * s + ny * o1);
+      C.ink.push({ p, c: col, e: inkEdge(col) }); };
+    let o = -820, k = 0, fd = false;
+    while (o < 820) { const fu = !fd && o > 20, w = fu ? 105 : 16 + Math.random() * 46; if (fu) fd = true; band(o, o + w, fu ? '#ff2e93' : cols[k++ % cols.length]); o += w; }
+    const pre = [[.3, .25, 80, '#c9b3f5'], [.3, .25, 50, '#ff2e93'], [.3, .25, 30, '#f4eeff'], [.75, .62, 90, '#0a0510'], [.75, .62, 60, '#e4d8ff'], [.15, .78, 70, '#7a4fd0'], [.8, .2, 55, '#ffd76a'], [.55, .9, 45, '#f4eeff']];
+    for (const [fx, fy, r, col] of pre) { const x = W * fx, y = H * fy, p = []; for (let i = 0; i < 48; i++) p.push(x + Math.cos(i / 48 * 6.283) * .5, y + Math.sin(i / 48 * 6.283) * .5); C.ink.push({ p, c: col, e: inkEdge(col) }); inkDrop(C, x, y, r * r); inkTidy(C, W, H); }
+    for (let i = 0; i < 6; i++) { inkSwirl(C, C.cx, C.cy, .22, 300); inkTidy(C, W, H); }
+    inkTine(C, C.cx - 120, C.cy, 0, 1, 60, 26); inkTidy(C, W, H); }
+  // semillas: espiral áurea sobre una esfera, sin las de abajo de todo (ahí va el tallo)
+  const GA = Math.PI * (3 - Math.sqrt(5)), sd = [];
+  for (let i = 0; i < 160 && sd.length < 144; i++) {
+    const y = 1 - 2 * (i + .5) / 160; if (y < -.84) continue;
+    const r = Math.sqrt(1 - y * y), th = i * GA, x = r * Math.cos(th), z = r * Math.sin(th);
+    const lon = Math.atan2(z, x);
+    sd.push({ x, y, z, tr: Math.floor((lon + Math.PI) / (2 * Math.PI) * 8) % 8, bi: Math.min(15, Math.floor((y + 1) / 2 * 16)), ph: Math.random() * 6.28, lit: 0, grow: 1, gone: -1 });
+  }
+  C.seeds = sd;
+  // pétalos de la flor amarilla: 6 anillos (de afuera hacia adentro), más cortos y más naranjas hacia el centro
+  const RINGS = [[34, 168, 17, '#ffe347'], [30, 142, 15, '#ffd52a'], [26, 116, 14, '#ffc61a'], [22, 90, 12, '#ffb40c'], [18, 64, 10, '#ffa206'], [14, 40, 8, '#f28d00']], pet = [];
+  RINGS.forEach(([n, L, w, col], ri) => { for (let k = 0; k < n; k++) {
+    const a = (k + (ri & 1) * .5) / n * Math.PI * 2 + ri * GA, an = ((a % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
+    pet.push({ a, L: L * (.94 + Math.random() * .1), w, col, tr: Math.floor(an / (Math.PI * 2) * 8) % 8, bi: Math.floor(an / (Math.PI * 2) * 16) % 16, ph: Math.random() * 6.28, cv: (Math.random() - .5) * .5, lit: 0 });
+  } });
+  C.pet = pet;
+  // brillos de colores ya dibujados, para no calcular degradados en cada cuadro
+  C.glow = DLC.map((c) => { const b = document.createElement('canvas'); b.width = b.height = 64; const x = b.getContext('2d'), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, c); gr.addColorStop(.25, c + 'aa'); gr.addColorStop(1, c + '00'); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return b; });
+  // grano de serigrafía y viñeta
+  C.grain = [0, 1].map(() => { const b = document.createElement('canvas'); b.width = W; b.height = H; const x = b.getContext('2d');
+    for (let i = 0; i < 26000; i++) { x.fillStyle = Math.random() < .5 ? `rgba(255,245,255,${Math.random() * .09})` : `rgba(8,0,16,${Math.random() * .16})`; x.fillRect(Math.random() * W, Math.random() * H, 1.5, 1.5); }
+    const vg = x.createRadialGradient(W / 2, H * .47, H * .28, W / 2, H * .47, H * .8); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(6,0,14,.55)'); x.fillStyle = vg; x.fillRect(0, 0, W, H);
+    return b; });
   return C;
 }
-function drawMarea(g, R, st, V) {
-  const { W, H, TAU, now, beats, col, bass, mid } = V;
-  const C = st.ma || (st.ma = mareaInit(false));
+function drawDiente(g, R, st, V) {
+  const { W, H, TAU, now, beats, bass, mid } = V;
+  const C = st.dl || (st.dl = dlInit(W, H));
+  const dt = clamp(now - C.last, 0, .1); C.last = now;
+  const B = vBands(st, 16);
+  // la vida de la flor sigue la canción: arranca como capullo, se abre la flor amarilla, a mitad del tema se cierra,
+  // se abre la bola de semillas y al final el viento se las lleva todas
+  const u = clamp(now / Math.max(R.dur, .1), 0, 1);
+  const bloom = smooth01(0, 1.4, now) * (1 - smooth01(.48, .62, u)), puff = smooth01(.64, .8, u), blow = smooth01(.88, .985, u);
+  const release = (s, sp) => { // una semilla se suelta y vuela desde donde estaba
+    C.fl.push({ x: s.tx, y: s.ty, vx: s.dx * sp + 40, vy: s.dy * sp - 30, r: Math.atan2(s.dy, s.dx) + Math.PI / 2, w: (Math.random() - .5) * 1.6, tr: s.tr, t: now, life: 4 + Math.random() * 2, sc: .8 + Math.random() * .4 });
+    if (C.fl.length > 110) C.fl.shift();
+  };
+  // golpes nuevos: gotas de tinta, pétalos o semillas que se prenden y, con la bola abierta, alguna semilla que se vuela
   if (!st.hits) st.hits = [];
-  // olas nuevas: una por instrumento y por golpe
-  const rings = C.rings || (C.rings = []);
-  for (const e of st.hits) { rings.push({ t: e.t, tr: e.tr }); if (rings.length > 30) rings.shift(); }
-  st.hits.length = 0;
-  for (let i = rings.length - 1; i >= 0; i--) if (now - rings[i].t > MAREA[rings[i].tr].life) rings.splice(i, 1);
-  const RG = rings.map((r) => {
-    const m = MAREA[r.tr], age = Math.max(0, now - r.t), u = age / m.life;
-    return { r: C.Re + m.v * age, w: m.w, k: m.k, A: m.a * (1 - Math.exp(-age * 30)) * Math.pow(1 - u, 1.6), dir: r.tr * TAU / 8 + .4, rgb: hexRgb(VCOL[r.tr]) };
-  }).filter(r => r.A > .3);
-  // cámara fija: la esfera en el origen y el eje X cruzando en diagonal
-  const cyw = Math.cos(C.yaw), syw = Math.sin(C.yaw), ce = Math.cos(C.el), se = Math.sin(C.el), roll = C.roll, fx = W / 2, fy = H * .5 + 20;
-  const proj = (x, y, z) => { const xr = x * cyw - z * syw, zr = x * syw + z * cyw, d = C.Dc + zr * ce - y * se, s = C.F / d; return [fx + xr * s, fy - (y * ce + zr * se) * s, d, s]; };
-  // fondo: degradado pintado con aerógrafo, claro y cálido al fondo, verde profundo adelante
-  const far = mixHex('#eef0c2', col, .12), midc = mixHex('#86d3b3', col, .3), near = mixHex('#164c3d', col, .18);
-  const wg = g.createLinearGradient(0, -220, 0, H + 260); wg.addColorStop(0, far); wg.addColorStop(.42, midc); wg.addColorStop(1, near);
-  g.save();
-  g.translate(W / 2, H / 2); g.rotate(roll); g.translate(-W / 2, -H / 2);
-  g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1;
-  g.fillStyle = wg; g.fillRect(-400, -400, W + 800, H + 800);
-  const ink = hexRgb('#0b1d16'), hiB = hexRgb('#f4fff6');
-  const flow = beats * TAU / 8, swell = .25 + bass * .9, rip = 1.6 + mid * 3.2;
-  const n0 = C.lines[0].xs.length, sx = new Float32Array(n0), sy = new Float32Array(n0), ssc = new Float32Array(n0), hR = new Float32Array(n0), hG = new Float32Array(n0), hB = new Float32Array(n0), hI = new Float32Array(n0), hh = new Float32Array(n0);
-  const seg = 5;
-  let sphereDone = false;
-  const drawShadow = () => { // sombra suave de la esfera sobre el fondo, entre las líneas de atrás y las de adelante
-    sphereDone = true;
-    const [sx0, sy0, , s] = proj(0, 0, 0), r = C.Rs * s, sg = g.createRadialGradient(sx0, sy0 + r * .1, r * .5, sx0, sy0 + r * .1, r * 1.6);
-    sg.addColorStop(0, 'rgba(6,20,15,.4)'); sg.addColorStop(1, 'rgba(6,20,15,0)'); g.fillStyle = sg; g.beginPath(); g.ellipse(sx0, sy0 + r * .1, r * 1.6, r * 1.1, 0, 0, TAU); g.fill();
-  };
-  const drawSphere = () => { // el obstáculo: una esfera de cromo pintada con aerógrafo, fija en el centro; va encima de todo
-    const yc = -C.Rs * .28, [ox, oy, , s] = proj(0, yc, 0), r = C.Rs * s;
-    // solo se ve lo que queda arriba del agua
-    const rw = Math.sqrt(C.Rs * C.Rs - yc * yc), wl = [];
-    for (let i = 0; i < 72; i++) { const a = i / 72 * TAU; wl.push(proj(Math.cos(a) * rw, 0, Math.sin(a) * rw)); }
-    let iL = 0, iR = 0; wl.forEach((q, i) => { if (q[0] < wl[iL][0]) iL = i; if (q[0] > wl[iR][0]) iR = i; });
-    const m1 = wl[(iL + ((iR - iL + 72) % 72 >> 1)) % 72], fw = m1[1] > (wl[iL][1] + wl[iR][1]) / 2;
-    const arc = (cb) => { for (let k = 0; k <= 72; k++) { const i = fw ? (iL + k) % 72 : (iL - k + 72) % 72; cb(wl[i], k); if (i === iR) break; } };
-    g.save(); g.beginPath(); g.moveTo(wl[iL][0] - 400, wl[iL][1]); arc((q) => g.lineTo(q[0], q[1]));
-    g.lineTo(wl[iR][0] + 400, wl[iR][1]); g.lineTo(wl[iR][0] + 400, -3000); g.lineTo(wl[iL][0] - 400, -3000); g.closePath(); g.clip();
-    g.beginPath(); g.arc(ox, oy, r, 0, TAU); g.clip();
-    // la luz viene de arriba a la izquierda de la pantalla, aunque la imagen esté girada
-    g.save(); g.translate(ox, oy); g.rotate(-roll);
-    // cromo: cielo claro arriba que baja a un horizonte brillante, y abajo el agua oscura reflejada
-    const hy = r * .08, sky = g.createLinearGradient(0, -r, 0, hy);
-    sky.addColorStop(0, mixHex('#0d3a2e', col, .35)); sky.addColorStop(.55, mixHex('#9fdcc0', col, .2)); sky.addColorStop(1, '#fbf6dc');
-    g.fillStyle = sky; g.fillRect(-r, -r, 2 * r, r + hy);
-    const gr = g.createLinearGradient(0, hy, 0, r); gr.addColorStop(0, '#07130f'); gr.addColorStop(.5, mixHex('#1d5546', col, .2)); gr.addColorStop(1, mixHex('#4fa487', col, .3));
-    g.fillStyle = gr; g.beginPath(); g.moveTo(-r, hy); g.quadraticCurveTo(0, hy + r * .16, r, hy); g.lineTo(r, r); g.lineTo(-r, r); g.closePath(); g.fill();
-    g.strokeStyle = '#fffbe6'; g.lineWidth = 2.2; g.globalAlpha = .9; g.beginPath(); g.moveTo(-r, hy); g.quadraticCurveTo(0, hy + r * .16, r, hy); g.stroke(); g.globalAlpha = 1;
-    // volumen: borde oscuro, como pintado, y un brillo grande y suave
-    const ed = g.createRadialGradient(-r * .25, -r * .3, r * .3, 0, 0, r); ed.addColorStop(0, 'rgba(0,0,0,0)'); ed.addColorStop(.75, 'rgba(0,0,0,.08)'); ed.addColorStop(1, 'rgba(4,14,10,.6)');
-    g.fillStyle = ed; g.fillRect(-r, -r, 2 * r, 2 * r);
-    const hl = g.createRadialGradient(-r * .38, -r * .45, 0, -r * .38, -r * .45, r * .45); hl.addColorStop(0, 'rgba(255,255,255,.85)'); hl.addColorStop(1, 'rgba(255,255,255,0)');
-    g.fillStyle = hl; g.fillRect(-r, -r, 2 * r, 2 * r);
-    // con el bombo, el borde se prende con el color de la parte
-    if (st.k > .03) { g.strokeStyle = col; g.globalAlpha = st.k * .8; g.lineWidth = 6; g.beginPath(); g.arc(0, 0, r - 3, 0, TAU); g.stroke(); g.globalAlpha = 1; }
-    g.restore(); g.restore();
-    g.strokeStyle = '#0b1d16'; g.lineWidth = 3; g.beginPath(); g.arc(ox, oy, r, 0, TAU); g.save(); g.beginPath(); g.moveTo(wl[iL][0] - 400, wl[iL][1]); arc((q) => g.lineTo(q[0], q[1])); g.lineTo(wl[iR][0] + 400, wl[iR][1]); g.lineTo(wl[iR][0] + 400, -3000); g.lineTo(wl[iL][0] - 400, -3000); g.closePath(); g.clip(); g.beginPath(); g.arc(ox, oy, r, 0, TAU); g.stroke(); g.restore();
-    // destello en estrella sobre el brillo, más grande con el bombo
-    const a = -roll - 2.25, gx = ox + Math.cos(a) * r * .55, gy = oy + Math.sin(a) * r * .55, sz = 28 + st.k * 44 + bass * 8;
-    g.save(); g.translate(gx, gy); g.rotate(-roll); g.globalCompositeOperation = 'lighter'; g.fillStyle = '#ffffff';
-    for (const [an, l, w] of [[0, sz, 3], [Math.PI / 2, sz, 3], [Math.PI / 4, sz * .42, 1.8], [-Math.PI / 4, sz * .42, 1.8]]) { g.save(); g.rotate(an); g.globalAlpha = .85; g.beginPath(); g.moveTo(-l, 0); g.quadraticCurveTo(0, -w, l, 0); g.quadraticCurveTo(0, w, -l, 0); g.fill(); g.restore(); }
-    g.restore();
-  };
-  for (const L of C.lines) {
-    if (!sphereDone && L.c < 0) drawShadow();
-    const n = L.xs.length;
-    let dmid = 0, vis = 0;
-    for (let i = 0; i < n; i++) {
-      const x = L.xs[i], z = L.zs[i], d = L.dd[i], a = L.an[i];
-      // la corriente: las líneas ondulan despacio con el pulso, los graves las hinchan y los medios les suman rizos
-      let h = Math.sin(x * .021 - flow + L.c * .013) * rip + Math.sin(d * .0105 - beats * TAU / 16) * 7 * swell;
-      let cr = 0, cg = 0, cb = 0, ci = 0;
-      for (const o of RG) {
-        const dx = d - o.r; if (dx > 2.6 * o.w || dx < -3.4 * o.w) continue;
-        const env = Math.exp(-(dx * dx) / (o.w * o.w)) * Math.sqrt(C.Re / Math.max(d, C.Re)), dw = .45 + .55 * (1 + Math.cos(a - o.dir)) / 2;
-        const v = o.A * env * dw * Math.cos(o.k * dx); h += v;
-        const m = Math.abs(v); cr += o.rgb[0] * m; cg += o.rgb[1] * m; cb += o.rgb[2] * m; ci += m;
+  for (const e of st.hits) {
+    const tr = e.tr; dlDrop(C, tr, now);
+    for (const s of C.seeds) if (s.tr === tr) s.lit = 1;
+    for (const p of C.pet) if (p.tr === tr) p.lit = 1;
+    const f = DLF[tr].fly;
+    if (f && puff > .9 && !blow && Math.random() < .7) {
+      const gone = C.seeds.reduce((n, s) => n + (s.grow < 1 ? 1 : 0), 0);
+      for (let k = 0; k < f && gone + k < 30; k++) {
+        const pool = C.seeds.filter(s => s.tr === tr && s.grow >= 1 && s.sz > -.15);
+        if (!pool.length) break;
+        const s = pool[(Math.random() * pool.length) | 0]; s.grow = 0; s.gone = now; release(s, 60 + Math.random() * 80);
       }
-      const P = proj(x, h, z);
-      sx[i] = P[0]; sy[i] = P[1]; ssc[i] = P[3]; hh[i] = h; hI[i] = ci;
-      if (ci > 0) { hR[i] = cr / ci; hG[i] = cg / ci; hB[i] = cb / ci; }
-      if (P[2] > 150) vis++;
-      if (i === n >> 1) dmid = P[2];
     }
-    if (vis < 2) continue;
-    const fog = clamp(1 - (dmid - 3100) / 1700, 0, 1);
-    if (fog <= 0) continue;
-    // franja de fondo debajo de la línea: tapa lo que queda atrás, así las líneas nunca se cruzan
-    g.beginPath(); g.moveTo(sx[0], sy[0]);
-    for (let i = 1; i < n; i++) g.lineTo(sx[i], sy[i]);
-    for (let i = n - 1; i >= 0; i--) g.lineTo(sx[i], sy[i] + Math.max(10, 70 * ssc[i]));
-    g.closePath(); g.fillStyle = wg; g.fill();
-    // la línea de tinta: una cinta de grosor variable (más gruesa cerca y en las crestas)
-    const wd = new Float32Array(n), nx = new Float32Array(n), ny = new Float32Array(n);
-    for (let i = 0; i < n; i++) {
-      const I = Math.min(1, hI[i] / 14), up = clamp(hh[i] / 30, -1, 1);
-      wd[i] = Math.max(.9, 7.2 * ssc[i] * (1 + Math.max(0, up) * .55 + I * .4));
-      const a0 = Math.max(0, i - 1), a1 = Math.min(n - 1, i + 1), tx = sx[a1] - sx[a0], ty = sy[a1] - sy[a0], tl = Math.hypot(tx, ty) || 1;
-      nx[i] = ty / tl; ny[i] = -tx / tl; if (ny[i] > 0) { nx[i] = -nx[i]; ny[i] = -ny[i]; } // normal hacia arriba
-    }
-    g.globalAlpha = fog; g.fillStyle = '#0b1d16'; g.beginPath();
-    for (let i = 0; i < n; i++) { const h2 = wd[i] / 2, x = sx[i] + nx[i] * h2, y = sy[i] + ny[i] * h2; i ? g.lineTo(x, y) : g.moveTo(x, y); }
-    for (let i = n - 1; i >= 0; i--) { const h2 = wd[i] / 2; g.lineTo(sx[i] - nx[i] * h2, sy[i] - ny[i] * h2); }
-    g.closePath(); g.fill();
-    // filo de luz arriba: blanco suave, que toma el color del instrumento en las crestas
-    g.lineCap = 'butt'; g.lineJoin = 'round';
-    for (let i0 = 0; i0 < n - 1; i0 += seg) {
-      const i1 = Math.min(n - 1, i0 + seg), im = (i0 + i1) >> 1, I = Math.min(1, hI[im] / 14), up = clamp(hh[im] / 30, -1, 1);
-      let lr = hiB[0], lg = hiB[1], lb = hiB[2];
-      if (I > 0) { lr += (hR[im] - lr) * I; lg += (hG[im] - lg) * I; lb += (hB[im] - lb) * I; }
-      g.globalAlpha = fog * Math.min(1, .3 + .5 * Math.max(0, up) + .5 * I); g.strokeStyle = `rgb(${lr | 0},${lg | 0},${lb | 0})`; g.lineWidth = Math.max(.5, wd[im] * .3);
+  }
+  st.hits.length = 0;
+  // el final: el viento se lleva las semillas de a poco, y esas ya no vuelven a crecer
+  if (blow > 0) {
+    const want = Math.round(blow * C.seeds.length), pool = C.seeds.filter(s => !s.blown);
+    let gone = C.seeds.length - pool.length;
+    while (gone < want && pool.length) { const s = pool.splice((Math.random() * pool.length) | 0, 1)[0]; s.blown = true; if (s.grow > .5 && s.tx != null) release(s, 30 + Math.random() * 70); s.grow = 0; gone++; }
+  }
+  // ---- fondo: tinta sobre agua ----
+  // gotas que todavía se están abriendo, peines en marcha, y el remolino de los graves (cambia de sentido en cada parte)
+  const ease = (x) => 1 - Math.pow(1 - clamp(x, 0, 1), 3);
+  for (let i = C.drops.length - 1; i >= 0; i--) { const d = C.drops[i], f = ease((now - d.t) / .35); if (f > d.f) { inkDrop(C, d.x, d.y, d.r2 * (f - d.f)); d.f = f; } if (f >= 1) C.drops.splice(i, 1); }
+  { const cb = V.cur ? `${V.cur.bi}.${V.cur.r}` : '';
+    if (V.cur && V.cur.s === 0 && cb !== C.bar) { // empieza un compás: un peine cruza la tinta
+      C.bar = cb; C.nb = (C.nb || 0) + 1; const a = Math.random() * TAU, ox = (Math.random() - .5) * 360, oy = (Math.random() - .5) * 520, comb = C.nb % 2 === 0;
+      // un compás sí y otro no, en vez de una línea pasa un peine de varias: deja las vetas onduladas de la hidroimpresión
+      C.tines.push({ x: C.cx + ox, y: C.cy + oy, mx: Math.cos(a), my: Math.sin(a), z: (comb ? 22 + bass * 30 : 36 + bass * 70) * (Math.random() < .5 ? -1 : 1), sp: comb ? 70 + Math.random() * 50 : 0, t: now, f: 0 });
+    } }
+  for (let i = C.tines.length - 1; i >= 0; i--) { const t = C.tines[i], f = ease((now - t.t) / .7); if (f > t.f) { inkTine(C, t.x, t.y, t.mx, t.my, t.z * (f - t.f), t.sp ? 14 : 24, t.sp); t.f = f; } if (f >= 1) C.tines.splice(i, 1); }
+  inkSwirl(C, C.cx, C.cy + 20, (V.p % 2 ? -1 : 1) * (.05 + bass * .3) * dt, 280);
+  inkTidy(C, W, H);
+  g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; g.fillStyle = C.base; g.fillRect(0, 0, W, H);
+  g.lineJoin = 'round'; g.lineWidth = 1.1;
+  for (const q of C.ink) {
+    const P = q.p; g.beginPath(); g.moveTo(P[0], P[1]); for (let i = 2; i < P.length; i += 2) g.lineTo(P[i], P[i + 1]); g.closePath();
+    g.globalAlpha = 1; g.fillStyle = q.c; g.fill();
+    g.globalAlpha = .45; g.strokeStyle = q.e; g.stroke(); // filo fino entre tintas, como en la película de hidroimpresión
+  }
+  g.globalAlpha = 1;
+  // brillo suave de la película de agua, arriba a la izquierda
+  { const sh = g.createRadialGradient(W * .22, H * .2, 0, W * .22, H * .2, W * .9); sh.addColorStop(0, 'rgba(255,255,255,.16)'); sh.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = sh; g.fillRect(0, 0, W, H); }
+  // ---- el diente de león ----
+  const sway = Math.sin(beats * TAU / 16) * 12 + Math.sin(beats * TAU / 7) * 4 + bass * 8;
+  const hx = C.cx + 6 + sway, hy = C.cy - 14 + Math.cos(beats * TAU / 16) * 3;
+  // tallo verde: sale de abajo de la cabeza y cruza la franja hasta el borde de la pantalla
+  { const ex = W * .16 + sway * .15, ey = H + 40, cx1 = C.cx + 60 + sway * .7, cy1 = C.cy + 420;
+    g.lineCap = 'round';
+    g.strokeStyle = '#13240b'; g.lineWidth = 15; g.beginPath(); g.moveTo(hx, hy + 20); g.quadraticCurveTo(cx1, cy1, ex, ey); g.stroke();
+    g.strokeStyle = '#5a9a32'; g.lineWidth = 9; g.beginPath(); g.moveTo(hx, hy + 20); g.quadraticCurveTo(cx1, cy1, ex, ey); g.stroke();
+    g.strokeStyle = '#b8e27c'; g.globalAlpha = .8; g.lineWidth = 2.2; g.beginPath(); g.moveTo(hx - 2.5, hy + 22); g.quadraticCurveTo(cx1 - 3, cy1, ex - 3, ey); g.stroke(); g.globalAlpha = 1; }
+  const hs = 1 + st.k * .06, r0 = 18 * hs, cur = V.cur && V.cur.s != null ? V.cur.s : -1;
+  // ---- la flor amarilla: 144 pétalos finos en 6 anillos, con la punta dentada ----
+  // cada instrumento tiene su gajo de pétalos: al sonar se estira, toma algo de su color y cambia de forma
+  const fa = 1 - smooth01(.15, .7, puff); // la flor se apaga mientras crece la bola de semillas
+  if (fa > .01) {
+    const spin = beats * TAU / 96 + .2 * Math.sin(beats * TAU / 40), open = .16 + .84 * bloom, tilt = .9;
+    for (const p of C.pet) {
+      p.lit = Math.max(0, p.lit - dt * 2.4);
+      const f = DLF[p.tr], l = p.lit, band = B[p.bi];
+      const L = (8 + (p.L - 8) * open) * hs * (1 + (f.l - 1) * l * .45 + .07 * band + .025 * Math.sin(beats * TAU / 4 + p.ph));
+      const w = p.w * (.65 + .35 * open) * (1 + (f.o - 1) * l * .5), bend = (f.c * l * .6 + p.cv) * L * .2;
+      const a = p.a + spin + (f.j && l ? (Math.random() - .5) * f.j * l * .1 : 0);
+      const q = (x, y) => { const k = x / L; return [x, y + bend * k * k]; };
+      g.save(); g.translate(hx, hy); g.scale(1, tilt); g.rotate(a); g.globalAlpha = fa;
       g.beginPath();
-      for (let i = i0; i <= i1; i++) { const o = wd[i] * .22, x = sx[i] + nx[i] * o, y = sy[i] + ny[i] * o; i === i0 ? g.moveTo(x, y) : g.lineTo(x, y); }
-      g.stroke();
+      const p0 = q(8, 0), c1 = q(8 + (L - 8) * .45, -w * .62), e1 = q(L - 3, -w / 2), c2 = q(8 + (L - 8) * .45, w * .62);
+      g.moveTo(p0[0], p0[1]); g.quadraticCurveTo(c1[0], c1[1], e1[0], e1[1]);
+      for (const [x, y] of [[L + 3, -w * .3], [L - 1, -w * .12], [L + 4, w * .05], [L - 1, w * .2], [L + 2.5, w * .36], [L - 3, w / 2]]) { const t = q(x, y); g.lineTo(t[0], t[1]); }
+      g.quadraticCurveTo(c2[0], c2[1], p0[0], p0[1]);
+      g.fillStyle = l > .03 ? mixHex(p.col, DLC[p.tr], l * .3) : p.col; g.fill();
+      if (l > .1) { g.lineWidth = 1.1 + l * 1.4; g.strokeStyle = mixHex('#a65f00', DLC[p.tr], Math.min(1, l * 1.5)); } else { g.lineWidth = 1.1; g.strokeStyle = '#a65f00'; }
+      g.stroke(); g.lineWidth = 1.1; g.strokeStyle = '#a65f00';
+      g.globalAlpha = fa * .3; g.beginPath(); { const s0 = q(14, 0), m = q(L * .55, 0), e = q(L * .9, 0); g.moveTo(s0[0], s0[1]); g.quadraticCurveTo(m[0], m[1], e[0], e[1]); } g.stroke();
+      g.restore();
+    }
+    // el centro de la flor, con las 16 marcas de los pasos
+    g.globalAlpha = fa; const cr = 15 * hs;
+    g.fillStyle = '#d77400'; g.beginPath(); g.arc(hx, hy, cr, 0, TAU); g.fill();
+    for (let k = 0; k < STEPS; k++) { const a = k / STEPS * TAU - Math.PI / 2 + spin, on = k === cur; g.fillStyle = on ? '#ffffff' : '#ffc23a'; g.beginPath(); g.arc(hx + Math.cos(a) * cr * .62, hy + Math.sin(a) * cr * .62 * tilt, on ? 2.8 : 1.6, 0, TAU); g.fill(); }
+    // capullo: las hojitas verdes que la envuelven al empezar y cuando se cierra
+    const bud = (1 - bloom) * (1 - smooth01(0, .5, puff));
+    if (bud > .01) {
+      const rb = 66 * hs * (.75 + .25 * bud);
+      g.globalAlpha = Math.min(1, bud * 1.4) * fa; g.lineWidth = 1.4; g.strokeStyle = '#13240b';
+      for (let k = 0; k < 12; k++) {
+        const a = k / 12 * TAU + spin * .5 + (k & 1) * .13, ln = rb * (k & 1 ? .82 : 1), wd = 15 * hs;
+        g.save(); g.translate(hx, hy); g.scale(1, tilt); g.rotate(a);
+        g.fillStyle = k & 1 ? '#4c8a29' : '#5fa233';
+        g.beginPath(); g.moveTo(0, 0); g.quadraticCurveTo(ln * .45, -wd, ln, 0); g.quadraticCurveTo(ln * .45, wd, 0, 0); g.fill(); g.stroke();
+        g.restore();
+      }
     }
     g.globalAlpha = 1;
   }
-  if (!sphereDone) drawShadow();
-  drawSphere();
-  g.restore();
-  // grano de aerógrafo y viñeta, hechos una sola vez
-  if (!st.grain) {
-    const mk = () => { const b = document.createElement('canvas'); b.width = W; b.height = H; const x = b.getContext('2d');
-      for (let i = 0; i < 26000; i++) { x.fillStyle = Math.random() < .5 ? `rgba(255,250,230,${Math.random() * .1})` : `rgba(0,10,6,${Math.random() * .14})`; x.fillRect(Math.random() * W, Math.random() * H, 1.5, 1.5); }
-      const vg = x.createRadialGradient(W / 2, H * .5, H * .25, W / 2, H * .5, H * .78); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(3,14,10,.42)'); x.fillStyle = vg; x.fillRect(0, 0, W, H);
-      return b; };
-    st.grain = [mk(), mk()];
+  // ---- la bola de semillas: crece después de que la flor se cierra ----
+  // gira despacio, se inclina hacia adelante y se agranda con el bombo
+  const yaw = beats * TAU / 48 + .3 * Math.sin(beats * TAU / 32), pit = .32 + Math.sin(beats * TAU / 24) * .06;
+  const cyw = Math.cos(yaw), syw = Math.sin(yaw), cp = Math.cos(pit), sp = Math.sin(pit), F = 1100;
+  const L0 = 166 * hs * (.3 + .7 * puff);
+  const rot = (x, y, z) => { const x1 = x * cyw + z * syw, z1 = -x * syw + z * cyw; return [x1, y * cp - z1 * sp, y * sp + z1 * cp]; };
+  const pr = (x, y, z) => { const s = F / (F - z); return [hx + x * s, hy - y * s, s]; };
+  for (const s of C.seeds) {
+    const [x, y, z] = rot(s.x, s.y, s.z); s.rx = x; s.ry = y; s.sz = z;
+    s.lit = Math.max(0, s.lit - dt * 2.2);
+    if (s.grow < 1 && !s.blown && now - s.gone > 1.2) s.grow = Math.min(1, s.grow + dt / 2.5);
   }
-  { const tg = g.createLinearGradient(0, 0, 0, 330); tg.addColorStop(0, far); tg.addColorStop(.45, far); tg.addColorStop(1, 'rgba(238,240,194,0)');
-    g.globalAlpha = .9; g.fillStyle = tg; g.fillRect(0, 0, W, 330); g.globalAlpha = 1; }
-  g.drawImage(st.grain[st.fr & 1], 0, 0, W, H);
-  drawMareaText(g, R, V);
+  const drawCore = () => { // el centro: un capullo cálido con las 16 marcas de los pasos
+    const cr = r0 * 1.15, cg = g.createRadialGradient(hx - cr * .3, hy - cr * .35, 1, hx, hy, cr);
+    cg.addColorStop(0, '#ffd9a0'); cg.addColorStop(.6, '#d9733f'); cg.addColorStop(1, '#5a2414');
+    g.fillStyle = cg; g.beginPath(); g.arc(hx, hy, cr, 0, TAU); g.fill();
+    for (let k = 0; k < STEPS; k++) { const a = k / STEPS * TAU - Math.PI / 2 + yaw * .3, on = k === cur; g.fillStyle = on ? '#ffffff' : 'rgba(60,20,10,.75)'; g.beginPath(); g.arc(hx + Math.cos(a) * cr * .68, hy + Math.sin(a) * cr * .68, on ? 2.6 : 1.5, 0, TAU); g.fill(); }
+  };
+  if (puff > .02) {
+    const order = C.seeds.slice().sort((a, b) => a.sz - b.sz);
+    let coreDone = false;
+    for (const s of order) {
+      if (!coreDone && s.sz > 0) { g.globalAlpha = puff; drawCore(); coreDone = true; }
+      const f = DLF[s.tr], l = s.lit, gw = s.grow; if (gw <= .02) continue;
+      const band = B[s.bi], dep = (s.sz + 1) / 2; // 0 atrás, 1 adelante
+      const len = (r0 + (L0 - r0) * gw) * (1 + .07 * band + (f.r - 1) * l + .03 * Math.sin(beats * TAU / 4 + s.ph));
+      const a0 = pr(s.rx * r0, s.ry * r0, s.sz * r0), a1 = pr(s.rx * (r0 + 9), s.ry * (r0 + 9), s.sz * (r0 + 9)), tp = pr(s.rx * len, s.ry * len, s.sz * len);
+      const dl = Math.hypot(tp[0] - a0[0], tp[1] - a0[1]) || 1; s.tx = tp[0]; s.ty = tp[1]; s.dx = (tp[0] - a0[0]) / dl; s.dy = (tp[1] - a0[1]) / dl;
+      const col = l > .02 ? mixHex('#f6f0ff', DLC[s.tr], Math.min(1, l * 1.3)) : '#f6f0ff';
+      const al = (.3 + .7 * dep) * gw * puff;
+      // la semilla (marrón, junto al centro) y el pico largo hasta el vilano
+      g.lineCap = 'round'; g.globalAlpha = al; g.strokeStyle = '#6b3320'; g.lineWidth = 2.6; g.beginPath(); g.moveTo(a0[0], a0[1]); g.lineTo(a1[0], a1[1]); g.stroke();
+      g.beginPath(); g.moveTo(a1[0], a1[1]); g.lineTo(tp[0], tp[1]);
+      g.globalAlpha = al * .45; g.strokeStyle = '#1a0b2e'; g.lineWidth = 2.6 + .5 * dep; g.stroke(); g.globalAlpha = al; // contorno oscuro: se lee sobre tinta clara
+      g.strokeStyle = col; g.lineWidth = .8 + .5 * dep + l * .6; g.stroke();
+      // el vilano: 12 pelitos abiertos como un paraguas alrededor de la punta, con la forma del instrumento cuando suena
+      const dx = s.rx, dy = s.ry, dz = s.sz, ax = Math.abs(dy) < .9 ? [0, 1, 0] : [1, 0, 0];
+      const ux = dlPerp(ax, dx, dy, dz);
+      const vx = [dy * ux[2] - dz * ux[1], dz * ux[0] - dx * ux[2], dx * ux[1] - dy * ux[0]];
+      const op = .95 * (1 + (f.o - 1) * l) * (.4 + .6 * puff), hl = 30 * hs * gw * (.4 + .6 * puff) * (1 + (f.l - 1) * l) * (1 + .25 * band), cu = f.c * l, jt = f.j * l;
+      const cb = Math.cos(Math.min(1.5, op)), sb = Math.sin(Math.min(1.5, op)), tx = s.rx * len, ty = s.ry * len, tz = s.sz * len;
+      g.lineWidth = .7 + .3 * dep; g.globalAlpha = al * (.75 + .25 * l);
+      g.beginPath();
+      for (let k = 0; k < 12; k++) {
+        const ph = k / 12 * TAU + s.ph, c = Math.cos(ph), sn = Math.sin(ph);
+        const ex = (dx * cb + (ux[0] * c + vx[0] * sn) * sb), ey = (dy * cb + (ux[1] * c + vx[1] * sn) * sb), ez = (dz * cb + (ux[2] * c + vx[2] * sn) * sb);
+        const j = jt ? (Math.random() - .5) * jt * 8 : 0;
+        const e = pr(tx + ex * hl + j, ty + ey * hl + j, tz + ez * hl);
+        g.moveTo(tp[0], tp[1]);
+        if (cu) { const m = pr(tx + ex * hl * .5 + (-ux[0] * sn + vx[0] * c) * hl * .35 * cu, ty + ey * hl * .5 + (-ux[1] * sn + vx[1] * c) * hl * .35 * cu, tz + ez * hl * .5 + (-ux[2] * sn + vx[2] * c) * hl * .35 * cu); g.quadraticCurveTo(m[0], m[1], e[0], e[1]); }
+        else g.lineTo(e[0], e[1]);
+      }
+      g.lineWidth = 2.2 + .3 * dep; g.strokeStyle = '#1a0b2e'; const a2 = g.globalAlpha; g.globalAlpha = a2 * .35; g.stroke();
+      g.lineWidth = .7 + .3 * dep; g.strokeStyle = col; g.globalAlpha = a2; g.stroke();
+      if (l > .25 && dep > .35) { const gs = (12 + 18 * l) * dep; g.globalCompositeOperation = 'lighter'; g.globalAlpha = (l - .25) * .6 * gw * puff; g.drawImage(C.glow[s.tr], tp[0] - gs, tp[1] - gs, gs * 2, gs * 2); g.globalCompositeOperation = 'source-over'; }
+    }
+    g.globalAlpha = puff;
+    if (!coreDone) drawCore();
+  }
+  g.globalAlpha = 1;
+  // semillas que se vuelan con el viento, girando, y se apagan de a poco
+  const wind = 46 + 30 * Math.sin(beats * TAU / 8) + bass * 40;
+  for (let i = C.fl.length - 1; i >= 0; i--) {
+    const p = C.fl[i], age = now - p.t; if (age > p.life) { C.fl.splice(i, 1); continue; }
+    p.vx += (wind - p.vx) * dt * .6; p.vy += (-34 - p.vy) * dt * .5; p.x += p.vx * dt; p.y += p.vy * dt; p.r += p.w * dt;
+    const a = Math.min(1, age * 3) * (1 - Math.pow(age / p.life, 2)), col = mixHex(DLC[p.tr], '#f6f0ff', clamp(age / 2, 0, .7)), L = 30 * p.sc;
+    g.save(); g.translate(p.x, p.y); g.rotate(p.r); g.globalAlpha = a;
+    g.strokeStyle = '#6b3320'; g.lineWidth = 2.4; g.beginPath(); g.moveTo(0, L); g.lineTo(0, L - 7); g.stroke();
+    g.strokeStyle = col; g.lineWidth = 1; g.beginPath(); g.moveTo(0, L - 7); g.lineTo(0, 0);
+    for (let k = 0; k < 11; k++) { const an = -Math.PI / 2 + (k / 10 - .5) * 2.3; g.moveTo(0, 0); g.lineTo(Math.cos(an) * 20 * p.sc, Math.sin(an) * 14 * p.sc); }
+    g.stroke(); g.restore();
+  }
+  g.globalAlpha = 1;
+  // grano de serigrafía y viñeta encima de todo
+  g.drawImage(C.grain[st.fr & 1], 0, 0, W, H);
+  drawDienteText(g, R, V);
 }
-// título, BPM y partes de la canción
-function drawMareaText(g, R, V) {
-  const { W, H, now, col } = V;
-  const fb = g.createLinearGradient(0, H - 300, 0, H); fb.addColorStop(0, 'rgba(4,16,12,0)'); fb.addColorStop(1, 'rgba(4,16,12,.8)');
+// un eje perpendicular a la semilla (para abrir el vilano)
+function dlPerp(ax, dx, dy, dz) {
+  let x = ax[1] * dz - ax[2] * dy, y = ax[2] * dx - ax[0] * dz, z = ax[0] * dy - ax[1] * dx; const l = Math.hypot(x, y, z) || 1;
+  return [x / l, y / l, z / l];
+}
+// título y BPM arriba, las partes de la canción abajo
+const DLP = ['#ff2e93', '#d6c8ff', '#ffb067', '#9d6bff', '#fff1df', '#ff7a8a', '#c49bff', '#ffd76a'];
+function drawDienteText(g, R, V) {
+  const { W, H, now } = V;
+  const tg = g.createLinearGradient(0, 0, 0, 280); tg.addColorStop(0, 'rgba(10,3,20,.78)'); tg.addColorStop(1, 'rgba(10,3,20,0)');
+  g.fillStyle = tg; g.fillRect(0, 0, W, 280);
+  const fb = g.createLinearGradient(0, H - 300, 0, H); fb.addColorStop(0, 'rgba(10,3,20,0)'); fb.addColorStop(1, 'rgba(10,3,20,.85)');
   g.fillStyle = fb; g.fillRect(0, H - 300, W, 300);
   g.textAlign = 'center'; g.textBaseline = 'alphabetic';
-  g.font = `800 52px ${VFONT}`; g.fillStyle = '#0b1d16';
+  g.shadowColor = 'rgba(10,3,20,.85)'; g.shadowBlur = 10;
+  g.font = `800 48px ${VFONT}`; g.fillStyle = '#fbf7ff';
   const tl = wrapLines(g, S.name || 'Mi tema', W - 120, 2);
-  tl.forEach((l, i) => g.fillText(l, W / 2, 128 + i * 60));
+  tl.forEach((l, i) => g.fillText(l, W / 2, 120 + i * 56));
   g.font = `800 24px ${VFONT}`; if ('letterSpacing' in g) g.letterSpacing = '3px';
-  g.fillStyle = mixHex(col, '#0b1d16', .62); g.fillText(`${S.bpm} BPM`, W / 2, 128 + tl.length * 60 - 8); if ('letterSpacing' in g) g.letterSpacing = '0px';
+  g.fillStyle = '#ffc6e6'; g.fillText(`${S.bpm} BPM`, W / 2, 120 + tl.length * 56 - 6); if ('letterSpacing' in g) g.letterSpacing = '0px';
+  g.shadowBlur = 0; g.shadowColor = 'rgba(0,0,0,0)';
   const bx = 70, bw = W - 140, by = H - 176, tot = R.blocks.reduce((a, b) => a + b.n, 0) || 1, kk = clamp(now / R.dur, 0, 1); let xx = bx;
   g.save(); rrect(g, bx, by, bw, 10, 5); g.clip();
-  R.blocks.forEach((b) => { const w = bw * b.n / tot; g.fillStyle = VCOL[b.p % 8] + '40'; g.fillRect(xx, by, w - 2, 10); xx += w; });
+  R.blocks.forEach((b) => { const w = bw * b.n / tot; g.fillStyle = DLP[b.p % 8] + '40'; g.fillRect(xx, by, w - 2, 10); xx += w; });
   g.beginPath(); g.rect(bx, by - 2, bw * kk, 14); g.clip(); xx = bx;
-  R.blocks.forEach((b) => { const w = bw * b.n / tot; g.fillStyle = VCOL[b.p % 8]; g.fillRect(xx, by, w - 2, 10); xx += w; });
+  R.blocks.forEach((b) => { const w = bw * b.n / tot; g.fillStyle = DLP[b.p % 8]; g.fillRect(xx, by, w - 2, 10); xx += w; });
   g.restore();
 }
 
@@ -4127,11 +4307,11 @@ async function doExport(f) {
   if (P.playing) stop();
   XP.busy = true; XP.cancel = false; clearOut(); xRender();
   const vv = XP.what === 'vidv' && !!VD.url && f !== 'vid'; // audio del largo del video, con la música donde empieza en el video
-  const blocks = vv ? vidBlocks() : xBlocks(), song = vv ? songMode() : XP.what === 'song' && S.song.length > 0;
+  const blocks = vv ? vidBlocks() : xBlocks();
   if (f === 'vid' && xDur(blocks) > 240) toast('El video dura más de 4 minutos: va a tardar lo mismo que dura la canción', 3200);
   try {
     xProgress(.08, 'Mezclando…');
-    const R = await renderOffline(blocks, song && !S.songLoop); // el platillo de cierre va solo si la canción no se repite, igual que al tocarla
+    const R = await renderOffline(blocks);
     if (vv) R.buf = fitToVideo(R.buf);
     let blob, ext;
     if (f === 'wav') { xProgress(.8, 'Armando el WAV…'); await new Promise(r => setTimeout(r, 0)); blob = toWav(R.buf); ext = 'wav'; }
@@ -5760,7 +5940,7 @@ async function vidRenderWave(sig) {
   if (!VD.on || VD.run || P.playing || sig !== vidWaveSig()) return;
   if (XP.busy || VD.mwBusy) { clearTimeout(VD.mwT); VD.mwT = setTimeout(() => vidRenderWave(sig), 1500); return; }
   VD.mwBusy = sig;
-  try { const R = await renderOffline(vidBlocks(), songMode() && !S.songLoop, 11025); VD.mw = { sig, pk: wavePeaks(fitToVideo(R.buf), 1400) }; } catch {}
+  try { const R = await renderOffline(vidBlocks(), 11025); VD.mw = { sig, pk: wavePeaks(fitToVideo(R.buf), 1400) }; } catch {}
   VD.mwBusy = null; vidDirty();
 }
 function layoutVid(aw, ah) {
@@ -5925,13 +6105,19 @@ function showSplash(next) {
 document.querySelectorAll('.logo, .dh b, [data-about]').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); openAbout(); }));
 const ABOUT0 = 'GREENPAD es una caja de ritmos para armar canciones con instrumentos grabados.';
 let aboutP = null;
-function openAbout() {
+function aboutParas() { // párrafos de acerca.txt (separados por una línea vacía); también los usa la intro
   if (!aboutP) aboutP = fetch('acerca.txt', { cache: 'no-cache' }).then(r => (r.ok ? r.text() : '')).catch(() => '').then((t) => {
-    const ps = t.split(/\r?\n\s*\r?\n/).map(x => x.split(/\r?\n/).filter(l => !l.trim().startsWith('#')).join(' ').trim()).filter(Boolean); // párrafos separados por una línea vacía
-    const box = $('#aboutTxt'); box.innerHTML = '';
-    (ps.length ? ps : [ABOUT0]).forEach(x => { const el = document.createElement('p'); el.textContent = x; box.appendChild(el); });
+    const ps = t.split(/\r?\n\s*\r?\n/).map(x => x.split(/\r?\n/).filter(l => !l.trim().startsWith('#')).join(' ').trim()).filter(Boolean);
+    return ps.length ? ps : [ABOUT0];
   });
-  aboutP.then(() => openModal('#about'));
+  return aboutP;
+}
+function openAbout() {
+  aboutParas().then((ps) => {
+    const box = $('#aboutTxt'); box.innerHTML = '';
+    ps.forEach(x => { const el = document.createElement('p'); el.textContent = x; box.appendChild(el); });
+    openModal('#about');
+  });
 }
 fetch('frases.txt', { cache: 'no-cache' }).then(r => (r.ok ? r.text() : '')).then((t) => {
   const L = t.split(/\r?\n/).map(x => x.trim()).filter(x => x && !x.startsWith('#')).map(x => x.slice(0, 60));
@@ -6047,6 +6233,69 @@ function applyAll() {
   renderAll(true); syncDrawer(); ensureSamples();
 }
 
+/* ================= intro: la primera vez que se abre =================
+   Pantalla borrosa con el logo, un texto corto que termina en "..." (tocándolo se lee entero; es el de acerca.txt),
+   tres estilos para empezar y Play. Play arranca un tema nuevo con el estilo elegido y suena; lo que había queda en
+   Mis beats. Sale una sola vez en cada equipo. Para verla de nuevo: agregar ?intro a la dirección. */
+const INTRO_ST = [ // n: nombre · d: detalle · p: ejemplo de PRESETS que se carga
+  { n: 'Rock', d: 'Guitarras', p: 'Rock' },
+  { n: '808', d: 'Trap', p: 'Trap' },
+  { n: 'Hip hop', d: 'Boom bap', p: 'Boom bap' },
+];
+const IN = { sel: 0, link: false, long: false };
+const introEl = $('#intro'), inTxt = $('#inTxt');
+function introText() {
+  aboutParas().then((ps) => {
+    inTxt.innerHTML = '';
+    if (IN.long) ps.forEach(x => { const el = document.createElement('p'); el.textContent = x; inTxt.appendChild(el); });
+    else { // la primera oración, cortada con "..."
+      let t = (ps[0].match(/^.*?[.!?](?=\s|$)/) || [ps[0]])[0].replace(/[.!?]+$/, '');
+      if (t.length > 150) t = t.slice(0, 130).replace(/\s+\S*$/, '').replace(/[,;:]$/, '');
+      const el = document.createElement('p'), dots = document.createElement('span'); el.textContent = t; dots.className = 'more'; dots.textContent = '...'; el.appendChild(dots); inTxt.appendChild(el);
+    }
+    inTxt.setAttribute('aria-expanded', IN.long ? 'true' : 'false'); inTxt.title = IN.long ? '' : 'Tocá para leer más';
+  });
+}
+function introStyles() {
+  const box = $('#inSty');
+  if (!box.children.length) INTRO_ST.forEach((x, i) => {
+    const b = document.createElement('button'); b.setAttribute('role', 'radio'); b.innerHTML = '<b></b><small></small>';
+    b.querySelector('b').textContent = x.n; b.querySelector('small').textContent = x.d;
+    b.addEventListener('click', () => { IN.sel = i; introStyles(); });
+    box.appendChild(b);
+  });
+  [...box.children].forEach((b, i) => { b.classList.toggle('on', i === IN.sel); b.setAttribute('aria-checked', i === IN.sel ? 'true' : 'false'); });
+}
+function showIntro() {
+  store.set(LS_PREF + '.intro1', 1); store.set(LS_PREF + '.seen1', 1);
+  introEl.classList.toggle('nost', IN.link); // si se abrió con un enlace, Play toca ese beat
+  IN.long = false; introText(); introStyles(); openModal('#intro');
+  if (!TOUCH) setTimeout(() => $('#inPlay').focus({ preventScroll: true }), 80);
+}
+function introPlay() {
+  ensureAudio();
+  const pr = !IN.link && presetByName(INTRO_ST[IN.sel].p);
+  if (pr) {
+    if (P.playing || P.paused) stop();
+    if (FRESH0 && !S.id && !S.dirty) addToLib(S, S.name); // el tema de ejemplo queda en Mis beats
+    else stash();                                           // y si había un beat sin guardar, también
+    const vol = S.vol; S = blank(); S.vol = vol; H.u = []; H.r = [];
+    applyAll(); loadPreset(pr); saveNow();
+  }
+  closeAll();
+  if (!P.playing) play();
+}
+inTxt.addEventListener('click', () => { IN.long = !IN.long; introText(); });
+inTxt.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); IN.long = !IN.long; introText(); } });
+$('#inPlay').addEventListener('click', introPlay);
+// con la intro abierta: ← → eligen estilo, Espacio o Enter es Play, Esc la cierra sin sonido
+addEventListener('keydown', (e) => {
+  if (!introEl.classList.contains('on') || e.ctrlKey || e.metaKey) return;
+  const k = e.key;
+  if (k === 'ArrowLeft' || k === 'ArrowRight') { e.preventDefault(); e.stopImmediatePropagation(); IN.sel = (IN.sel + (k === 'ArrowRight' ? 1 : INTRO_ST.length - 1)) % INTRO_ST.length; introStyles(); return; }
+  if ((k === ' ' || k === 'Enter') && !e.target.closest('#intro button, #inTxt')) { e.preventDefault(); e.stopImmediatePropagation(); introPlay(); }
+}, true);
+
 /* ================= boot ================= */
 document.documentElement.dataset.theme = PREF.theme;
 if (PREF.theme !== 'night') document.querySelector('meta[name="theme-color"]').content = '#e7ece8';
@@ -6059,10 +6308,11 @@ loadSlots();
 if (/^#b=/.test(location.hash)) {
   const o = decodeLink(location.hash);
   history.replaceState(null, '', location.pathname + location.search);
-  if (o) openBeat(o, `Beat cargado desde el enlace: ${o.name}`);
+  if (o) { openBeat(o, `Beat cargado desde el enlace: ${o.name}`); IN.link = true; }
 }
 bankWarm(true);
-if (!store.get(LS_PREF + '.seen1')) { store.set(LS_PREF + '.seen1', 1); setTimeout(() => toast('GREENPAD: instrumentos grabados de verdad y modo CANCIÓN. Tocá Play para escuchar el primer tema.', 4600), 600); }
+if (/[?&]intro\b/.test(location.search) || !store.get(LS_PREF + '.intro1')) showIntro();
+else if (!store.get(LS_PREF + '.seen1')) { store.set(LS_PREF + '.seen1', 1); setTimeout(() => toast('GREENPAD: instrumentos grabados de verdad y modo CANCIÓN. Tocá Play para escuchar el primer tema.', 4600), 600); }
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
 
 // sin zoom con dos dedos (iPhone y iPad no respetan user-scalable=no)
