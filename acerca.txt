@@ -4,5 +4,3 @@
 GREENPAD es una caja de ritmos para armar canciones con distintos instrumentos: batería, bajo, guitarras, piano, vientos y más. Se arma tocando cuadros en una grilla, sin necesidad de saber de escalas ni de notas.
 
 Los tracks se combinan en una canción, se mezclan en las bandejas y se pueden poner sobre un video. El tema se baja en MP3, WAV o video. Funciona en el teléfono y en la compu, también sin conexión, y todo queda guardado en el propio equipo.
-
-Es un proyecto personal de Jean Phillippe Studio, hecho en Santa Rosa, La Pampa, inspirado en un juego de drumpad de consola.

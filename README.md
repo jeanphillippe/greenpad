@@ -340,11 +340,13 @@ El tercer botón del selector de pantalla (la cámara, debajo de grilla y bandej
 
 ### Intro
 
-La primera vez que se abre la página en un equipo aparece una pantalla de bienvenida sobre la app borrosa: el logo con la frase amarilla, un texto corto que termina en "..." (tocándolo se lee entero; es el mismo de `acerca.txt`), tres estilos para empezar (**Rock**, **808** y **Hip hop**, que cargan los ejemplos Rock, Trap y Boom bap) y un botón **PLAY**. Play arranca un tema nuevo con el estilo elegido en el track A, empieza a sonar y cierra la intro. Lo que había no se pierde: el tema de ejemplo ("Primera banda") o el beat sin guardar quedan en Mis beats. Si la página se abrió con un enlace de un beat, la intro sale sin los estilos y Play toca ese beat.
+La primera vez que se abre la página en un equipo aparece una pantalla de bienvenida sobre la app borrosa: el logo con la frase amarilla, un texto corto que termina en "..." (tocándolo se lee entero; es el mismo de `acerca.txt`), una fila de estilos para empezar que se desliza (Rock, 808, Hip hop, Lo-fi, Cumbia, Reggaetón, Cuarteto, Fogón, Jazz, Phonk y muchos más, cada uno con su ambiente y tempo a la vista; **Sorpresa** elige uno al azar). Cada estilo carga un ejemplo con sus instrumentos, estilos, ambiente, efectos y destiempo ya elegidos. Abajo está el botón **PLAY**: arranca un tema nuevo con el estilo elegido en el track A, empieza a sonar y cierra la intro. Lo que había no se pierde: el tema de ejemplo ("Primera banda") o el beat sin guardar quedan en Mis beats. Si la página se abrió con un enlace de un beat, la intro sale sin los estilos y Play toca ese beat.
 
 - En la compu: ← → eligen el estilo, Espacio o Enter es Play, Esc la cierra sin sonido.
 - Sale una sola vez por equipo. Para verla de nuevo, abrir la dirección con `?intro` al final (por ejemplo `…/index.html?intro`).
-- Los tres estilos están en `INTRO_ST`, en `index.html`: cada uno tiene nombre, detalle y el ejemplo de `PRESETS` que carga (se puede cambiar, por ejemplo, Hip hop por Funk).
+- Los estilos están en `INTRO_ST`, en `index.html`: cada uno tiene nombre, detalle, el ejemplo de `PRESETS` que carga y el destiempo (`h`). Para sumar uno, se agrega un ejemplo a `PRESETS` y una línea a `INTRO_ST` que lo nombre.
+- El texto sale al instante: la página trae una copia de `acerca.txt` y, cuando llega el archivo, se actualiza si cambió. Conviene tocar las dos cosas juntas (`ABOUT0` en `index.html` y `acerca.txt`).
+- Arriba a la derecha está el selector de idioma (también en el menú, sección Vista). Usa el widget de Google Translate, que se carga solo cuando se elige otro idioma; el elegido queda guardado en el equipo. Volver a Español recarga la página si hace falta. El logo y la frase amarilla no se traducen.
 
 ### Frase sobre el logo
 

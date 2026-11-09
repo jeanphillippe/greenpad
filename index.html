@@ -765,7 +765,28 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .in-txt .more{color:var(--cy);font-weight:800;letter-spacing:.06em}
 .in-sp{flex:none;height:10px}
 .in-lbl{font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--ink)}
-.in-sty{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:min(100%,420px);margin-top:-6px}
+.in-sty{display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,auto);grid-auto-columns:108px;gap:10px;width:min(100%,600px);margin-top:-6px;
+  overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:none;padding:3px 18px 6px;scroll-padding:0 18px;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%)}
+.in-sty::-webkit-scrollbar{display:none}
+.in-sty button{scroll-snap-align:start;min-height:74px;justify-content:center}
+.in-sty button i{font-style:normal;font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--ink);opacity:.75;margin-top:1px}
+.in-sty button.on i{color:var(--cy);opacity:.9}
+.in-hint{font-size:11.5px;color:var(--ink);margin-top:-8px;opacity:.8}
+#intro .in-box{padding-top:calc(env(safe-area-inset-top) + 62px)}
+#intro .in-txt{margin-top:16px}
+@media (max-height:700px){.in-sty{gap:8px}.in-sty button{min-height:62px;padding:8px 4px;gap:1px}.in-sty button b{font-size:16px}#intro .in-box{gap:12px;padding-top:calc(env(safe-area-inset-top) + 56px)}}
+@media (max-height:600px){.in-hint{display:none}#intro .in-txt{font-size:14.5px;margin-top:8px}.in-logo{font-size:44px}}
+@media (min-height:760px) and (min-width:560px){.in-sty{grid-template-rows:repeat(3,auto)}}
+.in-lang{position:absolute;top:calc(env(safe-area-inset-top) + 12px);right:14px;z-index:2;display:flex;align-items:center;border-radius:20px;
+  background:color-mix(in srgb,var(--pad) 72%,transparent);box-shadow:inset 0 0 0 1.5px var(--line);color:var(--ink2)}
+.in-lang svg{position:absolute;left:10px;width:16px;height:16px;pointer-events:none;fill:none;stroke:currentColor;stroke-width:1.6}
+.in-lang select{appearance:none;-webkit-appearance:none;height:36px;padding:0 14px 0 32px;border-radius:20px;font-size:13px;font-weight:700;background:none;color:inherit}
+.lang-dr{width:100%;height:38px;font-size:13px;margin-top:8px}
+#gtHost{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+iframe.skiptranslate,.goog-te-banner-frame,#goog-gt-tt,.goog-te-balloon-frame,.VIpgJd-ZVi9od-ORHb-OEVmcd,.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,.VIpgJd-ZVi9od-xl07Ob-OEVmcd{display:none!important}
+body{top:0!important}
+.goog-text-highlight{background:none!important;box-shadow:none!important}
 .in-sty button{display:flex;flex-direction:column;align-items:center;gap:3px;padding:14px 4px;border-radius:16px;background:color-mix(in srgb,var(--pad) 72%,transparent);box-shadow:inset 0 0 0 1.5px var(--line);color:var(--ink2);transition:transform .12s,box-shadow .15s,color .15s}
 .in-sty button b{font-size:18px;font-weight:800}
 .in-sty button small{font-size:11.5px;color:var(--ink)}
@@ -773,9 +794,9 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .in-play{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;max-width:280px;height:64px;margin-top:8px;border-radius:32px;background:var(--cy);color:var(--acc-ink);font-size:20px;font-weight:800;letter-spacing:.14em;box-shadow:0 8px 26px color-mix(in srgb,var(--cy) 40%,transparent);transition:transform .12s}
 .in-play svg{width:24px;height:24px;fill:currentColor}
 .in-sty button:active,.in-play:active{transform:scale(.95)}
-#intro.nost .in-lbl,#intro.nost .in-sty{display:none}
-#intro.on .in-box>*{animation:inUp .55s cubic-bezier(.2,.9,.25,1) both}
-#intro.on .in-box>:nth-child(2){animation-delay:.08s}
+#intro.nost .in-lbl,#intro.nost .in-sty,#intro.nost .in-hint{display:none}
+#intro.on .in-box>*{animation:inUp .4s cubic-bezier(.2,.9,.25,1) both}
+#intro.on .in-box>:nth-child(2){animation-delay:.04s}
 #intro.on .in-box>:nth-child(4){animation-delay:.16s}
 #intro.on .in-box>:nth-child(5){animation-delay:.2s}
 #intro.on .in-box>:nth-child(6){animation-delay:.26s}
@@ -785,9 +806,10 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 </style>
 <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-TNBX6VG2"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 </script>
 </head>
 <body>
@@ -926,6 +948,8 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
     <div class="seg" id="themeSeg"><button data-v="night">Oscuro</button><button data-v="day">Claro</button></div>
     <button class="btn wide" id="helpBtn">Cómo se usa y atajos</button>
     <button class="btn wide" data-about style="margin-top:8px">Acerca de</button>
+    <h4>Idioma</h4>
+    <select id="langDr" class="sel lang-dr notranslate" translate="no" aria-label="Idioma / Language"></select>
   </section>
   <p class="foot">Todo se guarda en este dispositivo, sin cuentas ni base de datos. Exportá un .txt para respaldar o para pasar tus beats a otro equipo.</p>
 </aside>
@@ -1074,16 +1098,19 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 </div>
 
 <div id="intro" class="modal" role="dialog" aria-modal="true" aria-label="Bienvenida a GREENPAD" aria-hidden="true">
+  <label class="in-lang notranslate" translate="no" title="Idioma / Language"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.5 3.9 5.5 3.9 9s-1.3 6.5-3.9 9c-2.6-2.5-3.9-5.5-3.9-9S9.4 5.5 12 3z"/></svg><select id="langIn" aria-label="Idioma / Language"></select></label>
   <div class="in-box">
     <div class="in-logo">GREEN<span>PAD</span><em class="splash" aria-hidden="true"></em></div>
     <div class="in-txt" id="inTxt" role="button" tabindex="0" aria-expanded="false" title="Tocá para leer más"></div>
     <div class="in-sp"></div>
     <span class="in-lbl">ELEGÍ UN ESTILO</span>
     <div class="in-sty" id="inSty" role="radiogroup" aria-label="Estilo para empezar"></div>
+    <span class="in-hint">Deslizá para ver más estilos</span>
     <button class="in-play" id="inPlay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.2v15.6c0 .8.9 1.3 1.6.9l12.4-7.8c.6-.4.6-1.4 0-1.8L8.1 3.3c-.7-.4-1.6.1-1.6.9z"/></svg>PLAY</button>
   </div>
 </div>
 
+<div id="gtHost" aria-hidden="true"></div>
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="drop">Soltá el archivo para importarlo</div>
 <input type="file" id="file" accept=".txt,.json,text/plain,application/json" hidden>
@@ -2034,6 +2061,11 @@ const PRESETS = [
   { g: 'Banda', n: 'Bossa nova', d: 'Guitarra criolla', bpm: 130, key: 2, sc: 4, st: { BD: 'Acústico', SN: 'Aro', PC: 'Shaker', GT: 'Criolla', BS: 'Contrabajo' }, r: { BD: 'x..xx..xx..xx..x', SN: 'x..x..x...x..x..', PC: 'xxxxxxxxxxxxxxxx', BS: '1..5..1.4..8..5.', GT: '..3..3...3..3...' } },
   { g: 'Banda', n: 'Funk', d: 'Guitarra muteada', bpm: 102, key: 4, sc: 4, st: { GT: 'Muteada', LD: 'Trompeta' }, r: { BD: 'x.x.......x..x..', SN: '....x..x.x..x...', HH: 'xxxxxxxxxxxxxx.x', BS: '1.1..8.1..4..5.3', GT: '..5...5...5...5.', LD: '........5.6.5...' } },
   { g: 'Banda', n: 'Reggae', d: 'One drop', bpm: 76, key: 7, sc: 1, st: { SN: 'Aro', CH: 'Órgano' }, r: { BD: '........x.......', SN: '........x.......', HH: 'x.x.x.x.x.x.x.x.', BS: '1..1.3..5...4.3.', CH: '..1...1...4...4.' } },
+  { g: 'Banda', n: 'Cuarteto', d: 'Tunga tunga con piano y trompeta', bpm: 122, key: 2, sc: 1, st: { BD: 'Banda', SN: 'Aro', HH: 'Banda', PC: 'Shaker', BS: 'Eléctrico', CH: 'Piano', LD: 'Trompeta' }, fx: { rev: .16 }, r: { BD: 'x...x...x...x...', SN: '..x...x...x...x.', PC: 'x.xxx.xxx.xxx.xx', BS: '1...5...4...5...', CH: '..1...1...4...5.', LD: '5.5.6.5.3...2.1.' } },
+  { g: 'Banda', n: 'Fogón', d: 'Legüero, rasguido y armónica', bpm: 96, key: 7, sc: 1, st: { BD: 'Legüero', SN: 'Aro', HH: 'Acústico', PC: 'Shaker', BS: 'Contrabajo', GT: 'Rasguido', CH: 'Piano', LD: 'Armónica' }, fx: { rev: .26 }, r: { BD: 'x.....x...x.....', SN: '....x.......x...', PC: '..x...x...x...x.', BS: '1.......5.......', GT: '1.1.11.15.5.55.5', LD: '3...2...1.......' } },
+  { g: 'Banda', n: 'Soul', d: 'Órgano, guitarra y trompeta', bpm: 88, sw: 20, key: 5, sc: 4, st: { BD: 'Acústico', SN: 'Acústico', HH: 'Acústico', PC: 'Pandereta', BS: 'Eléctrico', GT: 'Eléctrica', CH: 'Órgano', LD: 'Trompeta' }, fx: { rev: .22 }, r: { BD: 'x......xx.x.....', SN: '....x.......x...', HH: 'x.x.x.x.x.x.x.x.', PC: '....x.......x...', BS: '1.....13..4...5.', GT: '....5.......5...', CH: '1.......4.......', LD: '5...6.5.4.3.....' } },
+  { g: 'Banda', n: 'Afrobeat', d: 'Congas, órgano y saxo', bpm: 108, key: 7, sc: 4, st: { BD: 'Banda', SN: 'Rimshot', HH: 'Semiabierto', PC: 'Conga', BS: 'Eléctrico', GT: 'Muteada', CH: 'Órgano', LD: 'Saxo' }, fx: { rev: .18 }, r: { BD: 'x..x..x...x..x..', SN: '....x.......x...', HH: 'x.xxx.xxx.xxx.xx', PC: '..x.xx..x.x.xx.x', BS: '1..1.5..1..4.5..', GT: '.5.5.5.5.5.5.5.5', CH: '....1.......1...', LD: '5.6.8...6.5.....' } },
+  { g: 'Banda', n: 'Indie', d: 'Eléctrica limpia y campanita', bpm: 120, key: 4, sc: 3, st: { BD: 'Banda', SN: 'Banda', HH: 'Banda', PC: 'Pandereta', BS: 'Eléctrico', GT: 'Eléctrica', CH: 'Piano', LD: 'Campanita' }, fx: { rev: .2, eco: .12 }, r: { BD: 'x.....x.x.....x.', SN: '....x.......x...', HH: 'x.x.x.x.x.x.x.x.', PC: '..x...x...x...x.', BS: '1.1.1.1.4.4.5.5.', GT: '1.3.4.3.6.4.3.2.', LD: '6...5...4.3.....' } },
   // noventas: batería de disco viejo, swing y vinilo
   { g: 'Noventas', n: 'Golden era', d: 'Boom bap con piano viejo', bpm: 92, sw: 30, key: 2, sc: 0, st: { BD: 'Noventa', SN: 'Noventa', HH: 'Noventa', PC: 'Pandereta', BS: 'Apagado', CH: 'Piano viejo' }, fx: { rev: .2, lofi: .35, vin: 1 }, r: { BD: 'x.......x.x....x', SN: '....x.......x...', HH: 'x.x.x.x.x.x.x.x.', PC: '..............x.', BS: '1.......1.6.....', CH: '1.......6.....4.' } },
   { g: 'Noventas', n: 'Guitarra 90', d: 'Rap lento con guitarra jazz', bpm: 86, sw: 20, key: 4, sc: 4, st: { BD: 'Noventa', SN: 'Noventa', HH: 'Noventa', GT: 'Jazz', PC: 'Pandereta', BS: 'Apagado' }, fx: { rev: .3, eco: .18, lofi: .2, vin: 1 }, r: { BD: 'x......x..x.....', SN: '....x.......x...', HH: 'x.x.x.x.x.x.x.xx', PC: '....x.......x...', BS: '1.....1...4...3.', GT: '1.3.5...8.7.5.3.' } },
@@ -6196,12 +6228,18 @@ function showSplash(next) {
 }
 // tocar el logo o la leyenda abre "Acerca de" (el texto está en acerca.txt)
 document.querySelectorAll('.logo, .dh b, [data-about]').forEach(el => el.addEventListener('click', (e) => { e.stopPropagation(); openAbout(); }));
-const ABOUT0 = 'GREENPAD es una caja de ritmos para armar canciones con instrumentos grabados.';
+// copia de acerca.txt dentro de la página: la intro lo muestra al instante y después se actualiza con el archivo
+const ABOUT0 = [
+  'GREENPAD es una caja de ritmos para armar canciones con distintos instrumentos: batería, bajo, guitarras, piano, vientos y más. Se arma tocando cuadros en una grilla, sin necesidad de saber de escalas ni de notas.',
+  'Los tracks se combinan en una canción, se mezclan en las bandejas y se pueden poner sobre un video. El tema se baja en MP3, WAV o video. Funciona en el teléfono y en la compu, también sin conexión, y todo queda guardado en el propio equipo.',
+];
+const aboutNow = () => { const x = store.get(LS_PREF + '.about'); return Array.isArray(x) && x.length ? x : ABOUT0; };
 let aboutP = null;
 function aboutParas() { // párrafos de acerca.txt (separados por una línea vacía); también los usa la intro
   if (!aboutP) aboutP = fetch('acerca.txt', { cache: 'no-cache' }).then(r => (r.ok ? r.text() : '')).catch(() => '').then((t) => {
     const ps = t.split(/\r?\n\s*\r?\n/).map(x => x.split(/\r?\n/).filter(l => !l.trim().startsWith('#')).join(' ').trim()).filter(Boolean);
-    return ps.length ? ps : [ABOUT0];
+    if (!ps.length) return aboutNow();
+    store.set(LS_PREF + '.about', ps); return ps;
   });
   return aboutP;
 }
@@ -6330,15 +6368,44 @@ function applyAll() {
    Pantalla borrosa con el logo, un texto corto que termina en "..." (tocándolo se lee entero; es el de acerca.txt),
    tres estilos para empezar y Play. Play arranca un tema nuevo con el estilo elegido y suena; lo que había queda en
    Mis beats. Sale una sola vez en cada equipo. Para verla de nuevo: agregar ?intro a la dirección. */
-const INTRO_ST = [ // n: nombre · d: detalle · p: ejemplo de PRESETS que se carga
-  { n: 'Rock', d: 'Guitarras', p: 'Rock' },
-  { n: '808', d: 'Trap', p: 'Trap' },
-  { n: 'Hip hop', d: 'Boom bap', p: 'Boom bap' },
+const INTRO_ST = [ // n: nombre · d: detalle · p: ejemplo de PRESETS (trae instrumentos, estilos, ambiente, tempo y efectos) · h: destiempo
+  { n: 'Rock', d: 'Guitarra saturada', p: 'Rock', h: .5 },
+  { n: '808', d: 'Trap oscuro', p: 'Trap', h: 0 },
+  { n: 'Hip hop', d: 'Boom bap', p: 'Boom bap', h: .4 },
+  { n: 'Lo-fi', d: 'Piano viejo y vinilo', p: 'Lo-fi', h: .5 },
+  { n: 'Rock nacional', d: 'Rasguido y banda', p: 'Rock nacional', h: .6 },
+  { n: 'Trap melódico', d: 'Criolla y 808', p: 'Trap melódico', h: .15 },
+  { n: 'Cumbia', d: 'Güiro, órgano y flauta', p: 'Cumbia', h: .6 },
+  { n: 'Reggaetón', d: 'Dembow', p: 'Dembow', h: .1 },
+  { n: 'Cuarteto', d: 'Piano y trompeta', p: 'Cuarteto', h: .5 },
+  { n: 'Fogón', d: 'Legüero y guitarra', p: 'Fogón', h: .75 },
+  { n: 'Funk', d: 'Guitarra muteada', p: 'Funk', h: .45 },
+  { n: 'Soul', d: 'Órgano y trompeta', p: 'Soul', h: .55 },
+  { n: 'Jazz', d: 'Contrabajo y saxo', p: 'Jazz club', h: .7 },
+  { n: 'Bossa nova', d: 'Criolla y shaker', p: 'Bossa nova', h: .6 },
+  { n: 'Blues', d: 'Shuffle y armónica', p: 'Blues', h: .7 },
+  { n: 'Reggae', d: 'One drop', p: 'Reggae', h: .5 },
+  { n: 'Afrobeat', d: 'Congas y saxo', p: 'Afrobeat', h: .55 },
+  { n: 'Indie', d: 'Eléctrica y campanita', p: 'Indie', h: .5 },
+  { n: 'Drill', d: 'Hi-hat cortado', p: 'Drill', h: 0 },
+  { n: 'Phonk', d: 'Cencerro y 808', p: 'Phonk', h: .05 },
+  { n: 'Jazz rap', d: 'Vibráfono y ride', p: 'Jazz rap', h: .5 },
+  { n: 'G-funk', d: 'Sinte que silba', p: 'G-funk', h: .35 },
+  { n: 'Trip hop', d: 'Lento y oscuro', p: 'Trip hop', h: .4 },
+  { n: 'Balada', d: 'Piano y criolla', p: 'Balada', h: .7 },
+  { n: 'Punk', d: 'Rápido y directo', p: 'Punk', h: .5 },
+  { n: 'Metal', d: 'Doble bombo', p: 'Metal', h: .3 },
+  { n: 'Grunge', d: 'Lento y pesado', p: 'Grunge', h: .5 },
+  { n: 'Pop', d: 'Piano y marimba', p: 'Pop', h: .3 },
+  { n: 'Disco', d: 'Bajo en octavas', p: 'Disco', h: .3 },
+  { n: 'House', d: 'Para bailar', p: 'House', h: 0 },
+  { n: 'Synthwave', d: 'Ochentoso', p: 'Synthwave', h: 0 },
+  { n: 'Sorpresa', d: 'Uno al azar', p: null },
 ];
-const IN = { sel: 0, link: false, long: false };
+const IN = { sel: 0, link: false, long: false, ps: null };
 const introEl = $('#intro'), inTxt = $('#inTxt');
 function introText() {
-  aboutParas().then((ps) => {
+  const draw = (ps) => {
     inTxt.innerHTML = '';
     if (IN.long) ps.forEach(x => { const el = document.createElement('p'); el.textContent = x; inTxt.appendChild(el); });
     else { // la primera oración, cortada con "..."
@@ -6347,33 +6414,50 @@ function introText() {
       const el = document.createElement('p'), dots = document.createElement('span'); el.textContent = t; dots.className = 'more'; dots.textContent = '...'; el.appendChild(dots); inTxt.appendChild(el);
     }
     inTxt.setAttribute('aria-expanded', IN.long ? 'true' : 'false'); inTxt.title = IN.long ? '' : 'Tocá para leer más';
-  });
+  };
+  const now = IN.ps || aboutNow(); draw(now); // al instante, sin esperar el archivo
+  if (!IN.ps) aboutParas().then((ps) => { IN.ps = ps; if (JSON.stringify(ps) !== JSON.stringify(now)) draw(ps); });
 }
-function introStyles() {
+function introStyles(scroll) {
   const box = $('#inSty');
-  if (!box.children.length) INTRO_ST.forEach((x, i) => {
-    const b = document.createElement('button'); b.setAttribute('role', 'radio'); b.innerHTML = '<b></b><small></small>';
-    b.querySelector('b').textContent = x.n; b.querySelector('small').textContent = x.d;
-    b.addEventListener('click', () => { IN.sel = i; introStyles(); });
-    box.appendChild(b);
-  });
+  if (!box.children.length) {
+    INTRO_ST.forEach((x, i) => {
+      const pr = x.p && presetByName(x.p);
+      const b = document.createElement('button'); b.setAttribute('role', 'radio'); b.innerHTML = '<b></b><small></small><i></i>';
+      b.querySelector('b').textContent = x.n; b.querySelector('small').textContent = x.d;
+      b.querySelector('i').textContent = pr ? `${moodName(pr.sc)} · ${pr.bpm}` : '?';
+      b.title = pr ? `${pr.n}: ${pr.d}. Ambiente ${moodName(pr.sc)}, ${pr.bpm} bpm` : 'Un estilo al azar';
+      b.addEventListener('click', () => { IN.sel = i; introStyles(); });
+      box.appendChild(b);
+    });
+    // en la compu, la rueda del mouse también desliza los estilos
+    box.addEventListener('wheel', (e) => {
+      if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && box.scrollWidth > box.clientWidth + 2) { box.scrollLeft += e.deltaY; e.preventDefault(); }
+    }, { passive: false });
+  }
   [...box.children].forEach((b, i) => { b.classList.toggle('on', i === IN.sel); b.setAttribute('aria-checked', i === IN.sel ? 'true' : 'false'); });
+  if (scroll) {
+    const b = box.children[IN.sel], l = b.offsetLeft - box.offsetLeft, r = l + b.offsetWidth;
+    if (l < box.scrollLeft + 18 || r > box.scrollLeft + box.clientWidth - 18) box.scrollTo({ left: l - box.clientWidth / 2 + b.offsetWidth / 2, behavior: RM ? 'auto' : 'smooth' });
+  }
 }
 function showIntro() {
   store.set(LS_PREF + '.intro1', 1); store.set(LS_PREF + '.seen1', 1);
   introEl.classList.toggle('nost', IN.link); // si se abrió con un enlace, Play toca ese beat
-  IN.long = false; introText(); introStyles(); openModal('#intro');
+  IN.long = false; introText(); introStyles(); openModal('#intro'); syncLang();
   if (!TOUCH) setTimeout(() => $('#inPlay').focus({ preventScroll: true }), 80);
 }
 function introPlay() {
   ensureAudio();
-  const pr = !IN.link && presetByName(INTRO_ST[IN.sel].p);
+  let x = INTRO_ST[IN.sel];
+  if (!x.p) { const ok = INTRO_ST.filter(y => y.p && presetByName(y.p)); x = ok[Math.floor(Math.random() * ok.length)]; }
+  const pr = !IN.link && presetByName(x.p);
   if (pr) {
     if (P.playing || P.paused) stop();
     if (FRESH0 && !S.id && !S.dirty) addToLib(S, S.name); // el tema de ejemplo queda en Mis beats
     else stash();                                           // y si había un beat sin guardar, también
     const vol = S.vol; S = blank(); S.vol = vol; H.u = []; H.r = [];
-    applyAll(); loadPreset(pr); saveNow();
+    applyAll(); loadPreset(pr); if (x.h != null) setHum(x.h, true); saveNow();
   }
   closeAll();
   if (!P.playing) play();
@@ -6385,9 +6469,76 @@ $('#inPlay').addEventListener('click', introPlay);
 addEventListener('keydown', (e) => {
   if (!introEl.classList.contains('on') || e.ctrlKey || e.metaKey) return;
   const k = e.key;
-  if (k === 'ArrowLeft' || k === 'ArrowRight') { e.preventDefault(); e.stopImmediatePropagation(); IN.sel = (IN.sel + (k === 'ArrowRight' ? 1 : INTRO_ST.length - 1)) % INTRO_ST.length; introStyles(); return; }
-  if ((k === ' ' || k === 'Enter') && !e.target.closest('#intro button, #inTxt')) { e.preventDefault(); e.stopImmediatePropagation(); introPlay(); }
+  if (k === 'ArrowLeft' || k === 'ArrowRight') { e.preventDefault(); e.stopImmediatePropagation(); IN.sel = (IN.sel + (k === 'ArrowRight' ? 1 : INTRO_ST.length - 1)) % INTRO_ST.length; introStyles(true); return; }
+  if ((k === ' ' || k === 'Enter') && !e.target.closest('#intro button, #inTxt, #intro select')) { e.preventDefault(); e.stopImmediatePropagation(); introPlay(); }
 }, true);
+
+/* ================= idiomas: widget de Google Translate =================
+   La página está en español. El traductor de Google se carga solo si se elige otro idioma (o si ya se había elegido),
+   así no pesa ni hace falta conexión para usarla en español. El idioma elegido queda guardado en el equipo. */
+const LANGS = [['es', 'Español'], ['en', 'English'], ['pt', 'Português'], ['fr', 'Français'], ['it', 'Italiano'], ['de', 'Deutsch'],
+  ['nl', 'Nederlands'], ['pl', 'Polski'], ['tr', 'Türkçe'], ['ru', 'Русский'], ['uk', 'Українська'], ['ar', 'العربية'], ['hi', 'हिन्दी'],
+  ['id', 'Bahasa Indonesia'], ['ja', '日本語'], ['ko', '한국어'], ['zh-CN', '中文 (简体)'], ['zh-TW', '中文 (繁體)'], ['ca', 'Català'], ['gn', 'Avañeʼẽ']];
+const GT = { st: 0, want: null };
+const gtCookieLang = () => { const m = /(?:^|;\s*)googtrans=\/[^/;]*\/([^;]+)/.exec(document.cookie); return m ? decodeURIComponent(m[1]) : ''; };
+const isTranslated = () => /\btranslated-(ltr|rtl)\b/.test(document.documentElement.className);
+let LANG = store.get(LS_PREF + '.lang') || gtCookieLang() || 'es';
+if (!LANGS.some(x => x[0] === LANG)) LANG = 'es';
+function gtCookie(code) {
+  const ex = 'expires=Thu, 01 Jan 1970 00:00:00 GMT', h = location.hostname;
+  ['; path=/', `; path=/; domain=${h}`, `; path=/; domain=.${h}`].forEach(d => { document.cookie = 'googtrans=' + d + '; ' + ex; });
+  if (code && code !== 'es') document.cookie = `googtrans=/es/${code}; path=/; max-age=31536000; SameSite=Lax`;
+}
+function syncLang() {
+  ['#langIn', '#langDr'].forEach((id) => {
+    const s = $(id); if (!s) return;
+    if (!s.options.length) {
+      LANGS.forEach(([c, n]) => { const o = document.createElement('option'); o.value = c; o.textContent = n; s.appendChild(o); });
+      s.addEventListener('change', () => setLang(s.value));
+    }
+    s.value = LANG;
+  });
+}
+function gtLoad() {
+  if (GT.st) return; GT.st = 1;
+  window.gpTranslateInit = () => {
+    try {
+      new google.translate.TranslateElement({ pageLanguage: 'es', includedLanguages: LANGS.map(x => x[0]).filter(c => c !== 'es').join(','), autoDisplay: false }, 'gtHost');
+      GT.st = 2; gtApply();
+    } catch { GT.st = 0; }
+  };
+  const s = document.createElement('script'); s.async = true;
+  s.src = 'https://translate.google.com/translate_a/element.js?cb=gpTranslateInit';
+  s.onerror = () => { GT.st = 0; s.remove(); if (GT.want) { GT.want = null; toast('Para cambiar el idioma hace falta conexión a internet', 2600); } };
+  document.head.appendChild(s);
+}
+function gtApply(tries = 0) {
+  const w = GT.want; if (!w) return;
+  const combo = document.querySelector('#gtHost select.goog-te-combo');
+  if (!combo || ![...combo.options].some(o => o.value === w)) { if (tries < 80) setTimeout(() => gtApply(tries + 1), 150); return; }
+  GT.want = null; combo.value = w; combo.dispatchEvent(new Event('change'));
+}
+function setLang(code) {
+  LANG = code; store.set(LS_PREF + '.lang', code); syncLang();
+  if (code === 'es') { // volver al original: si no alcanza con el widget, se recarga la página (el tema ya queda guardado)
+    gtCookie(''); GT.want = null;
+    if (!isTranslated()) return;
+    const combo = document.querySelector('#gtHost select.goog-te-combo');
+    if (combo) { combo.value = ''; combo.dispatchEvent(new Event('change')); }
+    setTimeout(() => {
+      if (!isTranslated()) return;
+      saveNow(); if (introEl.classList.contains('on')) try { sessionStorage.setItem('gp.intro', '1'); } catch {}
+      location.reload();
+    }, 600);
+    return;
+  }
+  gtCookie(code); GT.want = code;
+  if (GT.st === 2) gtApply(); else gtLoad();
+}
+// lo que no se traduce: el logo y la frase amarilla
+document.querySelectorAll('.logo, .in-logo, .dh b, .splash').forEach((el) => { el.classList.add('notranslate'); el.setAttribute('translate', 'no'); });
+syncLang();
+if (LANG !== 'es') { gtCookie(LANG); GT.want = LANG; gtLoad(); }
 
 /* ================= boot ================= */
 document.documentElement.dataset.theme = PREF.theme;
@@ -6404,7 +6555,8 @@ if (/^#b=/.test(location.hash)) {
   if (o) { openBeat(o, `Beat cargado desde el enlace: ${o.name}`); IN.link = true; }
 }
 bankWarm(true);
-if (/[?&]intro\b/.test(location.search) || !store.get(LS_PREF + '.intro1')) showIntro();
+let introAgain = false; try { introAgain = sessionStorage.getItem('gp.intro') === '1'; sessionStorage.removeItem('gp.intro'); } catch {}
+if (/[?&]intro\b/.test(location.search) || introAgain || !store.get(LS_PREF + '.intro1')) showIntro();
 else if (!store.get(LS_PREF + '.seen1')) { store.set(LS_PREF + '.seen1', 1); setTimeout(() => toast('GREENPAD: instrumentos grabados de verdad y modo CANCIÓN. Tocá Play para escuchar el primer tema.', 4600), 600); }
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
 
