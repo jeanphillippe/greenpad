@@ -790,7 +790,6 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
   gtag('js', new Date());
 </script>
 </head>
-</head>
 <body>
 <div id="app">
   <header id="top">
@@ -3278,17 +3277,23 @@ const DLD = [ // gotas de tinta por golpe · r: radio · sp: dónde cae (0 junto
   { r: 32, sp: 0, p: 1 },
   { r: 20, sp: 0, p: 1 },
 ];
-// tintas: cada parte de la canción (y cada 8 compases) cambia de juego de colores, así el fondo no es siempre igual
+// tintas: cada parte de la canción usa colores según su AMBIENTE, y cada 8 compases alterna entre los dos de ese ambiente
+// cada juego: [claro, acento, medio, profundo, oscuro, extra]
 const DLPAL = [
   ['#f4eeff', '#ff2e93', '#c9b3f5', '#5b2ea6', '#0a0510', '#9d6bff'], // violeta y fucsia
-  ['#e9fff8', '#13c2b3', '#0b3b46', '#ff6f59', '#ffd166', '#0a0510'], // turquesa y coral
-  ['#fff3e0', '#ff8a00', '#1d3fbf', '#7fb2ff', '#0a0510', '#ffd76a'], // naranja y azul
+  ['#e9fff8', '#13c2b3', '#ff6f59', '#0b3b46', '#0a0510', '#ffd166'], // turquesa y coral
+  ['#fff3e0', '#ff8a00', '#7fb2ff', '#1d3fbf', '#0a0510', '#ffd76a'], // naranja y azul
   ['#fff0f6', '#ff85b3', '#3ddbb5', '#5e2b97', '#0a0510', '#ffe066'], // rosa y menta
-  ['#fff6e8', '#e63946', '#7a0b2a', '#f4a261', '#0a0510', '#2a1e5c'], // rojo y crema
-  ['#f0f7ff', '#7ec8ff', '#3a5bd9', '#c9b3f5', '#ff9ad5', '#0a0510'], // celeste y lila
-  ['#fff8e1', '#ffc93c', '#6a2c91', '#ff7b54', '#2b0f3a', '#e0c3fc'], // dorado y violeta
-  ['#eafff0', '#00c48c', '#14213d', '#fca311', '#e5e5e5', '#0a0510'], // verde y azul noche
+  ['#fff6e8', '#e63946', '#f4a261', '#7a0b2a', '#0a0510', '#2a1e5c'], // rojo y crema
+  ['#f0f7ff', '#7ec8ff', '#c9b3f5', '#3a5bd9', '#0a0510', '#ff9ad5'], // celeste y lila
+  ['#fff8e1', '#ffc93c', '#ff7b54', '#6a2c91', '#2b0f3a', '#e0c3fc'], // dorado y violeta
+  ['#eafff0', '#00c48c', '#fca311', '#14213d', '#0a0510', '#e5e5e5'], // verde y azul noche
 ];
+// ambiente → sus dos juegos de colores (índice de SCALES: menor, mayor, penta menor, penta mayor, dórica, blues)
+const DLMOOD = [[5, 1], [3, 2], [0, 7], [2, 6], [1, 6], [4, 5]]; // Triste: fríos · Pop · Oscuro · Alegre: cálidos · Groove · Blues
+// qué tinta usa cada sonido: el bombo el acento, la caja la clara, el bajo la profunda; en los melódicos, la nota (grave oscura, aguda clara)
+const DLINK = [[1, 0], [0, 2], [4, 0], [5], [3, 4], null, null, null];
+const DLDUR = [.16, .2, .12, .15, .5, .3, .45, .3]; // cuánto tarda en abrirse la gota: la batería pega, el bajo y los acordes se expanden
 const smooth01 = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 const inkEdge = (c) => { const [r, g, b] = hexRgb(c); return r * .3 + g * .59 + b * .11 > 120 ? '#0a0510' : '#f4eeff'; };
 /* tinta sobre agua: cada mancha es un polígono cerrado [x0, y0, x1, y1, …], y la más nueva va arriba.
@@ -3348,10 +3353,10 @@ function dlDrop(C, e, now, W, H) {
     const a = tr * TAU / 8 + now * .07 + (Math.random() - .5) * 1.4, rr = d.sp * (140 + Math.random() * 300);
     x = C.cx + Math.cos(a) * rr; y = C.cy + Math.sin(a) * rr * 1.35;
   }
-  const col = pal[(tr + (C.dn[tr] = (C.dn[tr] || 0) + 1)) % pal.length], p = [];
+  const n = (C.dn[tr] = (C.dn[tr] || 0) + 1), sl = DLINK[tr], col = sl ? pal[sl[n % sl.length]] : pal[[4, 3, 2, 5, 1, 0][Math.round(clamp(((e.v || 1) - 1) / 7, 0, 1) * 5)]], p = [];
   for (let k = 0; k < 40; k++) p.push(x + Math.cos(k / 40 * TAU) * .5, y + Math.sin(k / 40 * TAU) * .5);
   const q = { p, c: col, e: inkEdge(col), young: true }; C.ink.push(q);
-  C.drops.push({ x, y, r2: r * r * (.45 + Math.random() * .45), t: now, f: 0, q });
+  C.drops.push({ x, y, r2: r * r * (.45 + Math.random() * .45), t: now, f: 0, q, d: DLDUR[tr] });
 }
 // cambio de colores: una gota grande del color nuevo y un peine, para que se note
 function dlWash(C, now, W, H) {
@@ -3364,17 +3369,19 @@ function dlWash(C, now, W, H) {
   }
   const a = Math.random() * TAU; C.tines.push({ x: C.cx, y: C.cy, mx: Math.cos(a), my: Math.sin(a), z: 30, sp: 90, t: now, f: 0 });
 }
-function dlInit(W, H) {
-  const C = { cx: W / 2, cy: H * .47, fl: [], last: 0, ink: [], drops: [], tines: [], ld: [], dn: [], base: '#2a1450', bar: '' };
+function dlInit(W, H, R) {
+  // la película del principio ya usa los colores del ambiente de la primera parte
+  const p0 = R && R.blocks[0] ? R.blocks[0].p : 0, sc0 = S.ps[p0] ? S.ps[p0].sc : 0, P0 = DLPAL[(DLMOOD[sc0] || DLMOOD[0])[p0 % 2]];
+  const C = { cx: W / 2, cy: H * .47, fl: [], last: 0, ink: [], drops: [], tines: [], ld: [], dn: [], base: P0[3], bar: '' };
   // la película de tinta del principio: franjas en diagonal (con la fucsia gruesa) ya marmoladas por unas gotas y un remolino
-  { const fa = -.86, ux = Math.cos(fa), uy = Math.sin(fa), nx = -uy, ny = ux, cols = ['#7a4fd0', '#0a0510', '#c9b3f5', '#3b1a6e', '#f4eeff', '#5b2ea6', '#0a0510', '#b48cff', '#e4d8ff', '#3b1a6e'];
+  { const fa = -.86, ux = Math.cos(fa), uy = Math.sin(fa), nx = -uy, ny = ux, cols = [P0[3], P0[4], P0[2], P0[3], P0[0], P0[5], P0[4], P0[2], P0[0], P0[3]];
     const band = (o0, o1, col) => { const p = [], L = 900;
       for (let s = -L; s <= L; s += 12) p.push(C.cx + ux * s + nx * o0, C.cy + uy * s + ny * o0);
       for (let s = L; s >= -L; s -= 12) p.push(C.cx + ux * s + nx * o1, C.cy + uy * s + ny * o1);
       C.ink.push({ p, c: col, e: inkEdge(col) }); };
     let o = -820, k = 0, fd = false;
-    while (o < 820) { const fu = !fd && o > 20, w = fu ? 105 : 16 + Math.random() * 46; if (fu) fd = true; band(o, o + w, fu ? '#ff2e93' : cols[k++ % cols.length]); o += w; }
-    const pre = [[.3, .25, 80, '#c9b3f5'], [.3, .25, 50, '#ff2e93'], [.3, .25, 30, '#f4eeff'], [.75, .62, 90, '#0a0510'], [.75, .62, 60, '#e4d8ff'], [.15, .78, 70, '#7a4fd0'], [.8, .2, 55, '#ffd76a'], [.55, .9, 45, '#f4eeff']];
+    while (o < 820) { const fu = !fd && o > 20, w = fu ? 105 : 16 + Math.random() * 46; if (fu) fd = true; band(o, o + w, fu ? P0[1] : cols[k++ % cols.length]); o += w; }
+    const pre = [[.3, .25, 80, P0[2]], [.3, .25, 50, P0[1]], [.3, .25, 30, P0[0]], [.75, .62, 90, P0[4]], [.75, .62, 60, P0[0]], [.15, .78, 70, P0[3]], [.8, .2, 55, P0[5]], [.55, .9, 45, P0[0]]];
     for (const [fx, fy, r, col] of pre) { const x = W * fx, y = H * fy, p = []; for (let i = 0; i < 48; i++) p.push(x + Math.cos(i / 48 * 6.283) * .5, y + Math.sin(i / 48 * 6.283) * .5); C.ink.push({ p, c: col, e: inkEdge(col) }); inkDrop(C, x, y, r * r); inkTidy(C, W, H); }
     for (let i = 0; i < 6; i++) { inkSwirl(C, C.cx, C.cy, .22, 300); inkTidy(C, W, H); }
     inkTine(C, C.cx - 120, C.cy, 0, 1, 60, 26); inkTidy(C, W, H); }
@@ -3407,7 +3414,7 @@ function dlInit(W, H) {
 }
 function drawDiente(g, R, st, V) {
   const { W, H, TAU, now, beats, bass, mid } = V;
-  const C = st.dl || (st.dl = dlInit(W, H));
+  const C = st.dl || (st.dl = dlInit(W, H, R));
   const dt = clamp(now - C.last, 0, .1); C.last = now;
   const B = vBands(st, 16);
   // la vida de la flor sigue la canción: arranca como capullo, se abre la flor amarilla, cerca de la mitad del tema
@@ -3422,10 +3429,10 @@ function drawDiente(g, R, st, V) {
   const Tm = C.tm;
   const bloom = smooth01(0, 1.4, now) * (1 - smooth01(Tm - .5 * bt, Tm + .5 * bt, now)), puff = smooth01(Tm - .15 * bt, Tm + 1.4 * bt, now), blow = smooth01(.88, .985, u);
   const release = (s, sp) => { // una semilla se suelta y vuela desde donde estaba
-    C.fl.push({ x: s.tx, y: s.ty, vx: s.dx * sp + 40, vy: s.dy * sp - 30, r: Math.atan2(s.dy, s.dx) + Math.PI / 2, w: (Math.random() - .5) * 1.6, tr: s.tr, t: now, life: 4 + Math.random() * 2, sc: .8 + Math.random() * .4 });
+    C.fl.push({ x: s.tx, y: s.ty, vx: s.dx * sp + 60, vy: s.dy * sp - 40, r: Math.atan2(s.dy, s.dx) + Math.PI / 2, w: (Math.random() - .5) * 2.4, tr: s.tr, t: now, life: 5 + Math.random() * 2, sc: .8 + Math.random() * .4 });
     if (C.fl.length > 110) C.fl.shift();
   };
-  { const pi = ((V.p || 0) + Math.floor((C.nb || 0) / 8)) % DLPAL.length;
+  { const sc = S.ps[V.p || 0] ? S.ps[V.p || 0].sc : 0, fam = DLMOOD[sc] || DLMOOD[0], pi = fam[((V.p || 0) + Math.floor((C.nb || 0) / 8)) % 2];
     if (C.pal == null) C.pal = pi; else if (pi !== C.pal) { C.pal = pi; dlWash(C, now, W, H); } }
   // golpes nuevos: gotas de tinta, pétalos o semillas que se prenden y, con la bola abierta, alguna semilla que se vuela
   if (!st.hits) st.hits = [];
@@ -3439,7 +3446,7 @@ function drawDiente(g, R, st, V) {
       for (let k = 0; k < f && gone + k < 30; k++) {
         const pool = C.seeds.filter(s => s.tr === tr && s.grow >= 1 && s.sz > -.15);
         if (!pool.length) break;
-        const s = pool[(Math.random() * pool.length) | 0]; s.grow = 0; s.gone = now; release(s, 60 + Math.random() * 80);
+        const s = pool[(Math.random() * pool.length) | 0]; s.grow = 0; s.gone = now; release(s, 160 + Math.random() * 120);
       }
     }
   }
@@ -3448,12 +3455,12 @@ function drawDiente(g, R, st, V) {
   if (blow > 0) {
     const want = Math.round(blow * C.seeds.length), pool = C.seeds.filter(s => !s.blown);
     let gone = C.seeds.length - pool.length;
-    while (gone < want && pool.length) { const s = pool.splice((Math.random() * pool.length) | 0, 1)[0]; s.blown = true; if (s.grow > .5 && s.tx != null) release(s, 30 + Math.random() * 70); s.grow = 0; gone++; }
+    while (gone < want && pool.length) { const s = pool.splice((Math.random() * pool.length) | 0, 1)[0]; s.blown = true; if (s.grow > .5 && s.tx != null) release(s, 120 + Math.random() * 120); s.grow = 0; gone++; }
   }
   // ---- fondo: tinta sobre agua ----
   // gotas que todavía se están abriendo, peines en marcha y una corriente suave que lleva la tinta en diagonal
   const ease = (x) => 1 - Math.pow(1 - clamp(x, 0, 1), 3);
-  for (let i = C.drops.length - 1; i >= 0; i--) { const d = C.drops[i], f = ease((now - d.t) / .35); if (f > d.f) { inkDrop(C, d.x, d.y, d.r2 * (f - d.f)); d.f = f; } if (f >= 1) { d.q.young = false; C.drops.splice(i, 1); } }
+  for (let i = C.drops.length - 1; i >= 0; i--) { const d = C.drops[i], f = ease((now - d.t) / (d.d || .35)); if (f > d.f) { inkDrop(C, d.x, d.y, d.r2 * (f - d.f)); d.f = f; } if (f >= 1) { d.q.young = false; C.drops.splice(i, 1); } }
   { const cb = V.cur ? `${V.cur.bi}.${V.cur.r}` : '';
     if (V.cur && V.cur.s === 0 && cb !== C.bar) { // empieza un compás
       C.bar = cb; C.nb = (C.nb || 0) + 1;
@@ -3470,9 +3477,12 @@ function drawDiente(g, R, st, V) {
   for (const q of C.ink) {
     const P = q.p; g.beginPath(); g.moveTo(P[0], P[1]); for (let i = 2; i < P.length; i += 2) g.lineTo(P[i], P[i + 1]); g.closePath();
     g.globalAlpha = 1; g.fillStyle = q.c; g.fill();
-    g.globalAlpha = .45; g.strokeStyle = q.e; g.stroke(); // filo fino entre tintas, como en la película de hidroimpresión
+    g.globalAlpha = Math.min(.9, .35 + mid * .6); g.strokeStyle = q.e; g.stroke(); // filo fino entre tintas: brilla más con los medios y agudos
   }
   g.globalAlpha = 1;
+  // con el bombo, un latido de luz del color de acento alrededor de la flor
+  if (st.k > .05) { const lc = DLPAL[C.pal || 0][1], kg = g.createRadialGradient(C.cx, C.cy, 40, C.cx, C.cy, 420 + st.k * 120); kg.addColorStop(0, lc); kg.addColorStop(1, lc + '00');
+    g.globalCompositeOperation = 'lighter'; g.globalAlpha = st.k * .22; g.fillStyle = kg; g.fillRect(0, 0, W, H); g.globalCompositeOperation = 'source-over'; g.globalAlpha = 1; }
   // brillo suave de la película de agua, arriba a la izquierda
   { const sh = g.createRadialGradient(W * .22, H * .2, 0, W * .22, H * .2, W * .9); sh.addColorStop(0, 'rgba(255,255,255,.16)'); sh.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = sh; g.fillRect(0, 0, W, H); }
   // ---- el diente de león ----
@@ -3493,8 +3503,8 @@ function drawDiente(g, R, st, V) {
   if (C.pb == null && now >= Tm) {
     C.pb = 1;
     for (const p of C.pet) if (p.L > 120 && Math.random() < .55) {
-      const a = p.a + spin, ca = Math.cos(a), sa = Math.sin(a) * tilt, sp = 120 + Math.random() * 160;
-      C.fl.push({ k: 1, x: hx + ca * p.L * .7, y: hy + sa * p.L * .7, vx: ca * sp, vy: sa * sp - 40, r: a + Math.PI / 2, w: (Math.random() - .5) * 5, col: p.col, t: now, life: 1.6 + Math.random(), sc: .9 + Math.random() * .3 });
+      const a = p.a + spin, ca = Math.cos(a), sa = Math.sin(a) * tilt, sp = 200 + Math.random() * 200;
+      C.fl.push({ k: 1, x: hx + ca * p.L * .7, y: hy + sa * p.L * .7, vx: ca * sp, vy: sa * sp - 40, r: a + Math.PI / 2, w: (Math.random() - .5) * 5, col: p.col, t: now, life: 3.5 + Math.random(), sc: .9 + Math.random() * .3 });
     }
   }
   if (fa > .01) {
@@ -3513,8 +3523,8 @@ function drawDiente(g, R, st, V) {
       const f = DLF[p.tr], l = p.lit, band = B[p.bi], ex = (f.l - 1) * l * .45 + .07 * band;
       // si se estira demasiado, se desprende y se va con el viento
       if (ex > .19 && p.grow >= 1 && bloom > .6 && Math.random() < .045 && C.pet.reduce((n, o) => n + (o.grow < 1 ? 1 : 0), 0) < C.pet.length * .35) {
-        const aa = p.a + spin, ca = Math.cos(aa), sa = Math.sin(aa) * tilt, sp = 90 + Math.random() * 120, Lp = p.L * hs * .75;
-        C.fl.push({ k: 1, x: hx + ca * Lp, y: hy + sa * Lp, vx: ca * sp, vy: sa * sp - 30, r: aa + Math.PI / 2, w: (Math.random() - .5) * 5, col: mixHex(p.col, DLC[p.tr], .3), t: now, life: 1.8 + Math.random(), sc: .8 + Math.random() * .3 });
+        const aa = p.a + spin, ca = Math.cos(aa), sa = Math.sin(aa) * tilt, sp = 170 + Math.random() * 150, Lp = p.L * hs * .75;
+        C.fl.push({ k: 1, x: hx + ca * Lp, y: hy + sa * Lp, vx: ca * sp, vy: sa * sp - 30, r: aa + Math.PI / 2, w: (Math.random() - .5) * 5, col: mixHex(p.col, DLC[p.tr], .3), t: now, life: 3.5 + Math.random(), sc: .8 + Math.random() * .3 });
         if (C.fl.length > 110) C.fl.shift();
         p.grow = 0; p.gone = now;
       }
@@ -3567,7 +3577,7 @@ function drawDiente(g, R, st, V) {
       const f = DLF[s.tr], l = s.lit, gw = s.grow; if (gw <= .02) continue;
       const band = B[s.bi], dep = (s.sz + 1) / 2; // 0 atrás, 1 adelante
       const exs = .07 * band + (f.r - 1) * l, len = (r0 + (L0 - r0) * gw) * (1 + exs + .03 * Math.sin(beats * TAU / 4 + s.ph));
-      if (exs > .12 && gw >= 1 && puff > .9 && !blow && s.tx != null && Math.random() < .05 && C.seeds.reduce((n, o) => n + (o.grow < 1 ? 1 : 0), 0) < 36) { s.grow = 0; s.gone = now; release(s, 70 + Math.random() * 90); continue; } // se estiró demasiado: se suelta
+      if (exs > .12 && gw >= 1 && puff > .9 && !blow && s.tx != null && Math.random() < .05 && C.seeds.reduce((n, o) => n + (o.grow < 1 ? 1 : 0), 0) < 36) { s.grow = 0; s.gone = now; release(s, 180 + Math.random() * 140); continue; } // se estiró demasiado: se suelta
       const a0 = pr(s.rx * r0, s.ry * r0, s.sz * r0), a1 = pr(s.rx * (r0 + 9), s.ry * (r0 + 9), s.sz * (r0 + 9)), tp = pr(s.rx * len, s.ry * len, s.sz * len);
       const dl = Math.hypot(tp[0] - a0[0], tp[1] - a0[1]) || 1; s.tx = tp[0]; s.ty = tp[1]; s.dx = (tp[0] - a0[0]) / dl; s.dy = (tp[1] - a0[1]) / dl;
       const col = l > .02 ? mixHex('#f6f0ff', DLC[s.tr], Math.min(1, l * 1.3)) : '#f6f0ff';
@@ -3603,12 +3613,15 @@ function drawDiente(g, R, st, V) {
   }
   g.globalAlpha = 1;
   // semillas que se vuelan con el viento, girando, y se apagan de a poco
-  const wind = 46 + 30 * Math.sin(beats * TAU / 8) + bass * 40;
+  // el viento sopla en ráfagas con el pulso, más fuerte con los graves, y cada bombo da un empujón
+  const wind = 130 + 60 * Math.sin(beats * TAU / 8) + bass * 160, gust = st.k * 260;
   g.globalAlpha = 1;
   for (let i = C.fl.length - 1; i >= 0; i--) {
-    const p = C.fl[i], age = now - p.t; if (age > p.life) { C.fl.splice(i, 1); continue; }
-    p.vx += (wind - p.vx) * dt * .6; p.vy += ((p.k ? 110 : -34) - p.vy) * dt * .5; // los pétalos caen, las semillas suben p.x += p.vx * dt; p.y += p.vy * dt; p.r += p.w * dt;
-    const a = Math.min(1, age * 3) * (1 - Math.pow(age / p.life, 2)), L = 30 * p.sc;
+    const p = C.fl[i], age = now - p.t;
+    if (age > p.life || p.x > W + 80 || p.x < -80 || p.y < -80 || p.y > H + 80) { C.fl.splice(i, 1); continue; }
+    p.vx += (wind - p.vx) * dt * .35 + gust * dt; p.vy += ((p.k ? 140 : -70) - p.vy) * dt * .35; // los pétalos caen, las semillas suben
+    p.x += p.vx * dt; p.y += p.vy * dt; p.r += p.w * dt;
+    const a = Math.min(1, age * 5) * (1 - smooth01(p.life - 1, p.life, age)), L = 30 * p.sc;
     g.save(); g.translate(p.x, p.y); g.rotate(p.r); g.globalAlpha = a;
     if (p.k) { // un pétalo amarillo
       g.fillStyle = p.col; g.strokeStyle = '#a65f00'; g.lineWidth = 1.1; g.beginPath(); g.ellipse(0, 0, 5 * p.sc, 17 * p.sc, 0, 0, TAU); g.fill(); g.stroke(); g.restore(); continue;
@@ -3637,12 +3650,12 @@ function drawDienteText(g, R, V) {
   const { W, H, now } = V, y0 = H / 2 - 320, y1 = H / 2 + 320;
   for (const [x0, x1] of [[0, 120], [W, W - 120]]) { const sg = g.createLinearGradient(x0, 0, x1, 0); sg.addColorStop(0, 'rgba(10,3,20,.62)'); sg.addColorStop(1, 'rgba(10,3,20,0)'); g.fillStyle = sg; g.fillRect(Math.min(x0, x1), 0, 120, H); }
   g.textBaseline = 'middle'; g.shadowColor = 'rgba(10,3,20,.85)'; g.shadowBlur = 8;
-  // izquierda: título y BPM, leyendo de abajo hacia arriba
-  g.save(); g.translate(0, H / 2); g.rotate(-Math.PI / 2); g.textAlign = 'center';
+  // izquierda: título y BPM, leyendo de arriba hacia abajo
+  g.save(); g.translate(0, H / 2); g.rotate(Math.PI / 2); g.textAlign = 'center';
   g.font = `800 34px ${VFONT}`; g.fillStyle = '#fbf7ff';
-  g.fillText(wrapLines(g, S.name || 'Mi tema', y1 - y0, 1)[0], 0, 38);
+  g.fillText(wrapLines(g, S.name || 'Mi tema', y1 - y0, 1)[0], 0, -38);
   g.font = `800 17px ${VFONT}`; if ('letterSpacing' in g) g.letterSpacing = '3px';
-  g.fillStyle = '#ffc6e6'; g.fillText(`${S.bpm} BPM`, 0, 74); if ('letterSpacing' in g) g.letterSpacing = '0px';
+  g.fillStyle = '#ffc6e6'; g.fillText(`${S.bpm} BPM`, 0, -74); if ('letterSpacing' in g) g.letterSpacing = '0px';
   g.restore();
   // derecha: el logo abajo y, arriba, el avance de la canción en vertical con el color de cada parte
   g.save(); g.translate(W - 34, y1 - 4); g.rotate(-Math.PI / 2); g.textAlign = 'left';
