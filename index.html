@@ -526,8 +526,9 @@ a.btn{display:block;text-decoration:none}
 .st.plg small{padding-right:38px}
 .plgs{grid-area:pg;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:center}
 .dv .mxr.hp{grid-template-areas:"me kn" "me bt" "pg pg" "gr gr" "rp rp" "xf xf"}
-.ppad{width:auto;min-width:52px;padding:0 10px;font-size:10px;letter-spacing:.08em}
-#dj.ds .ppad{min-width:42px;padding:0 7px;font-size:9px}
+.ppad{height:40px;min-width:52px;padding:0 10px;border-radius:10px;background:var(--chip);font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--ink2);touch-action:none;user-select:none;-webkit-user-select:none;transition:background .1s,color .1s}
+.ppad.on{background:var(--or);color:var(--acc-ink)}
+#dj.ds .ppad{height:32px;min-width:42px;padding:0 7px;font-size:9px}
 #xQual.many{flex-wrap:wrap}
 #xQual.many button{flex:1 1 22%}
 .about p{margin:0 0 12px;font-size:14px;line-height:1.6;color:var(--ink2)}
@@ -1982,7 +1983,7 @@ function plugApi(rec) {
       if (PLG.pv[t].some(x => x.key === key)) throw new Error('instrumento repetido: ' + key);
       PLG.pv[t].push({ key, plug: rec, n: plugTxt(def.nombre, 18) || 'Plugin', d: plugTxt(def.detalle, 60) || 'Plugin: ' + rec.n, smp: def.enVivo ? 1 : 0,
         f: (c, o, tm, v, x) => {
-          try { tocar(c, o, tm, v, x ? { f: x.f * PF, fs: x.fs ? x.fs.map(q => q * PF) : null, dur: x.dur } : null, PF); }
+          try { tocar(c, o, tm, v, x ? { f: x.f * PF, fs: x.fs ? x.fs.map(q => q * PF) : null, dur: x.dur } : null, PF, { bpm: S.bpm, paso: 15 / S.bpm }); }
           catch (e) { if (!rec.err) plugErr(rec, e, 'instrumento ' + def.nombre); }
         } });
       rec.k.add('sonido');
@@ -2084,7 +2085,7 @@ function applyPfx() {
     let u = X.u[d.key];
     if (u === undefined) { u = null; try { const r = d.crear(c); if (r && r.entrada && r.salida) u = r; else throw new Error('crear() tiene que devolver { entrada, salida, ajustar }'); } catch (e) { plugErr(d.plug, e, 'efecto ' + d.n); } X.u[d.key] = u; }
     if (!u) continue;
-    try { if (u.ajustar) u.ajustar(v, { bpm: S.bpm, ahora: c.currentTime }); } catch (e) { if (!d.plug.err) plugErr(d.plug, e, 'efecto ' + d.n); }
+    try { if (u.ajustar) u.ajustar(v, { bpm: S.bpm, ahora: c.currentTime, inicio: typeof c.startRendering === 'function' ? .05 : P.playing && P.b0 != null ? P.b0 : null }); } catch (e) { if (!d.plug.err) plugErr(d.plug, e, 'efecto ' + d.n); }
     act.push(u); keys.push(d.key);
   }
   const sig = keys.join('|'); if (sig === X.sig) return; X.sig = sig;
@@ -2693,8 +2694,8 @@ function play() {
     P.pat = S.song[P.si].p; SG.pl = -1; songEl.classList.add('pl'); renderSongPop();
   }
   P.paused = false;
-  P.next = c.currentTime + .06 + (P.startIn || 0); P.startIn = 0; P.t0 = P.next; // video: la música puede arrancar un poco después
-  warmDrums(); bankWarm(); tick(); setLever('play'); loop(); djKick(); plugEmit('play');
+  P.next = c.currentTime + .06 + (P.startIn || 0); P.startIn = 0; P.t0 = P.next; P.b0 = P.next; for (let i = 0; i < P.step; i++) P.b0 -= stepDur(i); // b0: cuándo cayó (o caería) el paso 1 de este compás // video: la música puede arrancar un poco después
+  warmDrums(); bankWarm(); tick(); setLever('play'); loop(); djKick(); applyPfx(); plugEmit('play');
 }
 function pause() {
   if (!P.playing) return;
@@ -4727,6 +4728,7 @@ function setBpm(v, quiet) {
   v = Math.round(clamp(v, 40, 240)); if (v === S.bpm && !quiet) return;
   S.bpm = v; bpmEl.textContent = v; if (!quiet) save(); vidDirty();
   if (AU.dly) AU.dly.delayTime.setTargetAtTime(Math.min(1.9, 60 / v * .75), AU.ctx.currentTime, .08);
+  applyPfx();
 }
 function holdRepeat(btn, fn) {
   let t1 = 0, t2 = 0; const stopIt = () => { clearTimeout(t1); clearInterval(t2); };
@@ -5741,7 +5743,7 @@ function buildDJ() {
     const pw = document.createElement('div'); pw.className = 'plgs'; djEl.querySelector('.mbts').after(pw); djEl.querySelector('.mxr').classList.add('hp');
     PLG.fx.forEach((d, k) => { DJ.knobs['p:' + d.key] = knob(pw, { label: d.n, val: (S.fx.px && S.fx.px[d.key]) || 0, color: d.color || stColor(6 + k), onInput: (v) => { if (!S.fx.px) S.fx.px = {}; S.fx.px[d.key] = v; applyFx(); save(); } }); DJ.knobs['p:' + d.key].el.title = 'Plugin: ' + d.plug.n; });
     PLG.pads.forEach((d) => {
-      const b = document.createElement('button'); b.className = 'rep ppad'; b.textContent = d.n; b.title = (d.d ? d.d + ' · ' : '') + 'Plugin: ' + d.plug.n; pw.appendChild(b);
+      const b = document.createElement('button'); b.className = 'ppad'; b.textContent = d.n; b.title = (d.d ? d.d + ' · ' : '') + 'Plugin: ' + d.plug.n; pw.appendChild(b);
       const up = () => { if (!b.classList.contains('on')) return; b.classList.remove('on'); if (d.soltar && AU.ctx) try { d.soltar(AU.ctx, AU.ctx.currentTime); } catch (e) { plugErr(d.plug, e, 'botón ' + d.n); } };
       b.addEventListener('pointerdown', (e) => { e.preventDefault(); const c = ensureAudio(); if (!c) return; try { b.setPointerCapture(e.pointerId); } catch {} b.classList.add('on'); try { d.tocar(c, AU.fxIn, c.currentTime + .005, { bpm: S.bpm }); } catch (er) { plugErr(d.plug, er, 'botón ' + d.n); } });
       ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => b.addEventListener(ev, up));
@@ -5798,6 +5800,7 @@ function deckRewind(d) {
 }
 function repeatOn(f, b) {
   ensureAudio(); if (!AU.wk) return toast('Este navegador no permite repetir');
+  if (!(f > 0)) return;
   const len = 60 / S.bpm * f;
   [0, 1].forEach(d => { if (!DJ.d[d].brake) deckMsg(d, { t: 'repeat', len }); });
   if (b) b.classList.add('on');
@@ -6869,7 +6872,7 @@ function offlineWarm() {
     for (let k = 0; k < 3; k++) next();
   }).catch(() => {});
 }
-window.__greenpad = { get S() { return S; }, P, AU, DJ, VG, DR, KS, WD, POLY, BK, SG, bankWhenReady, humanize, get MAXV() { return MAXV; }, setLite, toText, parseAny, encodeLink, playTrack, applyFx, PLG, renderOffline, drawVideoFrame };
+window.__greenpad = { get S() { return S; }, P, AU, DJ, VG, DR, KS, WD, POLY, BK, SG, bankWhenReady, humanize, get MAXV() { return MAXV; }, setLite, toText, parseAny, encodeLink, playTrack, applyFx, PLG, renderOffline, drawVideoFrame, voiceAt };
 })();
 </script>
 </body>

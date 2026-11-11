@@ -23,7 +23,8 @@ GREENPAD.plugin({
       // nota: en bajo, guitarra, acordes y melodía trae { f, fs, dur } (frecuencia, frecuencias del acorde, duración).
       //       En la batería viene vacía (null).
       // afin: afinación del instrumento (1 = normal). En la batería, multiplicá tus frecuencias por este número.
-      tocar(ctx, salida, t, fuerza, nota, afin) {
+      // info (opcional): { bpm, paso }, el tempo y cuánto dura un paso en segundos.
+      tocar(ctx, salida, t, fuerza, nota, afin, info) {
         const osc = ctx.createOscillator(), vol = ctx.createGain();
         osc.type = 'triangle';
         osc.frequency.value = nota ? nota.f : 200 * afin;

@@ -370,7 +370,7 @@ GREENPAD acepta plugins: archivos `.js` que suman instrumentos, mods para las ba
 | Archivo | Para qué |
 |---|---|
 | `plugins.html` | Landing de plugins: catálogo, instalar, quitar, actualizar y guía para crearlos |
-| `plugins/*.js` | Un archivo por plugin. `kalimba.js`, `dub.js` y `barras.js` son los ejemplos (uno de cada tipo) |
+| `plugins/*.js` | Un archivo por plugin. Los que vienen: `boombap.js`, `trap.js` y `arcade.js` (sonido), `djkit.js` y `oro.js` (bandejas), `cassette.js` y `parlantes.js` (visuales) |
 | `plugins/plantilla.js` | Plantilla que se baja desde la guía |
 
 **Sumar un plugin que te mandaron**
