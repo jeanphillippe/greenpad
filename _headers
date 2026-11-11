@@ -10,6 +10,12 @@
 /mini.html
   Cache-Control: no-cache
 
+/plugins.html
+  Cache-Control: no-cache
+
+/plugins/*
+  Cache-Control: no-cache
+
 /frases.txt
   Cache-Control: no-cache
 

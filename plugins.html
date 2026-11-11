@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="es" data-theme="night">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Plugins · GREENPAD</title>
+<meta name="description" content="Plugins para GREENPAD: instrumentos nuevos, mods para las bandejas y visuales para el video, hechos por quienes lo usan. También cómo hacer el tuyo.">
+<meta name="theme-color" content="#0f1612">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+:root{
+  --bg:#c5cdc7; --body:#e7ece8; --head:#eff3f0; --line:#d5ddd7; --pad:#f7faf7; --chip:#dfe6e1;
+  --ink:#6f7b73; --ink2:#35423a; --cy:#1fae5f; --or:#6f9a0a; --red:#e5484d; --acc-ink:#ffffff;
+  --k-sonido:#1fae5f; --k-bandeja:#2f86c9; --k-visual:#d0567e;
+  --code:#eef2ef; --shadow:0 18px 50px rgba(0,0,0,.14);
+  --font:"Avenir Next","Avenir","Segoe UI",Roboto,"Helvetica Neue",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+:root[data-theme="night"]{
+  --bg:#060b08; --body:#0f1612; --head:#131c17; --line:#22302a; --pad:#18221d; --chip:#1a2520;
+  --ink:#8a9c91; --ink2:#c4d6cb; --cy:#3ee08a; --or:#c6f43a; --acc-ink:#062012;
+  --k-sonido:#3ee08a; --k-bandeja:#6fc3ff; --k-visual:#ff8fb1;
+  --code:#0b120e; --shadow:0 18px 50px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);color:var(--ink2);background:var(--bg);line-height:1.55;
+  background:radial-gradient(120% 60% at 50% 0%,color-mix(in srgb,var(--bg) 70%,#fff 30%),var(--bg)) no-repeat,var(--bg)}
+:root[data-theme="night"] body{background:radial-gradient(120% 700px at 50% 0%,#12201a,var(--bg)) no-repeat,var(--bg)}
+a{color:var(--cy)}
+button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+
+/* cabecera */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0}
+.logo{font-weight:800;font-size:26px;letter-spacing:-.03em;color:var(--cy);text-decoration:none;line-height:1}
+.logo span{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:10px;background:var(--chip);font-size:13px;font-weight:700;color:var(--ink2);text-decoration:none;transition:transform .1s,background .15s}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--cy);color:var(--acc-ink)}
+.btn svg{width:15px;height:15px;flex:none}
+
+/* presentación */
+.hero{padding:34px 0 26px}
+.lbl{font-size:11px;font-weight:800;letter-spacing:.18em;color:var(--ink);text-transform:uppercase}
+h1{margin:10px 0 12px;font-size:clamp(34px,7vw,60px);line-height:1.02;letter-spacing:-.035em;color:var(--ink2);text-wrap:balance}
+h1 em{font-style:normal;color:var(--cy)}
+.lead{max-width:640px;margin:0;font-size:clamp(16px,2.2vw,19px);color:var(--ink)}
+.hero .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+
+/* qué puede ser un plugin */
+.kinds{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:8px 0 0}
+.kind{padding:16px;border-radius:16px;background:var(--head);box-shadow:inset 0 0 0 1px var(--line);border-top:3px solid var(--k)}
+.kind b{display:block;font-size:15px;color:var(--ink2);margin-bottom:4px}
+.kind p{margin:0;font-size:13.5px;color:var(--ink)}
+.kind svg{width:26px;height:26px;color:var(--k);margin-bottom:8px}
+
+/* catálogo */
+section{padding:38px 0 6px}
+h2{margin:0 0 6px;font-size:clamp(22px,3.4vw,30px);letter-spacing:-.02em;color:var(--ink2)}
+.sub{margin:0 0 18px;color:var(--ink);font-size:15px;max-width:680px}
+.filt{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.filt button{padding:8px 14px;border-radius:999px;background:var(--chip);font-size:13px;font-weight:700;color:var(--ink)}
+.filt button.on{background:var(--ink2);color:var(--body)}
+.filt button i{font-style:normal;opacity:.6;margin-left:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.pl{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:16px;background:var(--pad);box-shadow:inset 0 0 0 1px var(--line)}
+.pl.inst{box-shadow:inset 0 0 0 2px var(--cy)}
+.pl .tag{align-self:flex-start;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--k);box-shadow:inset 0 0 0 1.5px var(--k)}
+.pl h3{margin:2px 0 0;font-size:19px;letter-spacing:-.01em;color:var(--ink2)}
+.pl p{margin:0;font-size:14px;color:var(--ink);flex:1}
+.pl .meta{font-size:12px;color:var(--ink)}
+.pl .acts{display:flex;gap:8px;align-items:center;margin-top:6px}
+.pl .acts .btn{flex:1}
+.pl .acts .code{flex:none;font-size:12px;font-weight:700;color:var(--ink);text-decoration:none;padding:8px 4px}
+.pl .acts .code:hover{color:var(--cy)}
+.empty{padding:26px;border-radius:16px;border:1.5px dashed var(--line);color:var(--ink);text-align:center;font-size:14px}
+.k-sonido{--k:var(--k-sonido)}.k-bandeja{--k:var(--k-bandeja)}.k-visual{--k:var(--k-visual)}
+
+/* pasos */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;padding:16px;border-radius:16px;background:var(--head);box-shadow:inset 0 0 0 1px var(--line);font-size:14px;color:var(--ink)}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:var(--cy);color:var(--acc-ink);font-weight:800;font-size:14px;margin-bottom:10px}
+.steps b{color:var(--ink2)}
+
+/* guía */
+.doc{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.doc h3{margin:22px 0 4px;font-size:18px;color:var(--ink2)}
+.doc h3 small{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--k);margin-left:8px}
+.doc p,.doc li{font-size:15px;color:var(--ink);margin:0}
+.doc p+p{margin-top:8px}
+.doc ul{margin:6px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:4px}
+.doc b{color:var(--ink2)}
+code{font-family:var(--mono);font-size:.9em;background:var(--code);padding:1px 5px;border-radius:5px;color:var(--ink2)}
+pre{margin:8px 0 0;padding:14px 16px;border-radius:14px;background:var(--code);box-shadow:inset 0 0 0 1px var(--line);overflow-x:auto;font-family:var(--mono);font-size:12.5px;line-height:1.6;color:var(--ink2);-webkit-overflow-scrolling:touch}
+pre code{background:none;padding:0;font-size:inherit}
+pre .c{color:var(--ink)}
+.tbl{overflow-x:auto;margin-top:8px;border-radius:14px;box-shadow:inset 0 0 0 1px var(--line);background:var(--pad)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{text-align:left;padding:9px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+th{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
+td:first-child{white-space:nowrap}
+td{color:var(--ink)}
+.send{margin-top:26px;padding:22px;border-radius:18px;background:var(--head);box-shadow:inset 0 0 0 1px var(--line);display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.send h3{margin:0 0 4px;font-size:19px;color:var(--ink2)}
+.send p{margin:0;font-size:14.5px;color:var(--ink);max-width:560px}
+
+.madeby{padding:44px 0 26px;text-align:center}
+.madeby img{display:inline-block;max-width:100%;height:auto;opacity:.8;max-height:60px}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 22px);transform:translate(-50%,20px);max-width:min(520px,calc(100vw - 32px));padding:12px 16px;border-radius:12px;background:var(--ink2);color:var(--body);font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:10;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow)}
+#toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+#toast a{color:inherit;font-weight:800;white-space:nowrap}
+:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+@media (max-width:760px){
+  .kinds,.steps{grid-template-columns:1fr}
+  .top .btn span{display:none}
+  .hero{padding:18px 0 20px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-TNBX6VG2"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="index.html" aria-label="GREENPAD, volver a la app">GREEN<span>PAD</span></a>
+    <a class="btn" href="index.html"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5L5 8l4.5 4.5"/></svg><span>Volver a GREENPAD</span></a>
+  </header>
+
+  <div class="hero">
+    <span class="lbl">Plugins</span>
+    <h1>Sumale cosas a <em>GREENPAD</em></h1>
+    <p class="lead">Instrumentos nuevos, mods para las bandejas y visuales para el video, hechos por quienes lo usan. Se instalan con un toque y quedan guardados en tu equipo.</p>
+    <div class="row">
+      <a class="btn pri" href="#catalogo">Ver los plugins</a>
+      <a class="btn" href="#hacer">Hacer el tuyo</a>
+    </div>
+  </div>
+
+  <div class="kinds">
+    <div class="kind k-sonido"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 24V7.5l13-3.5v16"/><circle cx="8.6" cy="24" r="3.4"/><circle cx="21.6" cy="20" r="3.4"/></svg><b>Sonido</b><p>Estilos nuevos para cualquiera de los 8 instrumentos: aparecen al mantener apretado el ícono, junto a los que ya trae.</p></div>
+    <div class="kind k-bandeja"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="12"/><circle cx="16" cy="16" r="3.5"/><path d="M16 4a12 12 0 018.5 3.5"/></svg><b>Bandejas</b><p>Perillas de efectos, botones que disparan sonidos y otra pinta para los discos.</p></div>
+    <div class="kind k-visual"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="14" height="26" rx="3"/><path d="M13 22v-5M16 22V11M19 22v-8"/></svg><b>Visuales</b><p>Estilos nuevos para el video vertical que se baja desde Descargar.</p></div>
+  </div>
+
+  <section id="catalogo">
+    <h2>Plugins disponibles</h2>
+    <p class="sub">Instalá los que quieras. Después se prenden, apagan o quitan desde el menú de GREENPAD, en Plugins.</p>
+    <div class="filt" id="filt" role="tablist" aria-label="Filtrar por tipo"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section>
+    <h2>Cómo se usan</h2>
+    <ol class="steps">
+      <li><b>Instalá</b> el plugin desde esta página. Queda guardado en este equipo y sigue andando sin conexión.</li>
+      <li><b>Volvé a GREENPAD.</b> Los instrumentos aparecen al mantener apretado el ícono de cada uno, las perillas y botones en las bandejas, y los visuales en Descargar, en el estilo del video.</li>
+      <li><b>Administralos</b> desde el menú, en Plugins: ahí se prenden, se apagan o se quitan.</li>
+    </ol>
+  </section>
+
+  <section id="hacer">
+    <h2>Hacé tu plugin</h2>
+    <p class="sub">Un plugin es un solo archivo <code>.js</code>. No hace falta instalar nada: se escribe en cualquier editor de texto y se prueba en el navegador.</p>
+    <div class="row" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px">
+      <a class="btn pri" href="plugins/plantilla.js" download="mi-plugin.js"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v7.5M4.8 7l3.2 3.2L11.2 7"/><path d="M2.8 11.2v1.3a1.5 1.5 0 001.5 1.5h7.4a1.5 1.5 0 001.5-1.5v-1.3"/></svg>Bajar la plantilla</a>
+    </div>
+
+    <div class="doc">
+      <div>
+        <h3>1. La forma del archivo</h3>
+        <p>Todo va dentro de una llamada a <code>GREENPAD.plugin</code>. Los datos de arriba son los que se muestran en esta página y en el menú. En <code>setup</code> se registra lo que el plugin suma, usando el objeto <code>gp</code>.</p>
+<pre><code>GREENPAD.plugin({
+  id: 'mi-plugin',          <span class="c">// en minúsculas, sin espacios. No se cambia más</span>
+  nombre: 'Mi plugin',
+  autor: 'Tu nombre',
+  version: '1.0',
+  tipo: 'sonido',           <span class="c">// sonido, bandeja o visual</span>
+  descripcion: 'Qué hace, en una línea.',
+
+  setup(gp) {
+    <span class="c">// acá van gp.instrumento, gp.efecto, gp.boton, gp.estilo y gp.visual</span>
+  },
+});</code></pre>
+        <p style="margin-top:10px">Un mismo plugin puede sumar varias cosas (por ejemplo, tres instrumentos y una perilla).</p>
+      </div>
+
+      <div class="k-sonido">
+        <h3>2. Un instrumento <small>Sonido</small></h3>
+        <p><code>gp.instrumento(pista, datos)</code> suma un estilo a uno de los 8 instrumentos. Las pistas son <code>'BD'</code> bombo, <code>'SN'</code> caja, <code>'HH'</code> hi-hat, <code>'PC'</code> percu, <code>'BS'</code> bajo, <code>'GT'</code> guitarra, <code>'CH'</code> acordes y <code>'LD'</code> melodía.</p>
+<pre><code>gp.instrumento('LD', {
+  id: 'campana',
+  nombre: 'Campana',
+  detalle: 'Corta y brillante',
+  tocar(ctx, salida, t, fuerza, nota, afin) {
+    const osc = ctx.createOscillator(), vol = ctx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = nota.f;                 <span class="c">// la nota que toca, en Hz</span>
+    vol.gain.setValueAtTime(.4 * fuerza, t);
+    vol.gain.exponentialRampToValueAtTime(.001, t + .5);
+    osc.connect(vol); vol.connect(salida);
+    osc.start(t); osc.stop(t + .55);
+  },
+});</code></pre>
+        <div class="tbl"><table>
+          <tr><th>Dato</th><th>Qué es</th></tr>
+          <tr><td><code>ctx</code></td><td>El AudioContext (Web Audio). En Descargar es uno sin conexión: el mismo código arma el archivo.</td></tr>
+          <tr><td><code>salida</code></td><td>Adonde se conecta el sonido. Nunca a <code>ctx.destination</code>.</td></tr>
+          <tr><td><code>t</code></td><td>El momento exacto en que tiene que sonar. Todo se programa con <code>t</code>, sin <code>setTimeout</code>.</td></tr>
+          <tr><td><code>fuerza</code></td><td>De 0 a 1 (más con el destiempo prendido). Qué tan fuerte es el golpe.</td></tr>
+          <tr><td><code>nota</code></td><td>En bajo, guitarra, acordes y melodía: <code>{ f, fs, dur }</code>, la frecuencia, las frecuencias del acorde (en guitarra y acordes) y la duración en segundos. En la batería viene vacía (<code>null</code>).</td></tr>
+          <tr><td><code>afin</code></td><td>La afinación que eligió quien toca (1 es normal). En las notas ya viene aplicada; en la batería, multiplicá tus frecuencias por este número.</td></tr>
+        </table></div>
+        <p style="margin-top:10px">En caja, hi-hat y percu el sonido se arma una vez y después se repite, para que el teléfono no se trabe. Si el tuyo tiene que armarse en cada golpe, agregá <code>enVivo: true</code>.</p>
+        <p>Para usar grabaciones: <code>const s = gp.sonido('plugins/mi-plugin/golpe.mp3')</code> en <code>setup</code>, y en <code>tocar</code>, <code>gp.tocarSonido(ctx, salida, t, fuerza, s, { velocidad: afin })</code>. Los archivos de audio se mandan junto con el <code>.js</code>.</p>
+      </div>
+
+      <div class="k-bandeja">
+        <h3>3. Mods para las bandejas <small>Bandejas</small></h3>
+        <p><b>Una perilla de efecto.</b> Toda la mezcla pasa por el efecto. Con la perilla en 0 queda desenchufado.</p>
+<pre><code>gp.efecto({
+  id: 'filtro',
+  nombre: 'Filtro',                               <span class="c">// hasta 10 letras</span>
+  crear(ctx) {
+    const f = ctx.createBiquadFilter();
+    f.type = 'lowpass';
+    return {
+      entrada: f,
+      salida: f,
+      ajustar(valor, info) {                      <span class="c">// valor: de 0 a 1. info.bpm: el tempo</span>
+        f.frequency.value = 18000 * Math.pow(.02, valor);
+      },
+    };
+  },
+});</code></pre>
+        <p style="margin-top:10px"><b>Un botón que dispara un sonido.</b> <code>soltar</code> es opcional y sirve para los que suenan mientras se mantienen apretados.</p>
+<pre><code>gp.boton({
+  id: 'bip',
+  nombre: 'Bip',
+  detalle: 'Un tono corto',
+  tocar(ctx, salida, t) { <span class="c">/* armar el sonido y conectarlo a salida */</span> },
+  soltar(ctx, t) { <span class="c">/* apagarlo */</span> },
+});</code></pre>
+        <p style="margin-top:10px"><b>Otra pinta.</b> <code>gp.estilo(css)</code> agrega CSS a la página. Las bandejas están dentro de <code>#dj</code>: el disco es <code>.disc</code>, la etiqueta <code>.lab</code>, el brazo <code>.arm</code> y la consola del medio <code>.mxr</code>.</p>
+<pre><code>gp.estilo('#dj .disc{filter:hue-rotate(120deg)}');</code></pre>
+      </div>
+
+      <div class="k-visual">
+        <h3>4. Un visual para el video <small>Visuales</small></h3>
+        <p><code>dibujar</code> se llama 30 veces por segundo sobre un canvas de 720 × 1280. <code>g</code> es su contexto 2D y <code>v</code> trae lo que pasa en la música en ese cuadro.</p>
+<pre><code>gp.visual({
+  id: 'pulso',
+  nombre: 'Pulso',
+  detalle: 'Un círculo que late con el bombo.',
+  dibujar(g, v) {
+    g.fillStyle = '#060b08'; g.fillRect(0, 0, v.W, v.H);
+    g.fillStyle = v.color;
+    g.beginPath();
+    g.arc(v.W / 2, v.H / 2, 120 + v.bombo * 80, 0, Math.PI * 2);
+    g.fill();
+  },
+});</code></pre>
+        <div class="tbl"><table>
+          <tr><th>En v</th><th>Qué trae</th></tr>
+          <tr><td><code>W</code>, <code>H</code></td><td>El tamaño: 720 y 1280.</td></tr>
+          <tr><td><code>ahora</code>, <code>dur</code></td><td>Segundos desde que empezó el tema y cuánto dura.</td></tr>
+          <tr><td><code>pulsos</code></td><td>El tiempo contado en negras. Sirve para que todo se mueva con el tempo.</td></tr>
+          <tr><td><code>bombo</code>, <code>caja</code></td><td>De 0 a 1: saltan a 1 con cada golpe y se apagan solos.</td></tr>
+          <tr><td><code>graves</code>, <code>medios</code></td><td>De 0 a 1: cuánto suena cada zona.</td></tr>
+          <tr><td><code>niveles</code></td><td>8 valores, uno por instrumento (en el orden de las pistas): 1 cuando suena, y se va apagando.</td></tr>
+          <tr><td><code>bandas(n)</code></td><td>Devuelve <code>n</code> valores de 0 a 1, de graves a agudos (de 2 a 64).</td></tr>
+          <tr><td><code>frecuencias</code>, <code>onda</code></td><td>Los datos crudos del sonido (de 0 a 255), por si hacen falta.</td></tr>
+          <tr><td><code>color</code>, <code>color2</code>, <code>colores</code></td><td>Los colores de la parte que suena y la paleta de GREENPAD.</td></tr>
+          <tr><td><code>paso</code>, <code>track</code></td><td>El paso (0 a 15) y la letra del track que suena.</td></tr>
+          <tr><td><code>titulo</code>, <code>bpm</code></td><td>El nombre del tema y el tempo.</td></tr>
+          <tr><td><code>memoria</code></td><td>Un objeto vacío que se conserva de un cuadro al otro, para guardar partículas, posiciones o lo que haga falta.</td></tr>
+        </table></div>
+        <p style="margin-top:10px">El logo de GREENPAD se dibuja solo, abajo. Con <code>logo: false</code> no aparece.</p>
+      </div>
+
+      <div>
+        <h3>5. Otras ayudas de gp</h3>
+        <div class="tbl"><table>
+          <tr><th>Función</th><th>Para qué</th></tr>
+          <tr><td><code>gp.cuando('paso', fn)</code></td><td>Avisa en cada paso que suena: <code>fn({ paso, track })</code>. También hay <code>'play'</code> y <code>'stop'</code>.</td></tr>
+          <tr><td><code>gp.ruido()</code></td><td>Un segundo de ruido blanco, para platillos, soplidos y golpes.</td></tr>
+          <tr><td><code>gp.sonido(url)</code></td><td>Carga un archivo de audio. Se usa con <code>gp.tocarSonido</code>.</td></tr>
+          <tr><td><code>gp.tocar(pista, nota)</code></td><td>Toca un instrumento de GREENPAD, con el estilo que tenga elegido.</td></tr>
+          <tr><td><code>gp.aviso(texto)</code></td><td>Muestra un cartel corto abajo.</td></tr>
+          <tr><td><code>gp.estado()</code></td><td>Tempo, si está sonando, track y nombre del tema. Se usa después de <code>setup</code>, no adentro.</td></tr>
+        </table></div>
+      </div>
+
+      <div>
+        <h3>6. Probarlo</h3>
+        <ul>
+          <li>Abrí GREENPAD, menú, <b>Plugins</b>, <b>Probar un plugin propio (.js)</b> y elegí tu archivo. La página se recarga con el plugin puesto.</li>
+          <li>Cada vez que cambies el archivo, cargalo de nuevo: reemplaza al anterior.</li>
+          <li>Si algo falla, el menú muestra el error al lado del plugin. Si la página queda rota, abrila con <code>?sinplugins</code> al final de la dirección y quitalo.</li>
+          <li>Probá también Descargar (audio y video): tiene que sonar igual que en vivo.</li>
+        </ul>
+      </div>
+
+      <div>
+        <h3>7. Para que entre en la lista</h3>
+        <ul>
+          <li>Un solo archivo <code>.js</code>, más los audios si usa grabaciones propias o con licencia libre.</li>
+          <li>Tiene que andar sin conexión: nada de pedir cosas a otros sitios.</li>
+          <li>No lee ni guarda datos de quien lo usa.</li>
+          <li>Código legible, sin comprimir, para poder revisarlo antes de publicarlo.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="send">
+      <div><h3>¿Lo terminaste?</h3><p>Mandalo con tu nombre (o el apodo con el que querés figurar) y una línea que cuente qué hace. Se revisa y se suma a esta página.</p></div>
+      <a class="btn pri" id="sendBtn" href="#" target="_blank" rel="noopener">Mandar mi plugin</a>
+    </div>
+  </section>
+</div>
+
+<footer class="madeby"><a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" alt="Hecho en La Pampa por Jean Phillippe Studio"></a></footer>
+<div id="toast" role="status"></div>
+
+<script>
+/* ==========================================================================================
+   LISTA DE PLUGINS
+   Para sumar uno:
+     1. Copiá el archivo .js del plugin a la carpeta plugins/ del repo (y sus audios, si trae).
+     2. Agregá acá abajo una línea con sus datos. "archivo" es el nombre dentro de plugins/.
+        "tipo" es sonido, bandeja o visual. El "id" no se escribe: sale del propio archivo.
+     3. Si más adelante el plugin cambia, subí el número de "version": a quien lo tenga instalado
+        le aparece el botón Actualizar.
+   ========================================================================================== */
+const PLUGINS = [
+  { archivo: 'kalimba.js', tipo: 'sonido',  nombre: 'Kalimba', autor: 'GREENPAD', version: '1.0', descripcion: 'Una kalimba sintetizada para la melodía y para los acordes.' },
+  { archivo: 'dub.js',     tipo: 'bandeja', nombre: 'Dub',     autor: 'GREENPAD', version: '1.0', descripcion: 'Para las bandejas: una perilla de trémolo que late con el tempo y un botón de sirena.' },
+  { archivo: 'barras.js',  tipo: 'visual',  nombre: 'Barras',  autor: 'GREENPAD', version: '1.0', descripcion: 'Un estilo de video simple: barras que suben con el sonido y un círculo que late con el bombo.' },
+];
+
+/* Adónde va el botón "Mandar mi plugin": una dirección web o un mailto:tu@correo */
+const ENVIAR = 'https://jeanphillippe.com';
+
+/* ============================== de acá para abajo no hace falta tocar ============================== */
+(() => {
+'use strict';
+const LS_PLUG = 'greenpad.plugins.v1', LS_PREF = 'greenband.pref.v1';
+const KIND = { sonido: 'Sonido', bandeja: 'Bandejas', visual: 'Visuales' };
+const $ = (s) => document.querySelector(s);
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } },
+};
+const plugId = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
+const txt = (s, n) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim().slice(0, n);
+const installed = () => { const l = store.get(LS_PLUG); return Array.isArray(l) ? l.filter(x => x && typeof x.id === 'string' && typeof x.code === 'string') : []; };
+
+// mismo tema (oscuro o claro) que se eligió en GREENPAD
+const pref = store.get(LS_PREF);
+if (pref && pref.theme === 'day') { document.documentElement.dataset.theme = 'day'; document.querySelector('meta[name="theme-color"]').content = '#e7ece8'; }
+$('#sendBtn').href = ENVIAR;
+
+let toastT = 0;
+function toast(msg, link) {
+  const t = $('#toast'); t.textContent = msg;
+  if (link) { const a = document.createElement('a'); a.href = 'index.html'; a.textContent = 'Abrir GREENPAD'; t.appendChild(a); }
+  t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), link ? 6000 : 3200);
+}
+
+// lee el archivo del plugin y saca su id (el archivo llama a GREENPAD.plugin({...}); acá no se ejecuta su setup)
+let captured = null;
+window.GREENPAD = { version: 1, plugin(def) { captured = def; } };
+async function fetchPlugin(p) {
+  const r = await fetch('plugins/' + p.archivo, { cache: 'no-store' });
+  if (!r.ok) throw new Error('no encontré plugins/' + p.archivo);
+  const code = await r.text();
+  captured = null; new Function(code)();
+  const d = captured; captured = null;
+  const id = plugId(d && d.id); if (!id) throw new Error('el archivo no llama a GREENPAD.plugin({...}) con un id');
+  return { id, code };
+}
+const keyOf = (p) => plugId(p.id || p.archivo.replace(/\.js$/i, '')); // mientras no se instaló, se lo reconoce por el nombre del archivo
+function find(p, list) { return list.find(x => x.file === p.archivo || plugId(x.id) === keyOf(p)); }
+
+async function install(p, btn) {
+  btn.disabled = true; btn.textContent = 'Instalando…';
+  try {
+    const { id, code } = await fetchPlugin(p);
+    const list = installed().filter(x => plugId(x.id) !== id && x.file !== p.archivo), prev = find(p, installed());
+    list.push({ id, n: txt(p.nombre, 40) || id, a: txt(p.autor, 40), v: txt(p.version, 12) || '1.0', k: p.tipo, src: 'repo', file: p.archivo, on: prev ? prev.on !== false : true, code, t: Date.now() });
+    if (!store.set(LS_PLUG, list)) throw new Error('no hay espacio en este dispositivo');
+    toast(`${p.nombre} quedó instalado.`, true);
+  } catch (e) { toast(`No se pudo instalar ${p.nombre}: ${e && e.message ? e.message : e}`); }
+  render();
+}
+function remove(p) {
+  const cur = find(p, installed()); if (!cur) return;
+  store.set(LS_PLUG, installed().filter(x => x !== cur && plugId(x.id) !== plugId(cur.id)));
+  toast(`${p.nombre} se quitó de este equipo.`); render();
+}
+
+let filter = 'todos';
+function render() {
+  const list = installed(), counts = { todos: PLUGINS.length };
+  for (const p of PLUGINS) counts[p.tipo] = (counts[p.tipo] || 0) + 1;
+  const fw = $('#filt'); fw.innerHTML = '';
+  for (const k of ['todos', 'sonido', 'bandeja', 'visual']) {
+    const b = document.createElement('button'); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', k === filter);
+    b.className = k === filter ? 'on' : ''; b.textContent = k === 'todos' ? 'Todos' : KIND[k];
+    const i = document.createElement('i'); i.textContent = counts[k] || 0; b.appendChild(i);
+    b.addEventListener('click', () => { filter = k; render(); }); fw.appendChild(b);
+  }
+  const grid = $('#grid'); grid.innerHTML = '';
+  const show = PLUGINS.filter(p => filter === 'todos' || p.tipo === filter);
+  if (!show.length) { const e = document.createElement('div'); e.className = 'empty'; e.style.gridColumn = '1/-1'; e.textContent = filter === 'todos' ? 'Todavía no hay plugins publicados.' : 'Todavía no hay plugins de este tipo. Puede ser el tuyo.'; grid.appendChild(e); return; }
+  for (const p of show) {
+    const cur = find(p, list), kind = KIND[p.tipo] ? p.tipo : 'sonido';
+    const el = document.createElement('article'); el.className = `pl k-${kind}` + (cur ? ' inst' : '');
+    el.innerHTML = '<span class="tag"></span><h3></h3><p></p><div class="meta"></div><div class="acts"><button class="btn"></button><a class="code" target="_blank" rel="noopener">Ver código</a></div>';
+    el.querySelector('.tag').textContent = KIND[kind];
+    el.querySelector('h3').textContent = p.nombre;
+    el.querySelector('p').textContent = p.descripcion || '';
+    el.querySelector('.meta').textContent = [p.autor && 'de ' + p.autor, p.version && 'v' + p.version, cur && (cur.on === false ? 'instalado, apagado' : 'instalado')].filter(Boolean).join(' · ');
+    el.querySelector('.code').href = 'plugins/' + p.archivo;
+    const b = el.querySelector('.btn'), acts = el.querySelector('.acts');
+    if (!cur) { b.classList.add('pri'); b.textContent = 'Instalar'; b.addEventListener('click', () => install(p, b)); }
+    else if (txt(p.version, 12) && cur.v !== txt(p.version, 12)) {
+      b.classList.add('pri'); b.textContent = 'Actualizar a v' + p.version; b.addEventListener('click', () => install(p, b));
+    } else { b.textContent = 'Quitar'; b.addEventListener('click', () => remove(p)); }
+    grid.appendChild(el);
+  }
+}
+render();
+addEventListener('storage', (e) => { if (e.key === LS_PLUG) render(); });
+addEventListener('pageshow', render);
+})();
+</script>
+</body>
+</html>

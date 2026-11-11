@@ -362,3 +362,47 @@ Arriba de la firma hay un **ACERCA DE** que abre un texto corto sobre GREENPAD. 
 ### Tracks
 
 En la pantalla, los patrones A a H se llaman **tracks** (en este README a veces siguen apareciendo como "patrones"; es lo mismo). En el menú, la sección **Track** (copiar, pegar, dado, borrar, grabar en vivo y descargar) está arriba, justo después de Beat. El formato `.txt` no cambió.
+
+### Plugins
+
+GREENPAD acepta plugins: archivos `.js` que suman instrumentos, mods para las bandejas y visuales para el video. La página `plugins.html` (enlazada desde el menú, sección Plugins, y desde el pie, al lado de ACERCA DE) es la vitrina: lista los disponibles, los instala y trae la guía para hacerlos.
+
+| Archivo | Para qué |
+|---|---|
+| `plugins.html` | Landing de plugins: catálogo, instalar, quitar, actualizar y guía para crearlos |
+| `plugins/*.js` | Un archivo por plugin. `kalimba.js`, `dub.js` y `barras.js` son los ejemplos (uno de cada tipo) |
+| `plugins/plantilla.js` | Plantilla que se baja desde la guía |
+
+**Sumar un plugin que te mandaron**
+
+1. Revisá el código (corre con los mismos permisos que la página).
+2. Copiá el `.js` a `plugins/` (y sus audios, si trae).
+3. En `plugins.html`, agregá una línea al arreglo `PLUGINS`, arriba del script: `archivo`, `tipo` (`sonido`, `bandeja` o `visual`), `nombre`, `autor`, `version` y `descripcion`.
+4. Si más adelante cambia, subí `version` en esa línea: a quien lo tenga instalado le aparece **Actualizar**.
+
+No hace falta tocar `index.html` ni subir `VERSION` en `sw.js`. El botón "Mandar mi plugin" va a la dirección de `ENVIAR`, también arriba del script de `plugins.html`.
+
+**Cómo funciona**
+
+- Instalar guarda el código del plugin en el equipo (`localStorage`, clave `greenpad.plugins.v1`). Por eso anda sin conexión y `index.html` lo carga al abrir, antes de leer el beat guardado.
+- En el menú, sección **Plugins**: prender, apagar o quitar cada uno (recarga la página) y **Probar un plugin propio (.js)**, para quien está haciendo uno.
+- Abrir la dirección con `?sinplugins` al final no carga ninguno (por si alguno rompe algo).
+- Si un plugin falla al cargar, el menú muestra el error y el resto sigue andando.
+
+**Qué puede sumar un plugin** (la guía completa, con ejemplos, está en `plugins.html`)
+
+| Función | Qué suma |
+|---|---|
+| `gp.instrumento(pista, {...})` | Un estilo para uno de los 8 instrumentos. Aparece en el selector de estilos, después de Grabar, con la marca PLUGIN. Se puede usar como capa |
+| `gp.efecto({...})` | Una perilla en la consola de las bandejas. El efecto va sobre toda la mezcla, entre el volumen general y el compresor, y también sale en Descargar |
+| `gp.boton({...})` | Un botón en la consola de las bandejas que dispara un sonido |
+| `gp.estilo(css)` | CSS propio (otra pinta para los discos, por ejemplo) |
+| `gp.visual({...})` | Un estilo más para el video vertical, en Descargar |
+| `gp.cuando('paso' / 'play' / 'stop', fn)` | Avisos de la app |
+
+**Beats y plugins**
+
+- Cada track guarda qué instrumentos de plugins usa por nombre (`plugin/instrumento`), no por posición: no importa en qué orden se instalaron.
+- Si se abre un beat que usa un plugin que no está (o está apagado), suena con el primer estilo de GREENPAD y avisa cuál falta. Al instalarlo de nuevo, el beat lo recupera.
+- El `.txt` lleva los instrumentos de plugins por nombre. "Copiar enlace" no los lleva (quedan con el estilo de GREENPAD) y tampoco lleva las perillas de plugins.
+- De paso se arregló que las capas del estilo 9 en adelante (Cencerro, Claves y Palmas en Percu, y Grabación como capa en caja, hi-hat, percu y melodía) quedaban tildadas pero no sonaban.

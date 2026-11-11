@@ -1,6 +1,6 @@
 // Greenpad service worker. Subí VERSION en cada release para renovar la caché.
-const VERSION = 'greenpad-v1.17.0';
-const ASSETS = ['./', './index.html', './mini.html', './manifest.webmanifest', './banda.webmanifest', './lame.min.js', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './caveat-bold.woff2', './frases.txt', './acerca.txt'];
+const VERSION = 'greenpad-v1.18.0';
+const ASSETS = ['./', './index.html', './mini.html', './plugins.html', './manifest.webmanifest', './banda.webmanifest', './lame.min.js', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './caveat-bold.woff2', './frases.txt', './acerca.txt'];
 const SOUNDS = 'greenpad-sonidos-v1'; // las grabaciones de Banda (no cambian entre versiones)
 
 self.addEventListener('install', (e) => {
@@ -36,6 +36,11 @@ self.addEventListener('fetch', (e) => {
         .then((res) => { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); return res; })
         .catch(() => caches.match(req).then((hit) => hit || caches.match('./index.html')))
     );
+    return;
+  }
+  // plugins (plugins/*.js): red primero, así la lista de plugins.html siempre instala la versión nueva; caché si no hay conexión
+  if (new URL(req.url).pathname.includes('/plugins/')) {
+    e.respondWith(fetch(req).then((res) => { if (res.ok) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); } return res; }).catch(() => caches.match(req)));
     return;
   }
   // textos editables del repo (así se ven los nuevos apenas se suben)
