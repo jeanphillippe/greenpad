@@ -371,7 +371,7 @@ GREENPAD acepta plugins: archivos `.js` que suman instrumentos, mods para las ba
 | Archivo | Para qué |
 |---|---|
 | `plugins.html` | Landing de plugins: catálogo, instalar, quitar, actualizar y guía para crearlos |
-| `plugins/*.js` | Un archivo por plugin. Los que vienen: `guitarra.js`, `tuchacha.js`, `boombap.js`, `trap.js` y `arcade.js` (sonido), `djkit.js` y `oro.js` (bandejas), `cassette.js` y `parlantes.js` (visuales) |
+| `plugins/*.js` | Un archivo por plugin. Los que vienen: `guitarra.js`, `tuchacha.js`, `boombap.js`, `trap.js` y `arcade.js` (sonido), `djkit.js` y `envivo.js` (bandejas), `cassette.js` y `boombox.js` (visuales) |
 | `plugins/plantilla.js` | Plantilla que se baja desde la guía |
 
 **Sumar un plugin que te mandaron**
@@ -397,12 +397,14 @@ No hace falta tocar `index.html` ni subir `VERSION` en `sw.js`. El botón "Manda
 | `gp.instrumento(pista, {...})` | Un estilo para uno de los 8 instrumentos. Aparece en el selector de estilos, después de Grabar, con la marca PLUGIN. Se puede usar como capa |
 | `gp.efecto({...})` | Una perilla en la consola de las bandejas. El efecto va sobre toda la mezcla, entre el volumen general y el compresor, y también sale en Descargar |
 | `gp.boton({...})` | Un botón en la consola de las bandejas que dispara un sonido |
+| `gp.efecto({ oculto: true, ... })` | Un efecto sin perilla, siempre enchufado, para manejarlo desde los botones del plugin |
 | `gp.estilo(css)` | CSS propio (otra pinta para los discos, por ejemplo) |
 | `gp.visual({...})` | Un estilo más para el video vertical, en Descargar |
 | `gp.cuando('paso' / 'play' / 'stop', fn)` | Avisos de la app |
 | `gp.ejemplo({...})` | Un ritmo armado en el menú, en Ejemplos, bajo el nombre del plugin |
 | `gp.nota`, `gp.golpe`, `gp.grabado` | Usar las grabaciones de `sonidos/` dentro de un plugin (con `usa: [...]` en el instrumento para que se bajen antes) |
 | `gp.microfono()` | El micrófono en vivo, para los botones de las bandejas |
+| `gp.grabar(1 o 2)` y `gp.pararGrabacion()` | Grabar con el micrófono encima de la grabación 1 o 2 (las de GRABACIONES en las bandejas) |
 
 **Beats y plugins**
 
@@ -410,3 +412,5 @@ No hace falta tocar `index.html` ni subir `VERSION` en `sw.js`. El botón "Manda
 - Si se abre un beat que usa un plugin que no está (o está apagado), suena con el primer estilo de GREENPAD y avisa cuál falta. Al instalarlo de nuevo, el beat lo recupera.
 - El `.txt` lleva los instrumentos de plugins por nombre. "Copiar enlace" no los lleva (quedan con el estilo de GREENPAD) y tampoco lleva las perillas de plugins.
 - De paso se arregló que las capas del estilo 9 en adelante (Cencerro, Claves y Palmas en Percu, y Grabación como capa en caja, hi-hat, percu y melodía) quedaban tildadas pero no sonaban.
+- Con plugins la consola de las bandejas puede quedar más alta que la pantalla: en la compu y en el teléfono acostado se desliza por dentro y el crossfader queda siempre a la vista, abajo.
+- Se arregló que el botón de borrar (un beat en Mis beats, o un plugin en el menú) quedaba trabado en "¿Borrar?": usaba la clase `arm`, que es la del brazo del tocadiscos y no deja tocar.

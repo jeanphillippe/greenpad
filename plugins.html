@@ -274,8 +274,10 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   tocar(ctx, salida, t) { <span class="c">/* armar el sonido y conectarlo a salida */</span> },
   soltar(ctx, t) { <span class="c">/* apagarlo */</span> },
 });</code></pre>
+        <p style="margin-top:10px">Para que los botones manejen un efecto sobre toda la mezcla (cortes, frenos, filtros que se mantienen apretados), el efecto se registra con <code>oculto: true</code>: no tiene perilla y queda siempre enchufado, así que con todo suelto no tiene que cambiar nada. El plugin En vivo está hecho así.</p>
         <p style="margin-top:10px">Un botón también puede llevar <code>color</code> y <code>fijo: true</code> (queda prendido hasta tocarlo de nuevo). Si <code>tocar</code> devuelve <code>false</code>, o una promesa que da <code>false</code>, el botón se apaga.</p>
         <p style="margin-top:10px"><b>El micrófono.</b> <code>gp.microfono()</code> devuelve una promesa con un nodo de audio (el navegador pide permiso la primera vez). Se conecta a los efectos que quieras y a <code>salida</code>. Al terminar, <code>gp.soltarMicrofono(ms)</code> lo apaga pasado ese tiempo.</p>
+        <p style="margin-top:10px"><code>gp.grabar(1)</code> o <code>gp.grabar(2)</code> empieza a grabar con el micrófono sobre esa grabación (las de los botones GRABACIONES de la consola) y <code>gp.pararGrabacion()</code> la guarda. Graba hasta 8 segundos.</p>
         <p style="margin-top:10px"><b>Otra pinta.</b> <code>gp.estilo(css)</code> agrega CSS a la página. Las bandejas están dentro de <code>#dj</code>: el disco es <code>.disc</code>, la etiqueta <code>.lab</code>, el brazo <code>.arm</code> y la consola del medio <code>.mxr</code>.</p>
 <pre><code>gp.estilo('#dj .disc{filter:hue-rotate(120deg)}');</code></pre>
       </div>
@@ -373,10 +375,10 @@ const PLUGINS = [
   { archivo: 'boombap.js',   tipo: 'sonido',  nombre: 'Boom Bap',      autor: 'GREENPAD', version: '1.0', descripcion: 'Hip hop de los 90: bombo y caja polvorientos, hi-hat crujiente, scratch, bajo redondo, piano eléctrico y el silbido agudo del G-funk.' },
   { archivo: 'trap.js',      tipo: 'sonido',  nombre: 'Trap',          autor: 'GREENPAD', version: '1.0', descripcion: 'Bombo corto, clap, hi-hat que redobla solo, un 808 que resbala de nota en nota, cuerdas cortas y campana oscura.' },
   { archivo: 'arcade.js',    tipo: 'sonido',  nombre: 'Arcade',        autor: 'GREENPAD', version: '1.0', descripcion: 'Una consola de 8 bits completa: batería de ruido, bajo de triángulo, acordes en arpegio rápido y melodía de onda cuadrada con vibrato.' },
-  { archivo: 'djkit.js',     tipo: 'bandeja', nombre: 'DJ Kit',        autor: 'GREENPAD', version: '2.0', descripcion: 'Micrófono en vivo con tres voces (limpia, con eco y robot), bocina, sirena, láser, subida, bomba y scratch con eco de dub, y las perillas bombeo, jet y radio.' },
-  { archivo: 'oro.js',       tipo: 'bandeja', nombre: 'Vinilo de oro', autor: 'GREENPAD', version: '1.0', descripcion: 'Otra pinta para las bandejas: etiquetas, luces y bordes dorados.' },
+  { archivo: 'djkit.js',     tipo: 'bandeja', nombre: 'DJ Kit',        autor: 'GREENPAD', version: '2.1', descripcion: 'Micrófono en vivo con tres voces (limpia, con eco y robot), dos botones para grabar encima de las grabaciones 1 y 2, bocina, sirena, láser, subida, bomba y scratch con eco de dub, y las perillas bombeo, jet y radio.' },
+  { archivo: 'envivo.js',    tipo: 'bandeja', nombre: 'En vivo',       autor: 'GREENPAD', version: '1.0', descripcion: 'Seis botones para mantener apretados sobre toda la mezcla: corte en 1/8 y 1/16, freno de cinta, filtro que cierra, filtro que sube y un eco que atrapa lo que suena.' },
   { archivo: 'cassette.js',  tipo: 'visual',  nombre: 'Cassette',      autor: 'GREENPAD', version: '1.0', descripcion: 'Un cassette con el título escrito a mano, carretes que giran con el tempo, vúmetros de aguja y un fondo de puntos que sube con el sonido.' },
-  { archivo: 'parlantes.js', tipo: 'visual',  nombre: 'Parlantes',     autor: 'GREENPAD', version: '1.0', descripcion: 'Una torre de parlantes: los conos empujan con el bombo, los tweeters brillan con el hi-hat y el ecualizador de luces sigue al sonido.' },
+  { archivo: 'boombox.js',   tipo: 'visual',  nombre: 'Boombox',       autor: 'GREENPAD', version: '1.0', descripcion: 'Un radiograbador de los 80: parlantes que empujan con el bombo, cassette que gira, dial que avanza con el tema y luces que siguen al sonido.' },
 ];
 
 /* Adónde va el botón "Mandar mi plugin": una dirección web o un mailto:tu@correo */

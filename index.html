@@ -520,11 +520,16 @@ a.btn{display:block;text-decoration:none}
 #plugs .pt{width:52px;text-transform:uppercase}
 #plugs .pt.on{background:var(--cy);color:var(--acc-ink)}
 #plugs .pd{width:44px}
-#plugs .pd.arm{width:72px;background:var(--red);color:#fff}
+#plugs .pd.sure{width:72px;background:var(--red);color:#fff}
 #plugs .pd svg{width:16px;height:16px}
 .st.plg::after{content:'PLUGIN';position:absolute;right:8px;bottom:7px;font-size:7.5px;font-weight:800;letter-spacing:.12em;color:var(--c);opacity:.9}
 .st.plg small{padding-right:38px}
 .plgs{grid-area:pg;display:flex;flex-direction:column;gap:8px;align-self:stretch;width:100%;min-width:0}
+/* con plugins la consola puede quedar más alta que la pantalla: en la compu se desliza por dentro, así el crossfader siempre se alcanza */
+#dj:not(.dv){max-height:100%;grid-template-rows:minmax(0,1fr)}
+#dj:not(.dv) .mxr.hp{max-height:100%;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent;justify-content:flex-start}
+#dj:not(.dv) .mxr.hp>*{flex:none}
+#dj:not(.dv) .mxr.hp .xfw{position:sticky;bottom:-14px;background:var(--head);padding:8px 0 14px;margin-bottom:-14px;z-index:2}
 .pg{display:flex;flex-direction:column;align-items:center;gap:8px;padding:9px 8px 10px;border-radius:14px;background:color-mix(in srgb,var(--pad) 65%,transparent);box-shadow:inset 0 0 0 1px var(--line)}
 .pg>.lbl{font-size:9px;letter-spacing:.2em}
 .pgk{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
@@ -573,7 +578,7 @@ a.btn{display:block;text-decoration:none}
 #lib .open small{font-size:11px;color:var(--ink)}
 #lib li.cur .open{box-shadow:inset 0 0 0 2px var(--cy)}
 #lib .del{width:44px;border-radius:10px;background:var(--chip);color:var(--ink);font-size:11px;font-weight:700;display:grid;place-items:center}
-#lib .del.arm{width:72px;background:var(--red);color:#fff}
+#lib .del.sure{width:72px;background:var(--red);color:#fff}
 #lib .del svg{width:16px;height:16px}
 #lib .empty{font-size:13px;color:var(--ink);padding:6px 0}
 .seg{display:flex;background:var(--chip);border-radius:10px;padding:3px;gap:3px}
@@ -2005,7 +2010,7 @@ function plugApi(rec) {
     // ---- bandejas: una perilla de efecto sobre toda la mezcla ----
     efecto(def) {
       const key = own(def.id, def);
-      PLG.fx.push({ key, plug: rec, n: plugTxt(def.nombre, 10).toUpperCase() || 'PLUGIN', color: def.color, crear: fn(def.crear, 'crear') });
+      PLG.fx.push({ key, plug: rec, n: plugTxt(def.nombre, 10).toUpperCase() || 'PLUGIN', color: def.color, oculto: !!def.oculto, crear: fn(def.crear, 'crear') });
       rec.k.add('bandeja');
     },
     // ---- bandejas: un botón que dispara un sonido ----
@@ -2060,6 +2065,9 @@ function plugApi(rec) {
     // ---- micrófono: devuelve una promesa con un nodo de audio (pide permiso la primera vez) ----
     microfono() { return plugMic(); },
     soltarMicrofono(ms) { clearTimeout(PLG.micT); PLG.micT = setTimeout(plugMicOff, Math.max(0, +ms || 0)); },
+    // graba con el micrófono y pisa la grabación 1 o 2 (hasta 8 segundos). grabar da true cuando empezó; pararGrabacion guarda
+    grabar(numero) { return plugRecStart(numero); },
+    pararGrabacion() { return plugRecStop(); },
     // ---- ayudas ----
     ruido() { return AU.white; },                                   // un segundo de ruido blanco (AudioBuffer)
     sonido(url) { return plugSound(String(url)); },                 // carga un archivo de audio; se usa con tocarSonido
@@ -2105,6 +2113,39 @@ function plugMic() {
   return pr;
 }
 function plugMicOff() { if (PLG.micS) PLG.micS.getTracks().forEach(t => t.stop()); PLG.micS = null; PLG.mic = null; restoreSession(); }
+// grabar con el micrófono sobre una de las 2 grabaciones (las de GRABACIONES en las bandejas y las del botón del micrófono)
+const PREC = { r: null };
+function plugRecStart(num) {
+  const k = +num === 2 ? 1 : 0;
+  if (PREC.r || VE.rec || VE.starting) return Promise.resolve(false);
+  const r = PREC.r = { k, chunks: [], n: 0, live: true, on: false };
+  return plugMic().then((mic) => {
+    if (PREC.r !== r || !r.live) { if (PREC.r === r) PREC.r = null; return false; } // soltaron antes de que llegara el permiso
+    const c = AU.ctx; r.sr = c.sampleRate; r.mic = mic; r.proc = c.createScriptProcessor(2048, 1, 1); r.mute = c.createGain(); r.mute.gain.value = 0;
+    r.proc.onaudioprocess = (ev) => { if (PREC.r !== r) return; const d = ev.inputBuffer.getChannelData(0); r.chunks.push(new Float32Array(d)); r.n += d.length; if (r.n >= r.sr * MAXS) plugRecStop(); };
+    mic.connect(r.proc); r.proc.connect(r.mute); r.mute.connect(c.destination); r.on = true;
+    return true;
+  }, (e) => { if (PREC.r === r) PREC.r = null; throw e; });
+}
+async function plugRecStop() {
+  const r = PREC.r; if (!r) return false;
+  PREC.r = null; r.live = false;
+  if (!r.on) return false;
+  try { r.mic.disconnect(r.proc); r.proc.disconnect(); r.mute.disconnect(); } catch {}
+  let pcm = null;
+  if (r.n > r.sr * .12) { const all = new Float32Array(r.n); let o = 0; for (const ch of r.chunks) { all.set(ch, o); o += ch.length; } pcm = processRec(all, r.sr); }
+  if (!pcm) { toast('No se escuchó nada. Probá más cerca del micrófono.'); return false; }
+  await loadSlots();
+  const k = r.k, b64 = pcmToB64(pcm);
+  if (GP[k]) gpadStop(k);
+  addSample(tmpKey(k), b64); IDB.put('vslot' + k, { b64, t: Date.now() });
+  VE.sl[k] = { pcm: SMP.get(tmpKey(k)).pcm, id: null, fx: { rev: false, echo: false, robot: false }, a: 0, len: 1, pit: 0 };
+  if (VE.slot === k) loadSlot(k);
+  PREF.vs = VE.sl.map(x => x && { id: x.id, a: x.a, len: x.len, pit: x.pit, rev: x.fx.rev, echo: x.fx.echo, robot: x.fx.robot }); store.set(LS_PREF, PREF);
+  renderGpads();
+  toast(`Grabación ${k + 1} lista. Tocala en GRABACIONES ${k + 1}.`, 2600);
+  return k + 1;
+}
 function plugRun(src) { // corre el archivo de un plugin y devuelve lo que declaró en GREENPAD.plugin({...})
   PLG.def = null;
   try { new Function(String(src))(); } catch (e) { PLG.def = null; throw e; }
@@ -2147,7 +2188,7 @@ function applyPfx() {
   const X = AU.pfx, c = AU.ctx; if (!X || !PLG.fx.length || !c) return;
   const px = S.fx.px || {}, act = [], keys = [];
   for (const d of PLG.fx) {
-    const v = clamp(+px[d.key] || 0, 0, 1); if (v <= .005) continue;
+    const v = d.oculto ? 1 : clamp(+px[d.key] || 0, 0, 1); if (v <= .005) continue; // oculto: sin perilla, siempre enchufado (lo manejan los botones del plugin)
     let u = X.u[d.key];
     if (u === undefined) { u = null; try { const r = d.crear(c); if (r && r.entrada && r.salida) u = r; else throw new Error('crear() tiene que devolver { entrada, salida, ajustar }'); } catch (e) { plugErr(d.plug, e, 'efecto ' + d.n); } X.u[d.key] = u; }
     if (!u) continue;
@@ -5322,7 +5363,8 @@ function renderLib() {
     });
     const del = li.querySelector('.del'); let armT = 0;
     del.addEventListener('click', () => {
-      if (!del.classList.contains('arm')) { del.classList.add('arm'); del.textContent = '¿Borrar?'; armT = setTimeout(() => renderLib(), 3000); return; }
+      if (!del.classList.contains('sure')) { del.classList.add('sure'); del.textContent = '¿Borrar?'; // ojo: no usar la clase "arm", que es la del brazo de las bandejas
+        armT = setTimeout(() => renderLib(), 3000); return; }
       clearTimeout(armT);
       setLib(getLib().filter(x => x.id !== e.id));
       if (S.id === e.id) { S.id = null; S.dirty = true; save(); syncDrawer(); }
@@ -5814,7 +5856,7 @@ function buildDJ() {
       if (!G) { const el = document.createElement('div'); el.className = 'pg'; el.innerHTML = '<span class="lbl"></span><div class="pgk"></div><div class="pgp"></div>'; el.querySelector('.lbl').textContent = rec.n.toUpperCase(); pw.appendChild(el); G = { k: el.querySelector('.pgk'), p: el.querySelector('.pgp') }; groups.set(rec, G); }
       return G;
     };
-    PLG.fx.forEach((d, k) => { DJ.knobs['p:' + d.key] = knob(grp(d.plug).k, { label: d.n, val: (S.fx.px && S.fx.px[d.key]) || 0, color: d.color || stColor(6 + k), onInput: (v) => { if (!S.fx.px) S.fx.px = {}; S.fx.px[d.key] = v; applyFx(); save(); } }); DJ.knobs['p:' + d.key].el.title = 'Plugin: ' + d.plug.n; });
+    PLG.fx.forEach((d, k) => { if (d.oculto) return; DJ.knobs['p:' + d.key] = knob(grp(d.plug).k, { label: d.n, val: (S.fx.px && S.fx.px[d.key]) || 0, color: d.color || stColor(6 + k), onInput: (v) => { if (!S.fx.px) S.fx.px = {}; S.fx.px[d.key] = v; applyFx(); save(); } }); DJ.knobs['p:' + d.key].el.title = 'Plugin: ' + d.plug.n; });
     PLG.pads.forEach((d) => {
       const b = document.createElement('button'); b.className = 'ppad' + (d.fijo ? ' fijo' : ''); b.innerHTML = '<b></b>'; b.querySelector('b').textContent = d.n;
       b.title = (d.d ? d.d + ' · ' : '') + 'Plugin: ' + d.plug.n; if (d.color) b.style.setProperty('--pc', d.color); if (d.fijo) b.setAttribute('aria-pressed', 'false');
@@ -6919,7 +6961,7 @@ function renderPlugs() {
     pt.addEventListener('click', () => { const l = plugStored(), e = l.find(x => plugId(x.id) === r.id); if (!e) return; e.on = !r.on; if (plugSave(l)) plugReload(); });
     const pd = li.querySelector('.pd'); let armT = 0;
     pd.addEventListener('click', () => {
-      if (!pd.classList.contains('arm')) { pd.classList.add('arm'); pd.textContent = 'Quitar'; clearTimeout(armT); armT = setTimeout(renderPlugs, 2600); return; }
+      if (!pd.classList.contains('sure')) { pd.classList.add('sure'); pd.textContent = 'Quitar'; clearTimeout(armT); armT = setTimeout(renderPlugs, 2600); return; }
       clearTimeout(armT); if (plugSave(plugStored().filter(x => plugId(x.id) !== r.id))) plugReload();
     });
     ul.appendChild(li);

@@ -1,12 +1,12 @@
-// DJ KIT: para las bandejas. Micrófono en vivo (voz, eco y robot), efectos para disparar con eco de dub
+// DJ KIT: para las bandejas. Micrófono en vivo (voz, eco y robot), grabar encima de las grabaciones 1 y 2, efectos para disparar con eco de dub
 // (bocina, sirena, láser, subida, bomba, scratch) y tres perillas (bombeo, jet y radio).
 GREENPAD.plugin({
   id: 'djkit',
   nombre: 'DJ Kit',
   autor: 'GREENPAD',
-  version: '2.0',
+  version: '2.1',
   tipo: 'bandeja',
-  descripcion: 'Micrófono en vivo con tres voces (limpia, con eco y robot), bocina, sirena, láser, subida, bomba y scratch con eco de dub, y las perillas bombeo, jet y radio.',
+  descripcion: 'Micrófono en vivo con tres voces (limpia, con eco y robot), dos botones para grabar encima de las grabaciones 1 y 2, bocina, sirena, láser, subida, bomba y scratch con eco de dub, y las perillas bombeo, jet y radio.',
   setup(gp) {
     const ROJO = '#ff5d5d', AMBAR = '#ffb347', CELESTE = '#6fc3ff', LILA = '#b49cff';
     function filtro(ctx, tipo, f, q, gan) { const b = ctx.createBiquadFilter(); b.type = tipo; b.frequency.value = f; if (q) b.Q.value = q; if (gan) b.gain.value = gan; return b; }
@@ -69,6 +69,12 @@ GREENPAD.plugin({
         cadena(ent, filtro(ctx, 'highpass', 200), anillo, filtro(ctx, 'lowpass', 3400), vol, salida);
         return [osc];
       }) });
+
+    // ---------- GRABAR 1 y 2: mientras se mantiene apretado graba con el micrófono y pisa esa grabación ----------
+    // Después se toca con los botones GRABACIONES 1 y 2 de la consola (pasa por reverb, eco y lo-fi).
+    [1, 2].forEach((n) => gp.boton({ id: 'grabar' + n, nombre: 'Grabar ' + n, detalle: 'Mantené apretado y grabá: reemplaza la grabación ' + n + ' (hasta 8 segundos)', color: ROJO,
+      tocar() { return gp.grabar(n).catch(() => { gp.aviso('No pude usar el micrófono. Revisá el permiso del navegador.', 3600); return false; }); },
+      soltar() { gp.pararGrabacion(); gp.soltarMicrofono(45000); } }));
 
     // ================= EFECTOS PARA DISPARAR =================
     // ---------- BOCINA: dos cornetas de aire desafinadas, tres bocinazos y el último se cae ----------
