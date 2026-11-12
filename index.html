@@ -524,11 +524,24 @@ a.btn{display:block;text-decoration:none}
 #plugs .pd svg{width:16px;height:16px}
 .st.plg::after{content:'PLUGIN';position:absolute;right:8px;bottom:7px;font-size:7.5px;font-weight:800;letter-spacing:.12em;color:var(--c);opacity:.9}
 .st.plg small{padding-right:38px}
-.plgs{grid-area:pg;display:flex;gap:6px;flex-wrap:wrap;justify-content:center;align-items:center}
+.plgs{grid-area:pg;display:flex;flex-direction:column;gap:8px;align-self:stretch;width:100%;min-width:0}
+.pg{display:flex;flex-direction:column;align-items:center;gap:8px;padding:9px 8px 10px;border-radius:14px;background:color-mix(in srgb,var(--pad) 65%,transparent);box-shadow:inset 0 0 0 1px var(--line)}
+.pg>.lbl{font-size:9px;letter-spacing:.2em}
+.pgk{display:flex;gap:4px;justify-content:center;flex-wrap:wrap}
+.pgp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;width:100%}
+.pgk:empty,.pgp:empty{display:none}
 .dv .mxr.hp{grid-template-areas:"me kn" "me bt" "pg pg" "gr gr" "rp rp" "xf xf"}
-.ppad{height:40px;min-width:52px;padding:0 10px;border-radius:10px;background:var(--chip);font-size:10px;font-weight:800;letter-spacing:.08em;color:var(--ink2);touch-action:none;user-select:none;-webkit-user-select:none;transition:background .1s,color .1s}
-.ppad.on{background:var(--or);color:var(--acc-ink)}
-#dj.ds .ppad{height:32px;min-width:42px;padding:0 7px;font-size:9px}
+.ppad{position:relative;height:44px;min-width:0;padding:0 4px;border-radius:11px;background:var(--chip);color:var(--ink2);font-size:9.5px;font-weight:800;letter-spacing:.07em;touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden;
+  box-shadow:inset 0 -3px 0 var(--pc,var(--or));transition:background .08s,color .08s,transform .08s,box-shadow .12s}
+.ppad b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:inherit}
+.ppad.on{background:var(--pc,var(--or));color:#07130c;transform:scale(.96);box-shadow:0 0 18px color-mix(in srgb,var(--pc,var(--or)) 65%,transparent)}
+.ppad.fijo::after{content:"";position:absolute;right:6px;top:6px;width:6px;height:6px;border-radius:50%;background:var(--pc,var(--or));opacity:.55}
+.ppad.fijo.on::after{background:#07130c;opacity:.9;animation:ppblink 1s steps(2) infinite}
+@keyframes ppblink{50%{opacity:.2}}
+#dj.ds .pg{padding:6px;gap:5px}
+#dj.ds .pg>.lbl{display:none}
+#dj.ds .pgp{gap:4px}
+#dj.ds .ppad{height:30px;font-size:8.5px;border-radius:8px}
 #xQual.many{flex-wrap:wrap}
 #xQual.many button{flex:1 1 22%}
 .about p{margin:0 0 12px;font-size:14px;line-height:1.6;color:var(--ink2)}
@@ -794,10 +807,10 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .in-sp{flex:none;height:10px}
 .in-lbl{font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--ink)}
 .in-sty{display:grid;grid-auto-flow:column;grid-template-rows:repeat(2,auto);grid-auto-columns:108px;gap:10px;width:min(100%,600px);margin-top:-6px;
-  overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scroll-snap-type:x proximity;scrollbar-width:none;padding:3px 18px 6px;scroll-padding:0 18px;
+  overflow-x:auto;overflow-y:hidden;overscroll-behavior-x:contain;scrollbar-width:none;padding:3px 18px 6px;scroll-padding:0 18px;
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 18px,#000 calc(100% - 18px),transparent 100%)}
 .in-sty::-webkit-scrollbar{display:none}
-.in-sty button{scroll-snap-align:start;min-height:74px;justify-content:center}
+.in-sty button{min-height:74px;justify-content:center}
 .in-sty button i{font-style:normal;font-size:10px;font-weight:700;letter-spacing:.06em;color:var(--ink);opacity:.75;margin-top:1px}
 .in-sty button.on i{color:var(--cy);opacity:.9}
 .in-hint{font-size:11.5px;color:var(--ink);margin-top:-8px;opacity:.8}
@@ -1141,7 +1154,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <div class="in-sp"></div>
     <span class="in-lbl">ELEGÍ UN ESTILO</span>
     <div class="in-sty" id="inSty" role="radiogroup" aria-label="Estilo para empezar"></div>
-    <span class="in-hint">Deslizá para ver más estilos</span>
+    <span class="in-hint">Tocá un estilo y empieza a sonar</span>
     <button class="in-play" id="inPlay"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.2v15.6c0 .8.9 1.3 1.6.9l12.4-7.8c.6-.4.6-1.4 0-1.8L8.1 3.3c-.7-.4-1.6.1-1.6.9z"/></svg>PLAY</button>
   </div>
 </div>
@@ -1956,7 +1969,7 @@ const stylesOf = (t) => { const p = effSt(t); return [p, ...bitsN(S.lay[t], NS(t
    prueban cargando el archivo desde el menú. Con ?sinplugins en la dirección no se carga ninguno.
    La guía para hacerlos está en plugins.html. */
 const LS_PLUG = 'greenpad.plugins.v1';
-const PLG = { list: [], pv: Array.from({ length: NT }, () => []), fx: [], pads: [], vis: [], on: { paso: [], play: [], stop: [] }, snd: new Map(), miss: new Set(), cur: null, def: null, safe: /[?&]sinplugins\b/.test(location.search) };
+const PLG = { list: [], pv: Array.from({ length: NT }, () => []), fx: [], pads: [], vis: [], on: { paso: [], play: [], stop: [] }, snd: new Map(), ex: [], mic: null, micS: null, micT: 0, miss: new Set(), cur: null, def: null, safe: /[?&]sinplugins\b/.test(location.search) };
 const PLUG_MAXV = 12; // instrumentos de plugins por pista, como máximo
 const plugId = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
 const plugTxt = (s, n) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim().slice(0, n);
@@ -1981,7 +1994,8 @@ function plugApi(rec) {
       if (PLG.pv[t].length >= PLUG_MAXV) throw new Error('instrumento: ya hay demasiados en ' + TR[t].name);
       const key = own(def.id, def), tocar = fn(def.tocar, 'tocar');
       if (PLG.pv[t].some(x => x.key === key)) throw new Error('instrumento repetido: ' + key);
-      PLG.pv[t].push({ key, plug: rec, n: plugTxt(def.nombre, 18) || 'Plugin', d: plugTxt(def.detalle, 60) || 'Plugin: ' + rec.n, smp: def.enVivo ? 1 : 0,
+      const usa = (Array.isArray(def.usa) ? def.usa : []).filter(k => BANK[k]); // grabaciones de GREENPAD que necesita: se bajan antes de sonar
+      PLG.pv[t].push({ key, plug: rec, n: plugTxt(def.nombre, 18) || 'Plugin', d: plugTxt(def.detalle, 60) || 'Plugin: ' + rec.n, smp: def.enVivo || usa.length ? 1 : 0, keys: usa.length ? usa : undefined,
         f: (c, o, tm, v, x) => {
           try { tocar(c, o, tm, v, x ? { f: x.f * PF, fs: x.fs ? x.fs.map(q => q * PF) : null, dur: x.dur } : null, PF, { bpm: S.bpm, paso: 15 / S.bpm }); }
           catch (e) { if (!rec.err) plugErr(rec, e, 'instrumento ' + def.nombre); }
@@ -1997,7 +2011,7 @@ function plugApi(rec) {
     // ---- bandejas: un botón que dispara un sonido ----
     boton(def) {
       const key = own(def.id, def);
-      PLG.pads.push({ key, plug: rec, n: plugTxt(def.nombre, 10).toUpperCase() || 'PLUGIN', d: plugTxt(def.detalle, 90), tocar: fn(def.tocar, 'tocar'), soltar: typeof def.soltar === 'function' ? def.soltar : null });
+      PLG.pads.push({ key, plug: rec, n: plugTxt(def.nombre, 10).toUpperCase() || 'PLUGIN', d: plugTxt(def.detalle, 90), color: typeof def.color === 'string' ? def.color.slice(0, 40) : '', fijo: !!def.fijo, tocar: fn(def.tocar, 'tocar'), soltar: typeof def.soltar === 'function' ? def.soltar : null });
       rec.k.add('bandeja');
     },
     // ---- visuales: un estilo nuevo para el video vertical ----
@@ -2010,6 +2024,42 @@ function plugApi(rec) {
     estilo(css) { const s = document.createElement('style'); s.dataset.plugin = rec.id; s.textContent = String(css); document.head.appendChild(s); rec.k.add('bandeja'); },
     // ---- avisos de la app: 'paso' (cada paso que suena), 'play' y 'stop' ----
     cuando(ev, f) { if (!PLG.on[ev]) throw new Error('cuando: no existe "' + ev + '"'); PLG.on[ev].push({ plug: rec, f: fn(f, 'de aviso') }); },
+    // ---- un ejemplo para el menú (Ejemplos): ritmo, tempo, ambiente y qué estilo usa cada instrumento ----
+    ejemplo(def) {
+      const st = {}, r = {};
+      for (const k of Object.keys(def.estilos || {})) {
+        const t = trackIndex(k); if (t < 0) continue;
+        // primero busca entre los instrumentos de este mismo plugin, después entre los de GREENPAD
+        const idx = String(def.estilos[k]).split('+').map(nm => { const j = PLG.pv[t].findIndex(x => x.plug === rec && (norm(x.n) === norm(nm) || x.key === rec.id + '/' + plugId(nm))); return j >= 0 ? VOICES[t].length + 1 + j : styleIndex(t, nm); }).filter(i => i >= 0);
+        if (idx.length) st[TR[t].id] = idx;
+      }
+      for (const k of Object.keys(def.ritmo || {})) { const t = trackIndex(k); if (t >= 0) r[TR[t].id] = String(def.ritmo[k]).replace(/\s/g, '').slice(0, STEPS); }
+      const mood = MOODS.find(m => norm(m.n) === norm(def.ambiente)), nb = typeof def.notaBase === 'number' ? def.notaBase : NOTES.findIndex(n => norm(n) === norm(def.notaBase));
+      const fx = {}, f0 = def.efectos || {}; for (const [a, b] of [['reverb', 'rev'], ['eco', 'eco'], ['lofi', 'lofi'], ['vinilo', 'vin']]) if (f0[a] != null) fx[b] = clamp(+f0[a] || 0, 0, 1);
+      PLG.ex.push({ g: rec.n, n: plugTxt(def.nombre, 24) || rec.n, d: plugTxt(def.detalle, 40), bpm: Math.round(clamp(+def.bpm || 100, 40, 240)), key: clamp(nb < 0 ? 9 : nb | 0, 0, 11), sc: mood ? mood.sc : 2, sw: clamp(+def.swing || 0, 0, 100), st, fx, r });
+    },
+    // ---- las grabaciones de GREENPAD (sonidos/), para armar instrumentos con ellas ----
+    // nota: toca la grabación más cercana afinada a f. Devuelve false si todavía no llegó (ahí conviene sintetizar algo).
+    nota(c, o, t, v, clave, f, dur, op) {
+      op = op || {};
+      return !!smpNote(c, o, t, v, clave, f / PF, dur, { g: op.volumen, ring: op.cola, max: op.max, rel: op.soltar, att: op.ataque, lp: op.brillo, oct: op.semitonos, sus: !!op.sostener, det: op.desafinar, off: op.desde });
+    },
+    // grabado: la grabación más cercana a f y a qué velocidad hay que tocarla para que dé esa nota: { buffer, velocidad }
+    grabado(clave, f) { const e = BANK[clave] && BANK[clave].z ? bankGet(clave) : null; if (!e) return null; const m = midiF(f), z = zoneOf(e, m); return { buffer: z.b, velocidad: Math.pow(2, (m - z.m) / 12) }; },
+    // golpe: una grabación de batería o percusión (bd_banda, sn_rim, pc_conga, pc_cowbell...). op: { volumen, velocidad }
+    golpe(c, o, t, v, clave, op) {
+      const e = BANK[clave] && BANK[clave].d ? bankGet(clave) : null; if (!e) return false; op = op || {};
+      const L = e.d, arr = L[v > .86 ? L.length - 1 : 0], s = c.createBufferSource(), g = c.createGain();
+      s.buffer = arr[(Math.random() * arr.length) | 0]; s.playbackRate.value = clamp(+op.velocidad || 1, .1, 8) * (1 + (Math.random() - .5) * .014);
+      g.gain.value = (op.volumen == null ? 1 : +op.volumen || 0) * (.6 + .4 * Math.min(1.15, v)); s.connect(g); g.connect(o); s.start(t);
+      if (op.dur > 0) { g.gain.setValueAtTime(g.gain.value, t + op.dur); g.gain.setTargetAtTime(0, t + op.dur, .02); s.stop(t + op.dur + .2); }
+      return true;
+    },
+    grabaciones: Object.keys(BANK),
+    distorsion(c, cuanto) { const ws = c.createWaveShaper(); ws.curve = distCurve(Math.round(clamp(+cuanto || 4, 1, 60))); ws.oversample = '2x'; return ws; },
+    // ---- micrófono: devuelve una promesa con un nodo de audio (pide permiso la primera vez) ----
+    microfono() { return plugMic(); },
+    soltarMicrofono(ms) { clearTimeout(PLG.micT); PLG.micT = setTimeout(plugMicOff, Math.max(0, +ms || 0)); },
     // ---- ayudas ----
     ruido() { return AU.white; },                                   // un segundo de ruido blanco (AudioBuffer)
     sonido(url) { return plugSound(String(url)); },                 // carga un archivo de audio; se usa con tocarSonido
@@ -2039,6 +2089,22 @@ function plugPlaySound(c, o, t, v, h, op) {
   if (op.dur > 0) { g.gain.setValueAtTime(g.gain.value, t + op.dur); g.gain.linearRampToValueAtTime(0, t + op.dur + .04); s.stop(t + op.dur + .06); }
   return true;
 }
+function plugMic() {
+  const c = ensureAudio(), md = navigator.mediaDevices;
+  if (!c || !md || !md.getUserMedia) return Promise.reject(new Error('Este navegador no deja usar el micrófono'));
+  clearTimeout(PLG.micT);
+  if (PLG.mic) return PLG.mic;
+  try { if (navigator.audioSession) navigator.audioSession.type = 'play-and-record'; } catch {}
+  // con cancelación de eco, para que lo que sale por el parlante no vuelva a entrar
+  const pr = md.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } }).then((stream) => {
+    if (PLG.mic !== pr) { stream.getTracks().forEach(t => t.stop()); throw new Error('cancelado'); }
+    const src = c.createMediaStreamSource(stream), out = c.createGain(); src.connect(out); PLG.micS = stream; return out;
+  });
+  PLG.mic = pr;
+  pr.catch(() => { if (PLG.mic === pr) { PLG.mic = null; restoreSession(); } });
+  return pr;
+}
+function plugMicOff() { if (PLG.micS) PLG.micS.getTracks().forEach(t => t.stop()); PLG.micS = null; PLG.mic = null; restoreSession(); }
 function plugRun(src) { // corre el archivo de un plugin y devuelve lo que declaró en GREENPAD.plugin({...})
   PLG.def = null;
   try { new Function(String(src))(); } catch (e) { PLG.def = null; throw e; }
@@ -2291,11 +2357,13 @@ const PRESETS = [
   { g: 'Otros', n: 'Disco', d: 'Bajo en octavas', bpm: 118, key: 5, sc: 1, st: { HH: 'Abierto', GT: 'Muteada' }, r: { BD: 'x...x...x...x...', SN: '....x.......x...', HH: '..x...x...x...x.', BS: '1.8.1.8.4.4.5.5.', GT: '.5.5.5.5.5.5.5.5', CH: '....1.......4...' } },
   { g: 'Otros', n: 'Synthwave', d: 'Pad y lead ochentoso', bpm: 104, key: 9, sc: 0, st: { BD: '808', SN: 'Caja 808', HH: 'Hat 808', BS: 'Sub 808', CH: 'Pad', LD: 'Lead' }, r: { BD: 'x...x...x...x...', SN: '....x.......x...', HH: 'x.x.x.x.x.x.x.x.', BS: '1111111166664444', CH: '1.......6.......', LD: '8...7.5.3...5...' } },
 ];
+PLG.ex.forEach(e => PRESETS.push(e)); // ejemplos de plugins
 const presetByName = (n) => PRESETS.find(p => p.n === n);
 // estilo de un ejemplo: nombre ("Saturada", "Banda+Sub 808") o número
 function presetSt(pr, t) {
   const x = pr.st[TR[t].id]; if (x == null) return [0, 0];
   if (typeof x === 'number') return [x, 0];
+  if (Array.isArray(x)) return [x[0], x.slice(1).reduce((a, i) => a | (1 << i), 0)]; // ejemplos de plugins: ya vienen como números
   const parts = String(x).split('+').map(y => styleIndex(t, y)).filter(i => i >= 0);
   return parts.length ? [parts[0], parts.slice(1).reduce((a, i) => a | (1 << i), 0)] : [0, 0];
 }
@@ -5739,14 +5807,33 @@ function buildDJ() {
   DJ.knobs.rev = knob(kn, { label: 'REVERB', val: S.fx.rev, color: 'var(--s5)', onInput: (v) => { S.fx.rev = v; applyFx(); save(); } });
   DJ.knobs.eco = knob(kn, { label: 'ECO', val: S.fx.eco, color: 'var(--s1)', onInput: (v) => { S.fx.eco = v; applyFx(); save(); } });
   DJ.knobs.lofi = knob(kn, { label: 'LO-FI', val: S.fx.lofi, color: 'var(--s3)', onInput: (v) => { S.fx.lofi = v; applyFx(); save(); } });
-  if (PLG.fx.length || PLG.pads.length) { // perillas y botones de plugins
+  if (PLG.fx.length || PLG.pads.length) { // perillas y botones de plugins: un bloque por plugin
     const pw = document.createElement('div'); pw.className = 'plgs'; djEl.querySelector('.mbts').after(pw); djEl.querySelector('.mxr').classList.add('hp');
-    PLG.fx.forEach((d, k) => { DJ.knobs['p:' + d.key] = knob(pw, { label: d.n, val: (S.fx.px && S.fx.px[d.key]) || 0, color: d.color || stColor(6 + k), onInput: (v) => { if (!S.fx.px) S.fx.px = {}; S.fx.px[d.key] = v; applyFx(); save(); } }); DJ.knobs['p:' + d.key].el.title = 'Plugin: ' + d.plug.n; });
+    const groups = new Map(), grp = (rec) => {
+      let G = groups.get(rec);
+      if (!G) { const el = document.createElement('div'); el.className = 'pg'; el.innerHTML = '<span class="lbl"></span><div class="pgk"></div><div class="pgp"></div>'; el.querySelector('.lbl').textContent = rec.n.toUpperCase(); pw.appendChild(el); G = { k: el.querySelector('.pgk'), p: el.querySelector('.pgp') }; groups.set(rec, G); }
+      return G;
+    };
+    PLG.fx.forEach((d, k) => { DJ.knobs['p:' + d.key] = knob(grp(d.plug).k, { label: d.n, val: (S.fx.px && S.fx.px[d.key]) || 0, color: d.color || stColor(6 + k), onInput: (v) => { if (!S.fx.px) S.fx.px = {}; S.fx.px[d.key] = v; applyFx(); save(); } }); DJ.knobs['p:' + d.key].el.title = 'Plugin: ' + d.plug.n; });
     PLG.pads.forEach((d) => {
-      const b = document.createElement('button'); b.className = 'ppad'; b.textContent = d.n; b.title = (d.d ? d.d + ' · ' : '') + 'Plugin: ' + d.plug.n; pw.appendChild(b);
-      const up = () => { if (!b.classList.contains('on')) return; b.classList.remove('on'); if (d.soltar && AU.ctx) try { d.soltar(AU.ctx, AU.ctx.currentTime); } catch (e) { plugErr(d.plug, e, 'botón ' + d.n); } };
-      b.addEventListener('pointerdown', (e) => { e.preventDefault(); const c = ensureAudio(); if (!c) return; try { b.setPointerCapture(e.pointerId); } catch {} b.classList.add('on'); try { d.tocar(c, AU.fxIn, c.currentTime + .005, { bpm: S.bpm }); } catch (er) { plugErr(d.plug, er, 'botón ' + d.n); } });
-      ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => b.addEventListener(ev, up));
+      const b = document.createElement('button'); b.className = 'ppad' + (d.fijo ? ' fijo' : ''); b.innerHTML = '<b></b>'; b.querySelector('b').textContent = d.n;
+      b.title = (d.d ? d.d + ' · ' : '') + 'Plugin: ' + d.plug.n; if (d.color) b.style.setProperty('--pc', d.color); if (d.fijo) b.setAttribute('aria-pressed', 'false');
+      grp(d.plug).p.appendChild(b);
+      const lit = (on) => { b.classList.toggle('on', on); if (d.fijo) b.setAttribute('aria-pressed', on); };
+      const up = () => { if (!b.classList.contains('on')) return; lit(false); if (d.soltar && AU.ctx) try { d.soltar(AU.ctx, AU.ctx.currentTime); } catch (e) { plugErr(d.plug, e, 'botón ' + d.n); } };
+      const down = () => {
+        const c = ensureAudio(); if (!c) return; lit(true);
+        let r; try { r = d.tocar(c, AU.fxIn, c.currentTime + .005, { bpm: S.bpm }); } catch (er) { plugErr(d.plug, er, 'botón ' + d.n); r = false; }
+        // tocar puede devolver false (o una promesa que da false) si no pudo arrancar: por ejemplo, sin permiso de micrófono
+        if (r === false) lit(false); else if (r && typeof r.then === 'function') r.then((ok) => { if (ok === false) lit(false); }, () => lit(false));
+      };
+      if (d.fijo) b.addEventListener('click', () => (b.classList.contains('on') ? up() : down()));
+      else {
+        b.addEventListener('pointerdown', (e) => { e.preventDefault(); try { b.setPointerCapture(e.pointerId); } catch {} down(); });
+        ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => b.addEventListener(ev, up));
+        b.addEventListener('keydown', (e) => { if ((e.key === ' ' || e.key === 'Enter') && !e.repeat) { e.preventDefault(); e.stopPropagation(); down(); } });
+        b.addEventListener('keyup', (e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); e.stopPropagation(); up(); } });
+      }
     });
   }
   $('#vinBtn').addEventListener('click', () => { ensureAudio(); S.fx.vin = S.fx.vin ? 0 : 1; applyFx(); syncFxUI(); save(); });
@@ -6601,7 +6688,8 @@ function applyAll() {
 
 /* ================= intro: la primera vez que se abre =================
    Pantalla borrosa con el logo, un texto corto que termina en "..." (tocándolo se lee entero; es el de acerca.txt),
-   tres estilos para empezar y Play. Play arranca un tema nuevo con el estilo elegido y suena; lo que había queda en
+   una fila de estilos que se desliza sola y da la vuelta sin fin, y Play. Tocar un estilo arranca un tema nuevo con ese
+   estilo y suena (no hace falta tocar Play). Ninguno viene elegido: Play solo pone uno al azar. Lo que había queda en
    Mis beats. Sale una sola vez en cada equipo. Para verla de nuevo: agregar ?intro a la dirección. */
 const INTRO_ST = [ // n: nombre · d: detalle · p: ejemplo de PRESETS (trae instrumentos, estilos, ambiente, tempo y efectos) · h: destiempo
   { n: 'Rock', d: 'Guitarra saturada', p: 'Rock', h: .5 },
@@ -6637,7 +6725,7 @@ const INTRO_ST = [ // n: nombre · d: detalle · p: ejemplo de PRESETS (trae ins
   { n: 'Synthwave', d: 'Ochentoso', p: 'Synthwave', h: 0 },
   { n: 'Sorpresa', d: 'Uno al azar', p: null },
 ];
-const IN = { sel: 0, link: false, long: false, ps: null };
+const IN = { sel: -1, link: false, long: false, ps: null, x: 0, per: 0, hold: 0, raf: 0 }; // sel -1: todavía no se eligió ninguno
 const introEl = $('#intro'), inTxt = $('#inTxt');
 function introText() {
   const draw = (ps) => {
@@ -6654,37 +6742,70 @@ function introText() {
   if (!IN.ps) aboutParas().then((ps) => { IN.ps = ps; if (JSON.stringify(ps) !== JSON.stringify(now)) draw(ps); });
 }
 function introStyles(scroll) {
-  const box = $('#inSty');
+  const box = $('#inSty'), N = INTRO_ST.length;
   if (!box.children.length) {
-    INTRO_ST.forEach((x, i) => {
+    // la fila va dos veces seguidas: al llegar al final de la primera copia se vuelve al principio sin que se note, y así gira sin fin
+    for (let k = 0; k < 2; k++) INTRO_ST.forEach((x, i) => {
       const pr = x.p && presetByName(x.p);
       const b = document.createElement('button'); b.setAttribute('role', 'radio'); b.innerHTML = '<b></b><small></small><i></i>';
       b.querySelector('b').textContent = x.n; b.querySelector('small').textContent = x.d;
       b.querySelector('i').textContent = pr ? `${moodName(pr.sc)} · ${pr.bpm}` : '?';
       b.title = pr ? `${pr.n}: ${pr.d}. Ambiente ${moodName(pr.sc)}, ${pr.bpm} bpm` : 'Un estilo al azar';
-      b.addEventListener('click', () => { IN.sel = i; introStyles(); });
+      if (k) { b.tabIndex = -1; b.setAttribute('aria-hidden', 'true'); }
+      b.addEventListener('click', () => { IN.sel = i; introStyles(); introPlay(); }); // tocar un estilo ya lo pone a sonar
       box.appendChild(b);
     });
     // en la compu, la rueda del mouse también desliza los estilos
     box.addEventListener('wheel', (e) => {
       if (Math.abs(e.deltaY) > Math.abs(e.deltaX) && box.scrollWidth > box.clientWidth + 2) { box.scrollLeft += e.deltaY; e.preventDefault(); }
+      introHold(2600);
     }, { passive: false });
+    ['pointerdown', 'touchstart', 'touchmove', 'focusin'].forEach(ev => box.addEventListener(ev, () => introHold(3200), { passive: true }));
+    box.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') introHold(1e9); });
+    box.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') introHold(700); });
+    box.addEventListener('scroll', () => { // deslizando a mano también da la vuelta, para los dos lados
+      const per = introPer(), max = box.scrollWidth - box.clientWidth; if (!per) return;
+      if (box.scrollLeft < 1) box.scrollLeft += per; else if (box.scrollLeft > max - 1) box.scrollLeft -= per;
+      if (Math.abs(box.scrollLeft - IN.x) > 2) IN.x = box.scrollLeft;
+    }, { passive: true });
   }
-  [...box.children].forEach((b, i) => { b.classList.toggle('on', i === IN.sel); b.setAttribute('aria-checked', i === IN.sel ? 'true' : 'false'); });
-  if (scroll) {
-    const b = box.children[IN.sel], l = b.offsetLeft - box.offsetLeft, r = l + b.offsetWidth;
-    if (l < box.scrollLeft + 18 || r > box.scrollLeft + box.clientWidth - 18) box.scrollTo({ left: l - box.clientWidth / 2 + b.offsetWidth / 2, behavior: RM ? 'auto' : 'smooth' });
+  [...box.children].forEach((b, i) => { const on = i % N === IN.sel; b.classList.toggle('on', on); b.setAttribute('aria-checked', on ? 'true' : 'false'); });
+  if (scroll && IN.sel >= 0) {
+    // de las dos copias del estilo elegido, va a la que queda más cerca
+    const mid = box.scrollLeft + box.clientWidth / 2, c = [box.children[IN.sel], box.children[IN.sel + N]].map(b => b.offsetLeft - box.offsetLeft + b.offsetWidth / 2);
+    const to = Math.abs(c[0] - mid) <= Math.abs(c[1] - mid) ? c[0] : c[1];
+    introHold(4200); box.scrollTo({ left: to - box.clientWidth / 2, behavior: RM ? 'auto' : 'smooth' });
   }
+}
+const introPer = () => { const box = $('#inSty'), N = INTRO_ST.length; return box.children.length > N ? box.children[N].offsetLeft - box.children[0].offsetLeft : 0; }; // ancho de una vuelta
+function introHold(ms) { IN.hold = performance.now() + ms; }
+// los estilos se deslizan solos, despacio; se frenan un momento cuando alguien los toca o pasa el mouse
+function introSlide() {
+  cancelAnimationFrame(IN.raf);
+  const box = $('#inSty'); let last = performance.now();
+  if (box.scrollLeft < 1 && introPer()) box.scrollLeft = 1;
+  IN.x = box.scrollLeft;
+  const step = (now) => {
+    if (!introEl.classList.contains('on')) return;
+    const dt = Math.min(.1, (now - last) / 1000); last = now;
+    if (!RM && !IN.link && now > IN.hold && !document.hidden) {
+      const per = introPer(); IN.x += dt * 26;
+      if (per && IN.x >= per + 1) IN.x -= per;
+      box.scrollLeft = IN.x;
+    } else IN.x = box.scrollLeft;
+    IN.raf = requestAnimationFrame(step);
+  };
+  IN.raf = requestAnimationFrame(step);
 }
 function showIntro() {
   store.set(LS_PREF + '.intro1', 1); store.set(LS_PREF + '.seen1', 1);
   introEl.classList.toggle('nost', IN.link); // si se abrió con un enlace, Play toca ese beat
-  IN.long = false; introText(); introStyles(); openModal('#intro'); syncLang();
+  IN.long = false; IN.sel = -1; introText(); introStyles(); openModal('#intro'); syncLang(); introHold(900); introSlide();
   if (!TOUCH) setTimeout(() => $('#inPlay').focus({ preventScroll: true }), 80);
 }
 function introPlay() {
   ensureAudio();
-  let x = INTRO_ST[IN.sel];
+  let x = INTRO_ST[IN.sel] || { p: null }; // sin ninguno elegido, Play pone uno al azar
   if (!x.p) { const ok = INTRO_ST.filter(y => y.p && presetByName(y.p)); x = ok[Math.floor(Math.random() * ok.length)]; }
   const pr = !IN.link && presetByName(x.p);
   if (pr) {
@@ -6704,7 +6825,7 @@ $('#inPlay').addEventListener('click', introPlay);
 addEventListener('keydown', (e) => {
   if (!introEl.classList.contains('on') || e.ctrlKey || e.metaKey) return;
   const k = e.key;
-  if (k === 'ArrowLeft' || k === 'ArrowRight') { e.preventDefault(); e.stopImmediatePropagation(); IN.sel = (IN.sel + (k === 'ArrowRight' ? 1 : INTRO_ST.length - 1)) % INTRO_ST.length; introStyles(true); return; }
+  if (k === 'ArrowLeft' || k === 'ArrowRight') { e.preventDefault(); e.stopImmediatePropagation(); IN.sel = IN.sel < 0 ? (k === 'ArrowRight' ? 0 : INTRO_ST.length - 1) : (IN.sel + (k === 'ArrowRight' ? 1 : INTRO_ST.length - 1)) % INTRO_ST.length; introStyles(true); return; }
   if ((k === ' ' || k === 'Enter') && !e.target.closest('#intro button, #inTxt, #intro select')) { e.preventDefault(); e.stopImmediatePropagation(); introPlay(); }
 }, true);
 

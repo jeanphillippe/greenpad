@@ -342,7 +342,8 @@ El tercer botón del selector de pantalla (la cámara, debajo de grilla y bandej
 
 La primera vez que se abre la página en un equipo aparece una pantalla de bienvenida sobre la app borrosa: el logo con la frase amarilla, un texto corto que termina en "..." (tocándolo se lee entero; es el mismo de `acerca.txt`), una fila de estilos para empezar que se desliza (Rock, 808, Hip hop, Lo-fi, Cumbia, Reggaetón, Cuarteto, Fogón, Jazz, Phonk y muchos más, cada uno con su ambiente y tempo a la vista; **Sorpresa** elige uno al azar). Cada estilo carga un ejemplo con sus instrumentos, estilos, ambiente, efectos y destiempo ya elegidos. Abajo está el botón **PLAY**: arranca un tema nuevo con el estilo elegido en el track A, empieza a sonar y cierra la intro. Lo que había no se pierde: el tema de ejemplo ("Primera banda") o el beat sin guardar quedan en Mis beats. Si la página se abrió con un enlace de un beat, la intro sale sin los estilos y Play toca ese beat.
 
-- En la compu: ← → eligen el estilo, Espacio o Enter es Play, Esc la cierra sin sonido.
+- En la compu: ← → eligen el estilo, Espacio o Enter es Play (con el estilo elegido, o uno al azar), Esc la cierra sin sonido.
+- Ningún estilo viene elegido: tocar uno arranca el tema con ese estilo (no hace falta tocar Play), y **PLAY** solo pone uno al azar. La fila de estilos se desliza sola y da la vuelta sin fin (se frena un momento al tocarla o pasar el mouse); con "reducir movimiento" activado no se mueve sola.
 - Sale una sola vez por equipo. Para verla de nuevo, abrir la dirección con `?intro` al final (por ejemplo `…/index.html?intro`).
 - Los estilos están en `INTRO_ST`, en `index.html`: cada uno tiene nombre, detalle, el ejemplo de `PRESETS` que carga y el destiempo (`h`). Para sumar uno, se agrega un ejemplo a `PRESETS` y una línea a `INTRO_ST` que lo nombre.
 - El texto sale al instante: la página trae una copia de `acerca.txt` y, cuando llega el archivo, se actualiza si cambió. Conviene tocar las dos cosas juntas (`ABOUT0` en `index.html` y `acerca.txt`).
@@ -370,7 +371,7 @@ GREENPAD acepta plugins: archivos `.js` que suman instrumentos, mods para las ba
 | Archivo | Para qué |
 |---|---|
 | `plugins.html` | Landing de plugins: catálogo, instalar, quitar, actualizar y guía para crearlos |
-| `plugins/*.js` | Un archivo por plugin. Los que vienen: `boombap.js`, `trap.js` y `arcade.js` (sonido), `djkit.js` y `oro.js` (bandejas), `cassette.js` y `parlantes.js` (visuales) |
+| `plugins/*.js` | Un archivo por plugin. Los que vienen: `guitarra.js`, `tuchacha.js`, `boombap.js`, `trap.js` y `arcade.js` (sonido), `djkit.js` y `oro.js` (bandejas), `cassette.js` y `parlantes.js` (visuales) |
 | `plugins/plantilla.js` | Plantilla que se baja desde la guía |
 
 **Sumar un plugin que te mandaron**
@@ -399,6 +400,9 @@ No hace falta tocar `index.html` ni subir `VERSION` en `sw.js`. El botón "Manda
 | `gp.estilo(css)` | CSS propio (otra pinta para los discos, por ejemplo) |
 | `gp.visual({...})` | Un estilo más para el video vertical, en Descargar |
 | `gp.cuando('paso' / 'play' / 'stop', fn)` | Avisos de la app |
+| `gp.ejemplo({...})` | Un ritmo armado en el menú, en Ejemplos, bajo el nombre del plugin |
+| `gp.nota`, `gp.golpe`, `gp.grabado` | Usar las grabaciones de `sonidos/` dentro de un plugin (con `usa: [...]` en el instrumento para que se bajen antes) |
+| `gp.microfono()` | El micrófono en vivo, para los botones de las bandejas |
 
 **Beats y plugins**
 

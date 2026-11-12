@@ -219,7 +219,32 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
           <tr><td><code>info</code></td><td>Un séptimo dato, opcional: <code>{ bpm, paso }</code>, el tempo y cuánto dura un paso en segundos. Sirve para redobles y ecos a tiempo (con <code>enVivo: true</code> en la batería).</td></tr>
         </table></div>
         <p style="margin-top:10px">En caja, hi-hat y percu el sonido se arma una vez y después se repite, para que el teléfono no se trabe. Si el tuyo tiene que armarse en cada golpe, agregá <code>enVivo: true</code>.</p>
-        <p>Para usar grabaciones: <code>const s = gp.sonido('plugins/mi-plugin/golpe.mp3')</code> en <code>setup</code>, y en <code>tocar</code>, <code>gp.tocarSonido(ctx, salida, t, fuerza, s, { velocidad: afin })</code>. Los archivos de audio se mandan junto con el <code>.js</code>.</p>
+        <p><b>Con las grabaciones de GREENPAD.</b> Un plugin puede usar los instrumentos grabados que ya trae la app (guitarras, bajo, piano, batería, percusión) y pasarlos por sus propios efectos. Se avisa cuáles con <code>usa</code>, así se bajan antes de sonar:</p>
+<pre><code>gp.instrumento('GT', {
+  id: 'octavada', nombre: 'Octavada', detalle: 'Eléctrica con su octava',
+  usa: ['gt_electrica'],
+  tocar(ctx, salida, t, fuerza, nota) {
+    gp.nota(ctx, salida, t, fuerza, 'gt_electrica', nota.f, nota.dur, { volumen: .4 });
+    gp.nota(ctx, salida, t, fuerza, 'gt_electrica', nota.f * 2, nota.dur, { volumen: .25 });
+  },
+});</code></pre>
+        <div class="tbl"><table>
+          <tr><th>Función</th><th>Qué hace</th></tr>
+          <tr><td><code>gp.nota(ctx, salida, t, fuerza, clave, f, dur, op)</code></td><td>Toca la grabación afinada a <code>f</code>. En <code>op</code>: <code>volumen</code>, <code>cola</code> (cuánto sigue sonando), <code>max</code>, <code>brillo</code>, <code>desafinar</code>. Devuelve <code>false</code> si todavía no llegó.</td></tr>
+          <tr><td><code>gp.golpe(ctx, salida, t, fuerza, clave, op)</code></td><td>Un golpe de batería o percusión. En <code>op</code>: <code>volumen</code> y <code>velocidad</code> (más de 1 lo sube de tono).</td></tr>
+          <tr><td><code>gp.grabado(clave, f)</code></td><td>Devuelve <code>{ buffer, velocidad }</code> para armar el sonido a mano (por ejemplo, para un vibrato).</td></tr>
+          <tr><td><code>gp.distorsion(ctx, cuanto)</code></td><td>Un nodo de distorsión, de 1 (apenas) a 60 (muchísimo).</td></tr>
+          <tr><td><code>gp.grabaciones</code></td><td>La lista de claves: <code>gt_electrica</code>, <code>gt_acustica</code>, <code>gt_criolla</code>, <code>gt_muteada</code>, <code>bs_electrico</code>, <code>ch_piano</code>, <code>pc_conga</code>, <code>pc_palmas</code>, <code>bd_banda</code> y las demás.</td></tr>
+        </table></div>
+        <p style="margin-top:10px"><b>Un ejemplo para el menú.</b> <code>gp.ejemplo</code> suma un ritmo armado a Ejemplos, con los estilos del plugin ya elegidos. Va después de los instrumentos:</p>
+<pre><code>gp.ejemplo({
+  nombre: 'Mi ritmo', detalle: 'Qué tiene', bpm: 120,
+  notaBase: 'Mi',                 <span class="c">// Do, Re, Mi, Fa, Sol, La, Si</span>
+  ambiente: 'Oscuro',             <span class="c">// Oscuro, Triste, Alegre, Pop, Groove, Blues</span>
+  estilos: { GT: 'Octavada', BS: 'Eléctrico' },
+  ritmo: { BD: 'x.......x.......', SN: '....x.......x...', GT: '1...3...5...3...' },
+});</code></pre>
+        <p style="margin-top:10px">Para usar grabaciones propias: <code>const s = gp.sonido('plugins/mi-plugin/golpe.mp3')</code> en <code>setup</code>, y en <code>tocar</code>, <code>gp.tocarSonido(ctx, salida, t, fuerza, s, { velocidad: afin })</code>. Los archivos de audio se mandan junto con el <code>.js</code>.</p>
       </div>
 
       <div class="k-bandeja">
@@ -249,6 +274,8 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   tocar(ctx, salida, t) { <span class="c">/* armar el sonido y conectarlo a salida */</span> },
   soltar(ctx, t) { <span class="c">/* apagarlo */</span> },
 });</code></pre>
+        <p style="margin-top:10px">Un botón también puede llevar <code>color</code> y <code>fijo: true</code> (queda prendido hasta tocarlo de nuevo). Si <code>tocar</code> devuelve <code>false</code>, o una promesa que da <code>false</code>, el botón se apaga.</p>
+        <p style="margin-top:10px"><b>El micrófono.</b> <code>gp.microfono()</code> devuelve una promesa con un nodo de audio (el navegador pide permiso la primera vez). Se conecta a los efectos que quieras y a <code>salida</code>. Al terminar, <code>gp.soltarMicrofono(ms)</code> lo apaga pasado ese tiempo.</p>
         <p style="margin-top:10px"><b>Otra pinta.</b> <code>gp.estilo(css)</code> agrega CSS a la página. Las bandejas están dentro de <code>#dj</code>: el disco es <code>.disc</code>, la etiqueta <code>.lab</code>, el brazo <code>.arm</code> y la consola del medio <code>.mxr</code>.</p>
 <pre><code>gp.estilo('#dj .disc{filter:hue-rotate(120deg)}');</code></pre>
       </div>
@@ -341,10 +368,12 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
         le aparece el botón Actualizar.
    ========================================================================================== */
 const PLUGINS = [
+  { archivo: 'guitarra.js',  tipo: 'sonido',  nombre: 'Guitarra',      autor: 'GREENPAD', version: '1.0', descripcion: 'Guitarras de verdad con pedales: crunch, metal, wah, chorus, trémolo, arpegio, 12 cuerdas, rasgueo eléctrico y solo con vibrato. Trae ejemplos que las combinan.' },
+  { archivo: 'tuchacha.js',  tipo: 'sonido',  nombre: 'Tu Cha Cha',    autor: 'GREENPAD', version: '1.0', descripcion: 'Funk brasileño: tum, cha, atabaques, agogô, lata, grave distorsionado, golpe de orquesta y puntito. Con los ritmos tum cha cha ya armados en Ejemplos.' },
   { archivo: 'boombap.js',   tipo: 'sonido',  nombre: 'Boom Bap',      autor: 'GREENPAD', version: '1.0', descripcion: 'Hip hop de los 90: bombo y caja polvorientos, hi-hat crujiente, scratch, bajo redondo, piano eléctrico y el silbido agudo del G-funk.' },
   { archivo: 'trap.js',      tipo: 'sonido',  nombre: 'Trap',          autor: 'GREENPAD', version: '1.0', descripcion: 'Bombo corto, clap, hi-hat que redobla solo, un 808 que resbala de nota en nota, cuerdas cortas y campana oscura.' },
   { archivo: 'arcade.js',    tipo: 'sonido',  nombre: 'Arcade',        autor: 'GREENPAD', version: '1.0', descripcion: 'Una consola de 8 bits completa: batería de ruido, bajo de triángulo, acordes en arpegio rápido y melodía de onda cuadrada con vibrato.' },
-  { archivo: 'djkit.js',     tipo: 'bandeja', nombre: 'DJ Kit',        autor: 'GREENPAD', version: '1.0', descripcion: 'Bocina de aire, scratch y sirena para disparar, más dos perillas: bombeo (la música se agacha con cada pulso) y teléfono.' },
+  { archivo: 'djkit.js',     tipo: 'bandeja', nombre: 'DJ Kit',        autor: 'GREENPAD', version: '2.0', descripcion: 'Micrófono en vivo con tres voces (limpia, con eco y robot), bocina, sirena, láser, subida, bomba y scratch con eco de dub, y las perillas bombeo, jet y radio.' },
   { archivo: 'oro.js',       tipo: 'bandeja', nombre: 'Vinilo de oro', autor: 'GREENPAD', version: '1.0', descripcion: 'Otra pinta para las bandejas: etiquetas, luces y bordes dorados.' },
   { archivo: 'cassette.js',  tipo: 'visual',  nombre: 'Cassette',      autor: 'GREENPAD', version: '1.0', descripcion: 'Un cassette con el título escrito a mano, carretes que giran con el tempo, vúmetros de aguja y un fondo de puntos que sube con el sonido.' },
   { archivo: 'parlantes.js', tipo: 'visual',  nombre: 'Parlantes',     autor: 'GREENPAD', version: '1.0', descripcion: 'Una torre de parlantes: los conos empujan con el bombo, los tweeters brillan con el hi-hat y el ecualizador de luces sigue al sonido.' },
