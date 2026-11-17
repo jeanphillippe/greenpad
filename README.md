@@ -6,7 +6,7 @@ Caja de ritmos y secuenciador de 16 pasos, inspirada en el drumpad de la consola
 
 ## Actualizaciones
 
-- **Recordings and UX improvements** (`greenpad-v1.20.0`): 5 grabaciones de cualquier sonido, cortadas solas en trozos para repartir en los instrumentos con un toque (y Repartir en batería); grabar manteniendo apretado; GRABACIONES 1 a 5 en las bandejas; los plugins de bandejas pasan abajo de los dos canales; cabecera más liviana (2 filas en el teléfono) con el botón AMBIENTE al lado de los tracks y un aviso para elegir el ambiente al empezar las melodías de un track.
+- **Recordings and UX improvements** (`greenpad-v1.20.1`): 5 grabaciones de cualquier sonido, cortadas solas en trozos para repartir en los instrumentos con un toque (y Repartir en batería); grabar manteniendo apretado; GRABACIONES 1 a 5 en las bandejas; los plugins de bandejas pasan abajo de los dos canales; cabecera más liviana (2 filas en el teléfono) con el botón AMBIENTE al lado de los tracks y un aviso para elegir el ambiente al empezar las melodías de un track.
 
 ## Archivos
 

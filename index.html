@@ -138,8 +138,8 @@ svg{display:block}
   .logo-s .splash{font-size:16px;bottom:-13px;right:-12px}
 }
 @media (min-width:600px){
-  #app.v #top{grid-template-areas:"lever tempo logo tools" "pats pats pats pats" "more more more vsw"}
-  #app.v.djv #top{grid-template-areas:"lever tempo logo tools" "more more more vsw"}
+  #app.v #top{grid-template-areas:"lever tempo logo vsw tools" "pats pats pats pats pats"}
+  #app.v.djv #top{grid-template-areas:"lever tempo logo vsw tools" "pats pats pats pats pats"}
   #app.v #top .logo{display:block;grid-area:logo;justify-self:center;align-self:center;font-size:28px;margin-bottom:8px}
   #app.v #top .splash{font-size:16px;bottom:-14px;right:-10px}
 }
@@ -290,9 +290,10 @@ svg{display:block}
 .vsw button.on{background:var(--cy);color:var(--acc-ink)}
 .vsw svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8}
 @media (pointer:coarse){#app:not(.cmp) .vsw{gap:3px}.vsw button{width:40px;height:24px}.vsw svg{width:16px;height:16px}}
-.djv .patbox,.djv .sndbox,.djv .tone{display:none}
+.djv .patbox .pl,.djv .patbox .pats,.djv .sndbox,.djv .tone{display:none}
+#app.djv:not(.cmp) .patbox{display:none}
 .djv #board{display:none}
-.djv.v #top{grid-template-areas:"lever tempo tools tools" "more more more vsw"}
+.djv.v #top{grid-template-areas:"lever tempo . vsw tools" "pats pats pats pats pats"}
 .djv #song{display:none}
 
 /* ---------- bandejas ---------- */
@@ -678,7 +679,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 
 /* ---- globo de herramientas del bloque ---- */
 #song{position:relative;z-index:9}
-.v #top{z-index:10}
+#top{z-index:10}
 .sgpop{position:absolute;top:calc(100% - 2px);left:10px;z-index:6;display:flex;align-items:center;gap:4px;padding:6px;border-radius:14px;background:var(--drawer);box-shadow:var(--shadow),inset 0 0 0 1px var(--line)}
 .sgpop[hidden]{display:none}
 .sgpop::before{content:"";position:absolute;top:-6px;left:var(--ax,50%);width:12px;height:12px;margin-left:-6px;background:var(--drawer);transform:rotate(45deg);box-shadow:-1px -1px 0 var(--line)}
@@ -688,23 +689,50 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 /* ---- barra resumen y panel (teléfono) ---- */
 .morebar,.mpanel{display:none}
 .tlab{display:none}
-.cmp .morebar{grid-area:more;display:flex;align-items:center;gap:8px;height:30px;padding:0 10px;border:0;border-radius:9px;background:var(--chip);color:var(--ink2);font-family:var(--font);font-size:11px;font-weight:700;min-width:0;cursor:pointer;text-align:left}
-.cmp .morebar #moreSum{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cmp .morebar .k{font-size:8.5px;letter-spacing:.14em;color:var(--ink);font-weight:700;margin-right:4px}
-.cmp .morebar .k~.k{margin-left:10px}
-.cmp .morebar .mx{color:var(--or)}
-.cmp .morebar .chev{width:15px;height:15px;flex:none;transition:transform .2s}
-.cmp .morebar[aria-expanded="true"]{background:var(--cy);color:var(--acc-ink)}
-.cmp .morebar[aria-expanded="true"] .k{color:inherit;opacity:.7}
-.cmp .morebar[aria-expanded="true"] .chev{transform:rotate(180deg)}
-.cmp .mpanel:not([hidden]){display:flex;flex-direction:column;gap:14px;position:absolute;left:0;right:0;top:100%;z-index:8;padding:14px 14px calc(16px + env(safe-area-inset-bottom));background:var(--head);border-bottom:1px solid var(--line);box-shadow:0 18px 30px rgba(0,0,0,.35);max-height:calc(var(--app-h,100vh) - 150px);overflow:auto;overscroll-behavior:contain}
+.morebar{display:flex;flex:none;align-items:center;gap:10px;height:54px;padding:0 12px 0 14px;border:0;border-radius:12px;background:var(--chip);color:var(--ink2);font-family:var(--font);cursor:pointer;text-align:left;min-width:0;box-shadow:inset 3px 0 0 var(--mc,var(--cy));transition:background .15s}
+.morebar #moreSum{display:flex;flex-direction:column;gap:3px;min-width:0}
+.morebar .ma{display:flex;flex-direction:column;gap:1px;min-width:0}
+.morebar .k{font-size:8.5px;letter-spacing:.14em;color:var(--ink);font-weight:700}
+.morebar .ma b{font-size:15px;font-weight:800;color:var(--mc,var(--cy));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.morebar .ms{font-size:10px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+.morebar .ms .mx{color:var(--or)}
+.morebar .chev{width:14px;height:14px;flex:none;opacity:.7;transition:transform .2s}
+.morebar[aria-expanded="true"]{background:var(--mc,var(--cy));color:var(--acc-ink);box-shadow:none}
+.morebar[aria-expanded="true"] .k,.morebar[aria-expanded="true"] .ma b,.morebar[aria-expanded="true"] .ms,.morebar[aria-expanded="true"] .ms .mx{color:inherit}
+.morebar[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.cmp .patbox{display:flex;flex-direction:row;align-items:center;gap:6px}
+.cmp .patbox .pats{flex:1;min-width:0}
+.cmp .morebar{height:32px;padding:0 5px 0 8px;gap:3px;border-radius:8px;max-width:84px}
+.cmp .morebar .ms{display:none}
+.cmp .morebar .k{font-size:7px;letter-spacing:.1em}
+.cmp .morebar .ma b{font-size:11.5px}
+.cmp .morebar .chev{width:11px;height:11px}
+.cmp.djv .morebar{flex:1;max-width:none;height:32px}
+.cmp.djv .morebar #moreSum{flex-direction:row;align-items:center;gap:10px}
+.cmp.djv .morebar .ma{flex-direction:row;align-items:baseline;gap:6px}
+.cmp.djv .morebar .ms{display:block;max-width:none}
+#app.djv:not(.cmp) .morebar{display:none}
+.mpanel:not([hidden]){display:flex;flex-direction:column;gap:14px;position:absolute;left:0;right:0;top:100%;z-index:8;padding:14px 14px calc(16px + env(safe-area-inset-bottom));background:var(--head);border-bottom:1px solid var(--line);box-shadow:0 18px 30px rgba(0,0,0,.35);max-height:calc(var(--app-h,100vh) - 150px);overflow:auto;overscroll-behavior:contain}
+#app:not(.cmp) .mpanel:not([hidden]){right:auto;width:400px;padding-bottom:16px;border:1px solid var(--line);border-top:0;border-radius:0 0 18px 18px}
+.moods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.moods button{height:38px;border:0;border-radius:10px;background:var(--chip);color:var(--ink2);font-family:var(--font);font-size:12px;font-weight:800;box-shadow:inset 0 -3px 0 var(--mc);transition:background .12s,color .12s}
+.moods button.on{background:var(--mc);color:var(--acc-ink);box-shadow:none}
+.tone .moods,.tone .mp-hint{display:none}
+.mp-sec .tone .moods{display:grid}
+.mp-sec .tone .mp-hint{display:block}
+.mp-sec .tone .sel{display:none}
+.ambpop{position:absolute;top:calc(100% + 6px);left:10px;z-index:9;width:min(330px,calc(100vw - 20px));padding:12px;border-radius:16px;background:var(--drawer);box-shadow:var(--shadow),inset 0 0 0 1px var(--line);display:flex;flex-direction:column;gap:10px}
+.ambpop[hidden]{display:none}
+.ambpop p{margin:0;font-size:12.5px;line-height:1.45;color:var(--ink2)}
+.ambpop p b{color:var(--cy)}
+.ambpop .later{align-self:flex-end;height:28px;padding:0 10px;border:0;border-radius:8px;background:none;color:var(--ink);font-family:var(--font);font-size:11px;font-weight:700}
 .mp-head{display:flex;align-items:center;justify-content:space-between}
 .mp-x{height:32px;padding:0 14px;border:0;border-radius:9px;background:var(--cy);color:var(--acc-ink);font-family:var(--font);font-size:12px;font-weight:800}
 .mp-sec{display:flex;flex-direction:column;gap:6px}
 .mp-sec .box{width:100%}
-.cmp .mp-sec .snds{grid-template-columns:repeat(4,1fr)}
-.cmp .mp-sec .sb,.cmp .mp-sec .sel{height:36px;font-size:11.5px}
-.cmp .mp-sec .tone{width:100%}
+.mp-sec .snds{grid-template-columns:repeat(4,1fr)}
+.mp-sec .sb,.mp-sec .sel{height:36px;font-size:11.5px}
+.mp-sec .tone,.mp-sec .sndbox{width:100%}
 .mpmix{display:grid;grid-template-columns:repeat(8,1fr);gap:5px}
 .mpmix button{height:34px;border:0;border-radius:8px;background:var(--chip);color:var(--ink);font-family:var(--font);font-size:12px;font-weight:800;position:relative}
 .mpmix button.has::after{content:"";position:absolute;right:4px;top:4px;width:4px;height:4px;border-radius:50%;background:var(--cy)}
@@ -715,10 +743,11 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .mptools .rb{width:auto;height:44px;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:4px}
 .mptools .tlab{display:block;font-size:10px;font-weight:700;letter-spacing:.02em}
 .mptools .rb svg{width:16px;height:16px}
-.cmp.djv .mp-mix{display:none}
+.djv .mp-mix{display:none}
 
 /* ---- cabecera compacta en el teléfono vertical ---- */
-.v #top{grid-template-columns:auto auto 1fr auto;grid-template-areas:"lever tempo tools tools" "pats pats pats pats" "more more more vsw";gap:6px 10px;padding:6px 10px 7px;align-items:center}
+.v #top{grid-template-columns:auto auto 1fr auto auto;grid-template-areas:"lever tempo . vsw tools" "pats pats pats pats pats";gap:6px 8px;padding:6px 10px 7px;align-items:center}
+.cmp .tools #dlBtn{display:none}
 .cmp .leverbox{display:contents}
 .cmp .pp{grid-area:lever}
 .cmp .vsw{grid-area:vsw;flex-direction:row;gap:4px;margin:0;justify-self:end}
@@ -727,7 +756,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .v .tools{grid-area:tools;max-width:none;flex-wrap:nowrap;justify-self:end;gap:6px}
 .v .pp{width:46px;height:46px}
 .v .pp svg{width:22px;height:22px}
-.v .vsw button{width:40px;height:30px;border-radius:9px}
+.v .vsw button{width:32px;height:30px;border-radius:9px}
 .v .vsw svg{width:16px;height:16px}
 .v #bpm{font-size:32px}
 .v .tcol .lbl{font-size:8px}
@@ -748,14 +777,13 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .cmp .sgt{height:38px;min-width:34px;padding:0 6px}
 .cmp .sgt[data-a="auto"]{font-size:9.5px;padding:0 5px}
 /* teléfono acostado: todo en una fila + barra resumen */
-.cmp:not(.v) #top{display:grid;grid-template-columns:auto auto 1fr auto;grid-template-areas:"lever tempo pats tools" "more more more vsw";gap:5px 12px;padding:5px 12px 6px;align-items:center;z-index:10}
+.cmp:not(.v) #top{display:grid;grid-template-columns:auto auto 1fr auto auto;grid-template-areas:"lever tempo pats vsw tools";gap:5px 10px;padding:5px 12px 6px;align-items:center;z-index:10}
 .cmp:not(.v) .leverbox{grid-area:lever}
 .cmp:not(.v) .tempo{grid-area:tempo;gap:4px}
 .cmp:not(.v) .patbox{grid-area:pats;min-width:0}
 .cmp:not(.v) .tools{grid-area:tools;gap:6px}
 .cmp:not(.v) .vsw button{width:34px;height:26px}
 .cmp:not(.v) #matrix,.cmp .grille,.cmp .logo,.cmp .spacer{display:none}
-.cmp:not(.v) .morebar{height:26px}
 .cmp:not(.v) .mpanel:not([hidden]){max-height:calc(var(--app-h,100vh) - 90px)}
 .cmp:not(.v) .mptools{grid-template-columns:repeat(2,minmax(0,160px))}
 .cmp:not(.v) #stage{padding:4px 10px}
@@ -772,7 +800,7 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .cmp:not(.v) .sgsw{padding-top:5px}
 .cmp:not(.v) #songTime{bottom:7px}
 .cmp:not(.v) #stage{align-items:center;align-items:safe center}
-@media (max-width:385px){.v .tools{gap:5px}.v .tools .rb{width:28px;height:28px}}
+@media (max-width:385px){.v .tools{gap:5px}.v .tools .rb{width:28px;height:28px}.v .vsw button{width:30px}}
 @media (max-width:350px){.v #top{gap:6px 6px;padding-left:8px;padding-right:8px}.v .tools .rb{width:26px!important;height:26px!important}.v .tools .rb svg{width:14px;height:14px}.v #bpm{font-size:26px}.v .arrows .rb{width:20px;height:20px}.v .tools{gap:3px}.v .vsw button{width:34px}.cmp .sgsw{padding:0 6px;padding-top:7px}.cmp #songTime{width:84px;padding-left:32px}.cmp .sgt{min-width:30px}.cmp .sgt[data-a="auto"]{font-size:8.5px}}
 
 /* ---- bandejas: grabaciones y mezcla ---- */
@@ -898,6 +926,9 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
         <button id="chainBtn" class="chain" title="Encadenar: tocar los tracks con notas uno detrás de otro (C)"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6.5 9.5l3-3M7 4.5l1-1a3 3 0 014.2 4.2l-1 1M9 11.5l-1 1a3 3 0 01-4.2-4.2l1-1"/></svg>CADENA</button></div>
       <div class="pats" id="pats" aria-label="Tracks"></div>
     </div>
+    <button id="moreBtn" class="morebar" aria-expanded="false" aria-controls="morePanel" title="Ambiente, sonido, mezcla y herramientas del track">
+      <span id="moreSum"></span><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
+    </button>
     <div class="box sndbox">
       <div class="pl"><span class="lbl">SONIDO</span><span id="sndMix"></span><button id="humBtn" class="chain" title="Destiempo: cada golpe sale un poco corrido y con fuerza distinta, como tocado por una persona">DESTIEMPO<i></i></button></div>
       <div class="snds" id="snds" aria-label="Estilo de sonido para todos"></div>
@@ -905,6 +936,8 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <div class="box tone">
       <span class="lbl" title="Elige qué notas usan bajo, guitarra, acordes y melodía (la batería no cambia). Oscuro y Triste suenan a menor; Alegre y Pop, a mayor.">AMBIENTE</span>
       <select id="moodSel" class="sel" aria-label="Ambiente de los instrumentos melódicos"></select>
+      <div class="moods" id="moodChips" role="group" aria-label="Ambiente"></div>
+      <p class="mp-hint">Elige qué notas usan bajo, guitarra, acordes y melodía en este track. La batería no cambia.</p>
     </div>
     <canvas id="matrix" aria-hidden="true"></canvas>
     <div class="tools">
@@ -920,13 +953,10 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       <button id="playBtn" class="pp" aria-label="Play (Espacio)" title="Play / pausa (Espacio)"><svg class="ip" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.2v15.6c0 .8.9 1.3 1.6.9l12.4-7.8c.6-.4.6-1.4 0-1.8L8.1 3.3c-.7-.4-1.6.1-1.6.9z"/></svg><svg class="ia" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="5" height="16" rx="1.3"/><rect x="14" y="4" width="5" height="16" rx="1.3"/></svg></button>
       <div class="vsw" role="tablist" aria-label="Pantalla"><button id="vGrid" class="on" role="tab" title="Grilla (B)" aria-label="Pantalla grilla"><svg viewBox="0 0 16 16"><rect x="2" y="2" width="5" height="5" rx="1"/><rect x="9" y="2" width="5" height="5" rx="1"/><rect x="2" y="9" width="5" height="5" rx="1"/><rect x="9" y="9" width="5" height="5" rx="1"/></svg></button><button id="vDj" role="tab" title="Bandejas (B)" aria-label="Pantalla bandejas"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="1.6"/><path d="M12.5 1.5l1.8 1.8-3.4 4.6" stroke-linecap="round"/></svg></button><button id="vVid" role="tab" title="Video (J)" aria-label="Pantalla video"><svg viewBox="0 0 16 16" stroke-linejoin="round"><rect x="1.6" y="3.6" width="9.2" height="8.8" rx="1.8"/><path d="M10.8 7.1l3.6-2.1v6l-3.6-2.1"/></svg></button></div>
     </div>
-    <button id="moreBtn" class="morebar" aria-expanded="false" aria-controls="morePanel" title="Sonido, ambiente, mezcla y herramientas del track">
-      <span id="moreSum"></span><svg class="chev" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>
-    </button>
     <div id="morePanel" class="mpanel" hidden>
       <div class="mp-head"><span class="lbl" id="mpTitle">TRACK A</span><button class="mp-x" id="moreClose" aria-label="Cerrar">Listo</button></div>
-      <div class="mp-sec" id="mpSnd"></div>
       <div class="mp-sec" id="mpTone"></div>
+      <div class="mp-sec" id="mpSnd"></div>
       <div class="mp-sec mp-mix">
         <div class="pl"><span class="lbl">SUMAR A LA MEZCLA</span><span id="mpChain"></span></div>
         <div class="mpmix" id="mpMix"></div>
@@ -937,6 +967,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <div class="spacer"></div>
     <div class="logo">GREEN<span>PAD</span><em class="splash" aria-hidden="true"></em></div>
     <div class="grille gr" aria-hidden="true"></div>
+    <div class="ambpop" id="ambPop" role="dialog" aria-label="Elegir ambiente" hidden></div>
   </header>
   <nav id="song" aria-label="Canción">
     <button id="songOn" class="sgsw" aria-pressed="false" title="Modo canción: Play toca la línea de tiempo entera (L)"><i></i>CANCIÓN</button>
@@ -1034,9 +1065,9 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 <div id="help" class="modal" aria-hidden="true">
   <div class="card">
     <h2>Cómo se usa</h2>
-    <p class="tips" style="margin-top:0"><b style="color:var(--cy)">GREEN<span style="color:var(--ink)">PAD</span>:</b> los instrumentos son grabaciones de verdad (batería, bajo, guitarras, piano, saxo, vibráfono y más). <b>DESTIEMPO</b> hace que cada golpe salga un poco corrido y con fuerza distinta, como tocado por una persona. SONIDO cambia todo el track a Banda, Acústico (con aire de sala), Noventa (grabación gastada) o Electro (los sintetizados).<br><br><b>Canción:</b> la barra de abajo de la cabecera es la línea de tiempo. Elegí un track y tocá <b>+</b> (o la tecla G) para sumarlo; cada bloque dice cuántas veces se repite. Tocá un bloque para elegirlo: aparecen botones para moverlo, repetirlo más o menos veces, duplicarlo o quitarlo, y Play arranca desde ahí. <b>AUTO</b> arma una canción con intro, verso y estribillo usando los tracks que tengan notas. Con <b>CANCIÓN</b> prendido (tecla L), Play toca el tema entero; mientras suena, tocar un bloque salta a ese bloque al terminar el compás. El botón de las flechas repite la canción; si está apagado, termina con el último compás y se frena.<br><br><b>Descargar</b> (botón verde de la flecha, al lado del dado): elegí la canción completa o un track, y bajala como audio MP3, WAV o como video vertical 9:16 con visualización. El tema queda guardado en Mis beats con el título que pongas. El video tarda lo mismo que dura la canción.<br><br><b>No hace falta saber música.</b> Elegí un ejemplo del menú o tocá el dado para inventar un track, y después cambiá lo que quieras.<br><br>
+    <p class="tips" style="margin-top:0"><b style="color:var(--cy)">GREEN<span style="color:var(--ink)">PAD</span>:</b> los instrumentos son grabaciones de verdad (batería, bajo, guitarras, piano, saxo, vibráfono y más). <b>DESTIEMPO</b> hace que cada golpe salga un poco corrido y con fuerza distinta, como tocado por una persona. SONIDO cambia todo el track a Banda, Acústico (con aire de sala), Noventa (grabación gastada) o Electro (los sintetizados).<br><br><b>Canción:</b> la barra de abajo de la cabecera es la línea de tiempo. Elegí un track y tocá <b>+</b> (o la tecla G) para sumarlo; cada bloque dice cuántas veces se repite. Tocá un bloque para elegirlo: aparecen botones para moverlo, repetirlo más o menos veces, duplicarlo o quitarlo, y Play arranca desde ahí. <b>AUTO</b> arma una canción con intro, verso y estribillo usando los tracks que tengan notas. Con <b>CANCIÓN</b> prendido (tecla L), Play toca el tema entero; mientras suena, tocar un bloque salta a ese bloque al terminar el compás. El botón de las flechas repite la canción; si está apagado, termina con el último compás y se frena.<br><br><b>Descargar</b> (botón verde de la flecha; en el teléfono, en el menú): elegí la canción completa o un track, y bajala como audio MP3, WAV o como video vertical 9:16 con visualización. El tema queda guardado en Mis beats con el título que pongas. El video tarda lo mismo que dura la canción.<br><br><b>No hace falta saber música.</b> Elegí un ejemplo del menú o tocá el dado para inventar un track, y después cambiá lo que quieras.<br><br>
     <b>Instrumentos:</b> arriba la batería (bombo, caja, hi-hat, percusión) y abajo los melódicos (bajo, guitarra, acordes, melodía). Tocá un ícono para escucharlo; mantenelo apretado (o clic derecho) para elegir su estilo, volumen, inventar una línea nueva o usar una grabación. El <b>+</b> de cada estilo lo suma como capa.<br><br>
-    <b>Altura:</b> en los melódicos, cuanto más lleno está el círculo, más agudo suena. Mantené apretado un paso (o clic derecho) para elegir la altura; en la compu también con la rueda del mouse o Shift + ↑ ↓. <b>AMBIENTE</b> elige qué notas usan bajo, guitarra, acordes y melodía: el mismo track suena oscuro, triste, alegre, etc. La batería no cambia, y todas las alturas combinan entre sí. Cada track (A a H) guarda su propio AMBIENTE y su propio SONIDO, igual que los estilos que elijas para cada instrumento.<br><br>
+    <b>Altura:</b> en los melódicos, cuanto más lleno está el círculo, más agudo suena. Mantené apretado un paso (o clic derecho) para elegir la altura; en la compu también con la rueda del mouse o Shift + ↑ ↓. <b>AMBIENTE</b> elige qué notas usan bajo, guitarra, acordes y melodía: el mismo track suena oscuro, triste, alegre, etc. La batería no cambia, y todas las alturas combinan entre sí. Cada track (A a H) guarda su propio AMBIENTE y su propio SONIDO, igual que los estilos que elijas para cada instrumento. El botón <b>AMBIENTE</b>, al lado de las letras de los tracks, muestra el del track que estás editando; tocalo para cambiarlo, junto con SONIDO, DESTIEMPO, la mezcla, grabar y borrar el track. Al poner la primera nota de bajo, guitarra, acordes o melodía en un track vacío, GREENPAD te pregunta qué ambiente querés.<br><br>
     <b>Grabar:</b> el botón del micrófono tiene 5 grabaciones de hasta 8 segundos. Sirve cualquier sonido: palmas, chasquidos, golpes en la mesa, una lata, una puerta, un instrumento de verdad o lo que tengas cerca. Tocá el botón rojo para empezar y otra vez para parar, o mantenelo apretado mientras grabás. Cada grabación se separa sola en <b>trozos</b> (donde hay silencio o un golpe fuerte): tocá un trozo en la onda o en los números, o arrastrá sobre la onda para elegir un pedazo, y después tocá un instrumento para ponérselo. Así cada instrumento del mismo track puede usar un pedazo distinto de la misma grabación; tocar otra vez el instrumento lo devuelve a su sonido normal. <b>Repartir en batería</b> pone lo más grave en el bombo, lo más agudo en el hi-hat y lo del medio en la caja y la percu. Si abrís Grabar desde un instrumento, lo que grabes ya queda puesto ahí. También podés hacerla más grave o más aguda, darla vuelta, ponerle eco o efecto robot. La grabación queda en ese instrumento solo en el track que estás editando: en los otros tracks el instrumento sigue sonando normal, y cada track puede usar una grabación distinta. Siempre suena completa; en los melódicos además sube y baja según la altura de cada paso. En las bandejas, los botones 1 a 5 de GRABACIONES la tocan: mantenelos apretados para que suene mientras los tenés, o tocalos una vez para dejarla sonando.<br><br>
     <b>Tracks A a H:</b> 8 grillas distintas. Tocá la letra para editarla. Tildá la casilla de otra letra para que suene <b>mezclada</b> con la que estás editando (cada track guarda su propia mezcla, y se respeta en la canción y en las bandejas); sus notas se ven como fantasmas en la grilla. Con CADENA suenan uno detrás de otro.</p>
     <p class="tips"><b>Bandejas</b> (botón del disco al lado de Play, o tecla B): dos platos que suenan juntos, cada uno con el track que elijas. El crossfader pasa de uno al otro. Arrastrá un disco con el dedo o el mouse para hacer scratch; FRENO lo para como un tocadiscos y REBOBINAR lo tira para atrás. GRAVES, MEDIOS y AGUDOS cortan esa parte del sonido, FILTRO deja solo graves o solo agudos, y los íconos de abajo apagan instrumentos de esa bandeja. Cada bandeja toca su track y los que tenga tildados en su mezcla (se ven como +B +C al lado del nombre). En el centro: REVERB, ECO, LO-FI, VINILO (ruido de disco), MODO 90, GRABACIONES (1 a 5: mantener apretado para que suene mientras lo tenés, o tocar una vez para dejarla sonando; teclas O, P, L, Ñ y la que sigue a la Ñ) y REPETIR (mantener apretado repite el último pedacito).</p>
@@ -1234,8 +1265,8 @@ const SCALES = [
 ];
 // ambientes: nombres simples para las escalas (no hace falta saber música)
 const MOODS = [
-  { n: 'Oscuro', sc: 2 }, { n: 'Triste', sc: 0 }, { n: 'Alegre', sc: 3 },
-  { n: 'Pop', sc: 1 }, { n: 'Groove', sc: 4 }, { n: 'Blues', sc: 5 },
+  { n: 'Oscuro', sc: 2, c: 'var(--s7)' }, { n: 'Triste', sc: 0, c: 'var(--s5)' }, { n: 'Alegre', sc: 3, c: 'var(--s8)' },
+  { n: 'Pop', sc: 1, c: 'var(--s6)' }, { n: 'Groove', sc: 4, c: 'var(--s3)' }, { n: 'Blues', sc: 5, c: 'var(--s10)' },
 ];
 const B64 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_';
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -2534,9 +2565,10 @@ const keySel = $('#keySel'), moodSel = $('#moodSel');
 NOTES.forEach((n, i) => keySel.add(new Option(n, i)));
 MOODS.forEach((m, i) => moodSel.add(new Option(m.n, i)));
 keySel.addEventListener('change', () => { keySel.blur(); pushUndo(); S.key = +keySel.value; renderPads(); markEdit(); ensureAudio(); playTrack(6, null, 1, 1, .5); });
+function previewMood() { const c = ensureAudio(); if (c) [1, 3, 5, 8].forEach((v, i) => playTrack(7, c.currentTime + .02 + i * .12, .9, v, .2)); }
 moodSel.addEventListener('change', () => {
   moodSel.blur(); pushUndo(); S.scale = MOODS[+moodSel.value].sc; renderPads(); markEdit(); ensureAudio();
-  const c = AU.ctx; if (c) [1, 3, 5, 8].forEach((v, i) => playTrack(7, c.currentTime + .02 + i * .12, .9, v, .2));
+  AMB.asked.add(S.cur); previewMood();
   toast(`Ambiente ${MOODS[+moodSel.value].n} en el track ${LET[S.cur]}: cambian las notas de bajo, guitarra, acordes y melodía`, 2000);
 });
 
@@ -2650,6 +2682,7 @@ function renderAll(anim) { renderTracks(); renderPads(anim); renderPats(); rende
 function setCell(t, s, v) {
   const pat = S.pats[S.cur]; if (pat[t][s] === v) return false;
   const was = pat[t][s]; pat[t][s] = v; paintPad(t, s);
+  if (v && !was && TR[t].mel && !AMB.asked.has(S.cur) && !pat.some((row, k) => k >= 4 && row.some((x, j) => x && (k !== t || j !== s)))) ambAsk(); // primera nota melódica del track
   if (!RM) pads[t][s].animate(v && !was ? [{ transform: 'scale(.78)' }, { transform: 'scale(1.08)', offset: .6 }, { transform: 'scale(1)' }] : v ? [{ transform: 'translateY(-3px)' }, { transform: 'none' }] : [{ transform: 'scale(.9)' }, { transform: 'scale(1)' }], { duration: 200, easing: 'ease-out' });
   return true;
 }
@@ -2873,6 +2906,7 @@ function showStep(it) {
 }
 
 function selectPattern(i) {
+  ambHide();
   if (P.playing && songMode()) { toast('Con CANCIÓN prendido manda la línea de tiempo: tocá un bloque para saltar ahí, o apagá CANCIÓN (L)', 2400); return; }
   if (P.playing) {
     if (i === P.pending || (i === P.pat && P.pending < 0 && i !== S.cur)) {
@@ -3103,23 +3137,58 @@ function moveTo(el, parent) {
 function moveBack(el) { const c = MORE.ph.get(el); if (c && c.parentNode) c.parentNode.insertBefore(el, c); }
 function compactUI(on) {
   if (on === MORE.on) return; MORE.on = on;
-  const sndbox = $('.sndbox'), tone = $('.box.tone'), parts = [[sndbox, '#mpSnd'], [tone, '#mpTone'], [$('#chainBtn'), '#mpChain'], [$('#rec'), '#mpTools'], [$('#micBtn'), '#mpTools']]; // Borrar track queda a la vista, junto al dado y la descarga
-  if (on) parts.forEach(([el, p]) => moveTo(el, $(p)));
+  // en el teléfono además pasan al panel la cadena, grabar en vivo y grabar un sonido; el botón de AMBIENTE va al lado de las letras
+  const parts = [[$('#chainBtn'), '#mpChain'], [$('#rec'), '#mpTools'], [$('#micBtn'), '#mpTools'], [$('#moreBtn'), '.patbox']];
+  if (on) { parts.forEach(([el, p]) => moveTo(el, $(p))); $('#mpTools').appendChild($('#clear')); }
   else { parts.forEach(([el]) => moveBack(el)); setMore(false); }
 }
+// en todas las pantallas, ambiente, sonido y borrar track viven en el panel del botón AMBIENTE (deja la cabecera libre)
+[[$('.box.tone'), '#mpTone'], [$('.sndbox'), '#mpSnd'], [$('#clear'), '#mpTools']].forEach(([el, p]) => $(p).appendChild(el));
 function setMore(open) {
   morePanel.hidden = !open; moreBtn.setAttribute('aria-expanded', open);
-  if (open) { renderMoreMix(); if (!RM) morePanel.animate([{ transform: 'translateY(-8px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 180, easing: 'ease-out' }); }
+  if (open) {
+    ambHide();
+    if (!MORE.on) { const r = $('#top').getBoundingClientRect(), b = moreBtn.getBoundingClientRect(); morePanel.style.left = clamp(b.left - r.left, 0, Math.max(0, r.width - morePanel.offsetWidth)) + 'px'; }
+    else morePanel.style.left = '';
+    renderMoreMix(); renderMoodChips();
+    if (!RM) morePanel.animate([{ transform: 'translateY(-8px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 180, easing: 'ease-out' });
+  }
 }
-const moreOpen = () => MORE.on && !morePanel.hidden;
+const moreOpen = () => !morePanel.hidden;
+const moodIdx = () => MOODS.findIndex(m => m.sc === S.scale);
 function renderMoreSum() {
-  if (!moreBtn) return;
-  if (DJ.on) { $('#moreSum').innerHTML = '<span class="k">MÁS</span>Grabar en vivo · Grabar sonido'; return; }
+  const mb = $('#moreBtn'); if (!mb) return;
+  if (DJ.on) { $('#moreSum').innerHTML = '<span class="ma"><span class="k">MÁS</span><b>Grabar</b></span><span class="ms">Grabar en vivo · Grabar un sonido</span>'; mb.style.removeProperty('--mc'); return; }
   const fam = S.st.every((x, t) => x === S.st[0] && !S.lay[t]) && S.st[0] < 4 ? FAM[S.st[0]] : 'Mixto';
-  const mx = bits(S.mix).filter(p => p !== S.cur).map(p => LET[p]).join(' ');
-  $('#moreSum').innerHTML = `<span class="k">SONIDO</span>${fam}<span class="k">AMBIENTE</span>${moodName(S.scale)}<span class="k">DESTIEMPO</span>${Math.round(S.hum * 100)}%` + (mx ? `<span class="k mx">MEZCLA</span><span class="mx">${mx}</span>` : '');
+  const mx = bits(S.mix).filter(p => p !== S.cur).map(p => LET[p]).join(' '), mi = moodIdx();
+  mb.style.setProperty('--mc', mi >= 0 ? MOODS[mi].c : 'var(--cy)');
+  $('#moreSum').innerHTML = `<span class="ma"><span class="k">AMBIENTE</span><b>${moodName(S.scale)}</b></span><span class="ms">Sonido ${fam} · destiempo ${Math.round(S.hum * 100)}%` + (mx ? ` · <span class="mx">mezcla ${mx}</span>` : '') + '</span>';
   $('#mpTitle').textContent = `TRACK ${LET[S.cur]}`;
+  renderMoodChips();
   if (moreOpen()) renderMoreMix();
+}
+// botones de ambiente (en el panel y en el aviso del track nuevo): un toque lo elige
+function moodButtons(box, onPick) {
+  MOODS.forEach((m, i) => { const b = document.createElement('button'); b.textContent = m.n; b.dataset.i = i; b.style.setProperty('--mc', m.c); b.addEventListener('click', () => onPick(i)); box.appendChild(b); });
+}
+function pickMood(i) { if (MOODS[i].sc === S.scale) { AMB.asked.add(S.cur); previewMood(); return; } moodSel.value = i; moodSel.dispatchEvent(new Event('change')); }
+function renderMoodChips() { const cur = moodIdx(); document.querySelectorAll('.moods button').forEach(b => { const on = +b.dataset.i === cur; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }); }
+moodButtons($('#moodChips'), pickMood);
+// la primera nota de bajo, guitarra, acordes o melodía en un track vacío pregunta el ambiente (sin frenar: se puede seguir tocando)
+const AMB = { asked: new Set(), t: 0 }, ambPop = $('#ambPop');
+ambPop.innerHTML = '<p></p><div class="moods"></div><button class="later">Después</button>';
+moodButtons(ambPop.querySelector('.moods'), (i) => { pickMood(i); ambHide(); });
+ambPop.querySelector('.later').addEventListener('click', () => ambHide());
+function ambHide() { clearTimeout(AMB.t); if (!ambPop.hidden) ambPop.hidden = true; }
+function ambAsk() {
+  if (DJ.on || VD.on || (P.playing && P.rec)) return;
+  AMB.asked.add(S.cur); setMore(false);
+  ambPop.querySelector('p').innerHTML = `¿Qué <b>ambiente</b> tiene el track ${LET[S.cur]}? Cambia las notas de bajo, guitarra, acordes y melodía. Después lo cambiás en el botón AMBIENTE.`;
+  renderMoodChips(); ambPop.hidden = false;
+  const r = $('#top').getBoundingClientRect(), b = $('#moreBtn').getBoundingClientRect(), w = ambPop.offsetWidth;
+  ambPop.style.left = clamp(b.right - r.left - w, 8, Math.max(8, r.width - w - 8)) + 'px';
+  if (!RM) ambPop.animate([{ transform: 'translateY(-6px)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 200, easing: 'ease-out' });
+  clearTimeout(AMB.t); AMB.t = setTimeout(ambHide, 14000);
 }
 function renderMoreMix() {
   const box = $('#mpMix');
