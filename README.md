@@ -4,6 +4,10 @@ La página principal (`index.html`) es **GREENPAD** (ver más abajo). La caja de
 
 Caja de ritmos y secuenciador de 16 pasos, inspirada en el drumpad de la consola. Tiene 4 pistas de batería y 4 melódicas (bajo, guitarra, acordes y melodía). Tema oscuro verde por defecto (hay tema claro en el menú). Corre en el navegador del teléfono y de la compu, funciona offline y guarda todo en el dispositivo (localStorage), sin base de datos.
 
+## Actualizaciones
+
+- **Recordings and UX improvements** (`greenpad-v1.20.0`): 5 grabaciones de cualquier sonido, cortadas solas en trozos para repartir en los instrumentos con un toque (y Repartir en batería); grabar manteniendo apretado; GRABACIONES 1 a 5 en las bandejas; los plugins de bandejas pasan abajo de los dos canales; cabecera más liviana (2 filas en el teléfono) con el botón AMBIENTE al lado de los tracks y un aviso para elegir el ambiente al empezar las melodías de un track.
+
 ## Archivos
 
 | Archivo | Para qué |
@@ -59,26 +63,33 @@ El botón del disco, al lado de Play (o la tecla `B`), cambia entre la grilla y 
 - **VOLUMEN** y **FILTRO** por bandeja (el filtro a la izquierda deja solo graves y a la derecha solo agudos; doble toque lo vuelve al centro).
 - **AGUDOS, MEDIOS, GRAVES:** cortan esa parte del sonido de la bandeja.
 - **Íconos de abajo:** apagan o prenden cada instrumento en esa bandeja, para armar la mezcla en vivo.
-- **Centro:** REVERB, ECO, LO-FI (sonido gastado), VINILO (ruido de disco), MODO 90 (vinilo, polvo, algo de reverb y swing de una) y REPETIR 1/4, 1/8, 1/16 (mantenido repite el último pedacito en las dos bandejas).
+- **Centro:** REVERB, ECO, LO-FI (sonido gastado), VINILO (ruido de disco), MODO 90 (vinilo, polvo, algo de reverb y swing de una), GRABACIONES 1 a 5 y REPETIR 1/4, 1/8, 1/16 (mantenido repite el último pedacito en las dos bandejas).
 - Los efectos también suenan en la grilla y se guardan con el beat.
 - Las perillas se mueven arrastrando arriba/abajo, con la rueda del mouse o con las flechas si tienen foco.
+- **Plugins:** si hay plugins de bandejas instalados, aparecen abajo de los dos canales, en el bloque PLUGINS.
 - Scratch, freno, rebobinar y repetir usan AudioWorklet (Chrome, Edge, Firefox y Safari 14.1 o más nuevos).
 
-## Tu voz (estilo Koala)
+## Grabaciones (estilo Koala)
 
-- El botón del micrófono (tecla `V`) tiene 2 grabaciones (Grabación 1 y 2) de hasta 8 segundos cada una. Se recorta solo el silencio del principio y del final.
-- Ajustes: "Empieza en" y "Termina en" para recortar, "Tono" para hacerla más grave o más aguda (±12 semitonos), y efectos al revés, eco y robot.
-- Siempre suena completa (entre el inicio y el final elegidos), no se corta al largo del paso. Si el instrumento elegido ya usa esa grabación, los cambios se aplican en vivo.
-- "Usarla en" elige el instrumento. En los melódicos tu voz sube y baja según la altura de cada paso; en la batería suena tal cual.
-- Queda como estilo "Tu voz" en el panel de ese instrumento: se puede volver a otro estilo o sumarla como capa.
-- Se guarda en este dispositivo (IndexedDB) y viaja dentro del `.txt` exportado (sección `[VOCES]`). El enlace no la incluye.
+- Sirve cualquier sonido, no solo cantar o hablar: palmas, chasquidos, golpes en la mesa, una lata, una puerta, un instrumento de verdad.
+- El botón del micrófono (tecla `V`) tiene 5 grabaciones (1 a 5) de hasta 8 segundos cada una. Se recorta solo el silencio del principio y del final. El botón rojo se toca para empezar y otra vez para parar, o se mantiene apretado mientras se graba.
+- Cada grabación se separa sola en **trozos** (cortes donde hay 60 ms de silencio o un golpe fuerte, hasta 12). Se elige un trozo tocándolo en la onda o en los números de TROZOS, o se arrastra sobre la onda para marcar un pedazo (las manijas de los bordes ajustan el inicio y el final).
+- Tocar un instrumento le pone el pedazo elegido, sin cerrar la ventana: así cada instrumento del mismo track usa un trozo distinto de la misma grabación (comparten el audio). El número rojo en cada instrumento dice cuál usa (`2·3` = grabación 2, trozo 3). Tocar otra vez el mismo instrumento lo devuelve a su sonido normal.
+- **Repartir en batería** reparte los trozos solo: lo más grave al bombo, lo más agudo al hi-hat y lo del medio a caja y percu (según el brillo de cada trozo).
+- Si Grabar se abre desde un instrumento (botón Grabar de sus estilos), lo que se graba queda puesto ahí directamente.
+- Teclado con la ventana abierta: `1` a `8` ponen el pedazo en ese instrumento, `←` `→` cambian de trozo, `↑` `↓` de grabación, `Enter` escucha y `Espacio` graba.
+- Ajustes: las manijas de la onda para recortar, "Tono" para hacerla más grave o más aguda (±12 semitonos), y efectos al revés, eco y robot.
+- Siempre suena completa (entre el inicio y el final elegidos), no se corta al largo del paso. Después de tocar un instrumento, los ajustes (manijas, tono, efectos) se aplican en vivo en ese instrumento; elegir otro trozo empieza un pedazo nuevo.
+- En los melódicos la grabación sube y baja según la altura de cada paso; en la batería suena tal cual.
+- Queda como estilo "Grabación" en el panel de ese instrumento: se puede volver a otro estilo o sumarla como capa.
+- Se guarda en este dispositivo (IndexedDB) y viaja dentro del `.txt` exportado (sección `[GRABACIONES]`; los `.txt` viejos con `[VOCES]` se siguen leyendo). El enlace no la incluye.
 - Para grabar, la página tiene que estar en https (Cloudflare Pages lo da) y el navegador pide permiso para el micrófono. En iPhone, si no lo pide, revisar Ajustes > Chrome (o Safari) > Micrófono.
 
 ## Sin saber música
 
 - **Dado** (cabecera o tecla `D`): inventa un patrón completo donde bajo, guitarra, acordes y melodía combinan entre sí.
 - **Inventar línea nueva** (en el panel de cada instrumento, o tecla `I` con el panel abierto): cambia solo ese instrumento y respeta lo que ya está.
-- **AMBIENTE** (cabecera): Oscuro, Triste, Alegre, Pop, Groove o Blues. Elige qué notas usan bajo, guitarra, acordes y melodía (la batería no cambia), así el mismo patrón suena oscuro, triste, alegre, etc. Cualquier altura combina.
+- **AMBIENTE** (el botón al lado de las letras de los tracks): Oscuro, Triste, Alegre, Pop, Groove o Blues. Elige qué notas usan bajo, guitarra, acordes y melodía (la batería no cambia), así el mismo patrón suena oscuro, triste, alegre, etc. Cualquier altura combina.
 - **Por patrón:** cada patrón (A a H) guarda su propio AMBIENTE, su SONIDO y el estilo de cada instrumento. Al mezclar o encadenar patrones, cada uno suena con lo suyo. En el `.txt` cada sección `[A]`, `[B]`... lleva sus líneas `AMBIENTE:` y `ESTILOS:`; las de la cabecera valen para los patrones que no las tengan.
 - La nota base es opcional y está en el menú, en Sonido.
 
@@ -168,7 +179,7 @@ MELODÍA   .... .... .... ....
 | Encadenar patrones | C |
 | Sonido para todos | K |
 | Inventar patrón (dado) | D |
-| Grabar tu voz | V |
+| Grabar un sonido | V |
 | Borrar patrón | Supr |
 | Deshacer / rehacer | Ctrl+Z / Ctrl+Y |
 | Copiar / pegar patrón | Ctrl+C / Ctrl+V |
@@ -255,10 +266,10 @@ En el `.txt`, cada sección de patrón puede llevar su línea `MEZCLA: B C`.
 
 ### Grabaciones
 
-- El micrófono (tecla `V`) graba un sonido en una de las 2 grabaciones y "Usar en" la pone en un instrumento **solo en el patrón que estás editando**. En los otros patrones ese instrumento sigue sonando normal, y cada patrón puede usar una grabación distinta en el mismo instrumento.
+- El micrófono (tecla `V`) graba un sonido en una de las 5 grabaciones y tocar un instrumento le pone el pedazo elegido **solo en el patrón que estás editando**. En los otros patrones ese instrumento sigue sonando normal, y cada patrón puede usar una grabación distinta en el mismo instrumento.
 - Si una grabación larga sigue sonando cuando pasás a un patrón donde el instrumento es normal, se apaga sola para no tapar al instrumento.
 - En el `.txt` cada patrón lleva `GRABACION: BS=g1+eco+L90` y las grabaciones van una sola vez al final, en la sección `[GRABACIONES]`. Los `.txt` viejos (con `VOZ:` y `[VOCES]`) se siguen importando.
-- **Bandejas:** en el centro hay dos botones, GRABACIONES 1 y 2. Mantenido apretado suena mientras lo tenés; con un toque corto queda sonando en loop hasta que lo volvés a tocar. Pasa por REVERB, ECO y LO-FI. En la compu, teclas `O` y `P`.
+- **Bandejas:** en el centro hay cinco botones, GRABACIONES 1 a 5. Mantenido apretado suena mientras lo tenés; con un toque corto queda sonando en loop hasta que lo volvés a tocar. Pasa por REVERB, ECO y LO-FI. En la compu, teclas `O`, `P`, `L`, `Ñ` y la que sigue a la `Ñ`.
 
 ### Canción
 
@@ -285,7 +296,7 @@ El enlace de "Copiar enlace" también lleva la canción, el destiempo y la mezcl
 
 ### Descargar
 
-El botón verde de la flecha (al lado del dado; en la compu, en la fila de herramientas) abre **Descargar**. También está en el menú, en Patrón.
+El botón verde de la flecha (en la compu y la tablet, en la fila de herramientas) abre **Descargar**. En el teléfono está en el menú, en Track (Descargar canción).
 
 - **Título:** el que pongas queda como nombre del tema y se guarda en Mis beats (si no estaba guardado, se guarda solo). Es también el nombre del archivo.
 - **Qué:** la canción completa (como suena en modo canción: termina con el último compás, sin agregar nada) o el patrón que estás editando, de 1 a 8 vueltas, con su mezcla.
@@ -302,14 +313,22 @@ El botón verde de la flecha (al lado del dado; en la compu, en la fila de herra
   - En iPhone sale en MP4; en la compu, MP4 o WebM según el navegador. Tarda lo mismo que dura la canción: hay que dejar la pantalla prendida.
 - El audio se mezcla sin tocar en tiempo real (más rápido) con los mismos sonidos, efectos, mezclas y destiempo, y se ajusta el volumen para que quede fuerte sin recortar.
 - Al terminar aparece para escucharlo, **Descargar** y, en el teléfono, **Compartir** (en iPhone, Compartir > Guardar video lo deja en Fotos).
-- **Grabar en vivo** pasó al panel de la barra resumen (teléfono) y al menú, en Patrón (compu). La tecla `R` sigue igual.
+- **Grabar en vivo** está en el panel del botón AMBIENTE (teléfono) y en el menú, en Track. La tecla `R` sigue igual.
+
+### Botón AMBIENTE y panel del track
+
+- Al lado de las letras de los tracks hay un botón con el **AMBIENTE** del track que estás editando (Oscuro, Triste, Alegre, Pop, Groove o Blues), en el color de ese ambiente. En la compu y la tablet muestra además el SONIDO, el DESTIEMPO y la mezcla.
+- Al tocarlo se abre el panel del track: AMBIENTE (un toque elige, con botones de colores), SONIDO, DESTIEMPO, **Sumar a la mezcla**, CADENA y las herramientas (Grabar en vivo y Grabar sonido en el teléfono, y Borrar track en todas las pantallas). Tocar la grilla, Escape o **Listo** lo cierra.
+- **Elegir el ambiente:** al poner la primera nota de bajo, guitarra, acordes o melodía en un track vacío aparece un globo que pregunta qué ambiente tiene ese track. No frena nada: se puede seguir tocando, elegir uno o tocar **Después** (se cierra solo a los 14 segundos). Pregunta una sola vez por track; si ya se eligió el ambiente desde el panel, no pregunta.
 
 ### En el teléfono
 
-Parado o acostado, la cabecera se compacta para que la grilla tenga más lugar:
+Parado o acostado, la cabecera se compacta para que la grilla tenga más lugar (en la actualización Recordings and UX improvements pasó de 3 filas a 2, más la canción):
 
-- Arriba quedan Play, grilla/bandejas, tempo, dado, deshacer y menú, y los patrones A a H en una sola fila.
-- La barra que dice **SONIDO · AMBIENTE · DESTIEMPO** muestra cómo está el patrón y, al tocarla, abre un panel con SONIDO, DESTIEMPO, AMBIENTE, **Sumar a la mezcla** (las casillas de los patrones), CADENA, Grabar en vivo y Grabar sonido. Borrar patrón (el tacho) queda siempre a la vista, junto al dado, la descarga y deshacer. Tocar la grilla o **Listo** lo cierra.
+- Fila 1: Play, tempo, grilla/bandejas/video, dado, deshacer y menú.
+- Fila 2: los tracks A a H y el botón AMBIENTE. Descargar y Borrar track pasan al menú (y Borrar track también al panel del track).
+- Acostado, todo eso va en una sola fila.
+- En bandejas, la fila 2 es la barra **MÁS** con Grabar en vivo y Grabar sonido.
 - La canción ocupa una sola fila (el tiempo va dentro del botón CANCIÓN). Al tocar un bloque, sus herramientas aparecen en un globo debajo del bloque; **OK** lo cierra.
 
 ### Service worker y uso sin conexión
@@ -320,7 +339,7 @@ Después de la primera carga (en https), la página baja de a poco, en segundo p
 
 ### Video
 
-El tercer botón del selector de pantalla (la cámara, debajo de grilla y bandejas; en el teléfono, a la derecha de la barra resumen) o la tecla `J` abre **Video**: muestra un video en sincronía con la canción y baja el audio justo para ese video. La canción se sigue armando y viendo arriba, en la línea de tiempo (la rayita marca por dónde va el video, también con la música quieta).
+El tercer botón del selector de pantalla (la cámara, debajo de grilla y bandejas; en el teléfono, en la primera fila) o la tecla `J` abre **Video**: muestra un video en sincronía con la canción y baja el audio justo para ese video. La canción se sigue armando y viendo arriba, en la línea de tiempo (la rayita marca por dónde va el video, también con la música quieta).
 
 - **Elegir un video** del equipo (horizontal 16:9, vertical 9:16, cuadrado o cualquier otra medida: la pantalla se acomoda). No se sube a ningún lado. También se puede soltar el archivo sobre la página.
 - El video no se guarda: al recargar hay que elegirlo otra vez. Dónde empieza la música sí queda guardado con el beat (si se elige el mismo archivo; con otro video arranca de cero).
@@ -395,8 +414,8 @@ No hace falta tocar `index.html` ni subir `VERSION` en `sw.js`. El botón "Manda
 | Función | Qué suma |
 |---|---|
 | `gp.instrumento(pista, {...})` | Un estilo para uno de los 8 instrumentos. Aparece en el selector de estilos, después de Grabar, con la marca PLUGIN. Se puede usar como capa |
-| `gp.efecto({...})` | Una perilla en la consola de las bandejas. El efecto va sobre toda la mezcla, entre el volumen general y el compresor, y también sale en Descargar |
-| `gp.boton({...})` | Un botón en la consola de las bandejas que dispara un sonido |
+| `gp.efecto({...})` | Una perilla en el bloque PLUGINS de las bandejas (abajo de los dos canales). El efecto va sobre toda la mezcla, entre el volumen general y el compresor, y también sale en Descargar |
+| `gp.boton({...})` | Un botón en el bloque PLUGINS de las bandejas que dispara un sonido |
 | `gp.efecto({ oculto: true, ... })` | Un efecto sin perilla, siempre enchufado, para manejarlo desde los botones del plugin |
 | `gp.estilo(css)` | CSS propio (otra pinta para los discos, por ejemplo) |
 | `gp.visual({...})` | Un estilo más para el video vertical, en Descargar |
@@ -404,7 +423,7 @@ No hace falta tocar `index.html` ni subir `VERSION` en `sw.js`. El botón "Manda
 | `gp.ejemplo({...})` | Un ritmo armado en el menú, en Ejemplos, bajo el nombre del plugin |
 | `gp.nota`, `gp.golpe`, `gp.grabado` | Usar las grabaciones de `sonidos/` dentro de un plugin (con `usa: [...]` en el instrumento para que se bajen antes) |
 | `gp.microfono()` | El micrófono en vivo, para los botones de las bandejas |
-| `gp.grabar(1 o 2)` y `gp.pararGrabacion()` | Grabar con el micrófono encima de la grabación 1 o 2 (las de GRABACIONES en las bandejas) |
+| `gp.grabar(1 a 5)` y `gp.pararGrabacion()` | Grabar con el micrófono encima de una de las grabaciones 1 a 5 (las de GRABACIONES en las bandejas) |
 
 **Beats y plugins**
 
@@ -412,5 +431,5 @@ No hace falta tocar `index.html` ni subir `VERSION` en `sw.js`. El botón "Manda
 - Si se abre un beat que usa un plugin que no está (o está apagado), suena con el primer estilo de GREENPAD y avisa cuál falta. Al instalarlo de nuevo, el beat lo recupera.
 - El `.txt` lleva los instrumentos de plugins por nombre. "Copiar enlace" no los lleva (quedan con el estilo de GREENPAD) y tampoco lleva las perillas de plugins.
 - De paso se arregló que las capas del estilo 9 en adelante (Cencerro, Claves y Palmas en Percu, y Grabación como capa en caja, hi-hat, percu y melodía) quedaban tildadas pero no sonaban.
-- Con plugins la consola de las bandejas puede quedar más alta que la pantalla: en la compu y en el teléfono acostado se desliza por dentro y el crossfader queda siempre a la vista, abajo.
+- Las perillas y botones de plugins de bandejas van abajo de los dos canales (debajo de FRENO, REBOBINAR, FILTRO y los íconos de instrumentos), en un bloque PLUGINS a todo el ancho, una tarjeta por plugin. La consola del centro queda corta y la pantalla de bandejas se desliza para abajo para llegar a los plugins.
 - Se arregló que el botón de borrar (un beat en Mis beats, o un plugin en el menú) quedaba trabado en "¿Borrar?": usaba la clase `arm`, que es la del brazo del tocadiscos y no deja tocar.
