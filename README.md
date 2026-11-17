@@ -6,6 +6,7 @@ Caja de ritmos y secuenciador de 16 pasos, inspirada en el drumpad de la consola
 
 ## Actualizaciones
 
+- **Herramientas: Onda y Shadow** (`greenpad-v1.21.0`): plugins de un tipo nuevo, Herramienta. Onda muestra la onda de lo que suena sobre la barra de la canción mientras armás el tema. Shadow guía para volver a armar un tema ya hecho (por ejemplo, mientras se filma). La API de plugins suma `gp.herramienta`, `gp.zona`, `gp.analizador`, notas, marcas y los avisos `toque`, `track` y `cambio`.
 - **Recordings and UX improvements** (`greenpad-v1.20.1`): 5 grabaciones de cualquier sonido, cortadas solas en trozos para repartir en los instrumentos con un toque (y Repartir en batería); grabar manteniendo apretado; GRABACIONES 1 a 5 en las bandejas; los plugins de bandejas pasan abajo de los dos canales; cabecera más liviana (2 filas en el teléfono) con el botón AMBIENTE al lado de los tracks y un aviso para elegir el ambiente al empezar las melodías de un track.
 
 ## Archivos
@@ -390,14 +391,14 @@ GREENPAD acepta plugins: archivos `.js` que suman instrumentos, mods para las ba
 | Archivo | Para qué |
 |---|---|
 | `plugins.html` | Landing de plugins: catálogo, instalar, quitar, actualizar y guía para crearlos |
-| `plugins/*.js` | Un archivo por plugin. Los que vienen: `guitarra.js`, `tuchacha.js`, `boombap.js`, `trap.js` y `arcade.js` (sonido), `djkit.js` y `envivo.js` (bandejas), `cassette.js` y `boombox.js` (visuales) |
+| `plugins/*.js` | Un archivo por plugin. Los que vienen: `guitarra.js`, `tuchacha.js`, `boombap.js`, `trap.js` y `arcade.js` (sonido), `djkit.js` y `envivo.js` (bandejas), `cassette.js` y `boombox.js` (visuales), `onda.js` y `shadow.js` (herramientas) |
 | `plugins/plantilla.js` | Plantilla que se baja desde la guía |
 
 **Sumar un plugin que te mandaron**
 
 1. Revisá el código (corre con los mismos permisos que la página).
 2. Copiá el `.js` a `plugins/` (y sus audios, si trae).
-3. En `plugins.html`, agregá una línea al arreglo `PLUGINS`, arriba del script: `archivo`, `tipo` (`sonido`, `bandeja` o `visual`), `nombre`, `autor`, `version` y `descripcion`.
+3. En `plugins.html`, agregá una línea al arreglo `PLUGINS`, arriba del script: `archivo`, `tipo` (`sonido`, `bandeja`, `visual` o `herramienta`), `nombre`, `autor`, `version` y `descripcion`.
 4. Si más adelante cambia, subí `version` en esa línea: a quien lo tenga instalado le aparece **Actualizar**.
 
 No hace falta tocar `index.html` ni subir `VERSION` en `sw.js`. El botón "Mandar mi plugin" va a la dirección de `ENVIAR`, también arriba del script de `plugins.html`.
@@ -424,12 +425,22 @@ No hace falta tocar `index.html` ni subir `VERSION` en `sw.js`. El botón "Manda
 | `gp.nota`, `gp.golpe`, `gp.grabado` | Usar las grabaciones de `sonidos/` dentro de un plugin (con `usa: [...]` en el instrumento para que se bajen antes) |
 | `gp.microfono()` | El micrófono en vivo, para los botones de las bandejas |
 | `gp.grabar(1 a 5)` y `gp.pararGrabacion()` | Grabar con el micrófono encima de una de las grabaciones 1 a 5 (las de GRABACIONES en las bandejas) |
+| `gp.herramienta({...})` | Un botón en el menú, sección **Herramientas** (aparece solo si hay alguna), que llama a `abrir()` |
+| `gp.zona('cancion' / 'pantalla')` | Un lugar para dibujar sobre la barra de la canción (no tapa los toques) o una capa encima de la app para carteles propios |
+| `gp.analizador()` | Un AnalyserNode con lo que suena (null hasta que suena algo por primera vez) |
+| `gp.notas()`, `gp.ponerNotas(n)`, `gp.poner(pista, paso, nota)` | Leer y cambiar las notas: `[track][pista][paso]`, 0 vacío, 1 a 8 la altura en los melódicos |
+| `gp.alTocar(fn)` | Al marcar un paso, `fn(pista, paso, track)` elige la nota (1 a 8), devuelve 0 para no dejar marcarlo, o nada para lo normal |
+| `gp.marcar`, `gp.marcarTrack`, `gp.limpiarMarcas` | Marcas en la grilla y en las letras (`data-guia`), para dibujarlas con `gp.estilo` |
+| `gp.irATrack(letra)`, `gp.cancion()` | Pasar a otro track; los bloques de la canción |
+| `gp.cuando('toque' / 'track' / 'cambio', fn)` | Avisos al marcar o borrar un paso, al cambiar de track (y una vez al abrir) y cuando cambia todo de golpe (deshacer, abrir un tema) |
 
 **Beats y plugins**
 
 - Cada track guarda qué instrumentos de plugins usa por nombre (`plugin/instrumento`), no por posición: no importa en qué orden se instalaron.
 - Si se abre un beat que usa un plugin que no está (o está apagado), suena con el primer estilo de GREENPAD y avisa cuál falta. Al instalarlo de nuevo, el beat lo recupera.
 - El `.txt` lleva los instrumentos de plugins por nombre. "Copiar enlace" no los lleva (quedan con el estilo de GREENPAD) y tampoco lleva las perillas de plugins.
+- **Onda** (`onda.js`): la onda de lo que suena sobre la barra de la canción, corriendo de derecha a izquierda a dos rayitas por paso, con el color del track que sonaba. Muestra también los golpes que se prueban en la grilla con la música quieta. En bandejas y video no dibuja.
+- **Shadow** (`shadow.js`): menú, Herramientas, Shadow. Elegís rehacer todo el tema (en el orden de la canción) o solo el track actual, marcas discretas (un punto chico en el centro) o claras (un aro naranja), y si se puede tocar solo lo marcado. Esconde las notas, marca los botones que faltan (el siguiente late) y las letras de los tracks que siguen. Al tocar un botón marcado pone la nota exacta del original, con su altura; con "Solo dejar tocar lo marcado", los demás no se prenden. Un cartel chico abajo muestra el progreso (se achica con –). Al salir se elige volver al original o dejar lo armado. El original queda en `localStorage` (`greenpad.shadow.v1`): si se recarga la página, pregunta si seguir, volver al original o descartar; si se abre otro tema, la guía queda en pausa. Mientras dura, el aviso de AMBIENTE de los tracks vacíos no aparece.
 - De paso se arregló que las capas del estilo 9 en adelante (Cencerro, Claves y Palmas en Percu, y Grabación como capa en caja, hi-hat, percu y melodía) quedaban tildadas pero no sonaban.
 - Las perillas y botones de plugins de bandejas van abajo de los dos canales (debajo de FRENO, REBOBINAR, FILTRO y los íconos de instrumentos), en un bloque PLUGINS a todo el ancho, una tarjeta por plugin. La consola del centro queda corta y la pantalla de bandejas se desliza para abajo para llegar a los plugins.
 - Se arregló que el botón de borrar (un beat en Mis beats, o un plugin en el menú) quedaba trabado en "¿Borrar?": usaba la clase `arm`, que es la del brazo del tocadiscos y no deja tocar.

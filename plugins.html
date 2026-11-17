@@ -12,7 +12,7 @@
 :root{
   --bg:#c5cdc7; --body:#e7ece8; --head:#eff3f0; --line:#d5ddd7; --pad:#f7faf7; --chip:#dfe6e1;
   --ink:#6f7b73; --ink2:#35423a; --cy:#1fae5f; --or:#6f9a0a; --red:#e5484d; --acc-ink:#ffffff;
-  --k-sonido:#1fae5f; --k-bandeja:#2f86c9; --k-visual:#d0567e;
+  --k-sonido:#1fae5f; --k-bandeja:#2f86c9; --k-visual:#d0567e; --k-herramienta:#e0893a;
   --code:#eef2ef; --shadow:0 18px 50px rgba(0,0,0,.14);
   --font:"Avenir Next","Avenir","Segoe UI",Roboto,"Helvetica Neue",system-ui,sans-serif;
   --mono:ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
@@ -20,7 +20,7 @@
 :root[data-theme="night"]{
   --bg:#060b08; --body:#0f1612; --head:#131c17; --line:#22302a; --pad:#18221d; --chip:#1a2520;
   --ink:#8a9c91; --ink2:#c4d6cb; --cy:#3ee08a; --or:#c6f43a; --acc-ink:#062012;
-  --k-sonido:#3ee08a; --k-bandeja:#6fc3ff; --k-visual:#ff8fb1;
+  --k-sonido:#3ee08a; --k-bandeja:#6fc3ff; --k-visual:#ff8fb1; --k-herramienta:#ffae5c;
   --code:#0b120e; --shadow:0 18px 50px rgba(0,0,0,.6);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -50,7 +50,7 @@ h1 em{font-style:normal;color:var(--cy)}
 .hero .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 
 /* qué puede ser un plugin */
-.kinds{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:8px 0 0}
+.kinds{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:8px 0 0}
 .kind{padding:16px;border-radius:16px;background:var(--head);box-shadow:inset 0 0 0 1px var(--line);border-top:3px solid var(--k)}
 .kind b{display:block;font-size:15px;color:var(--ink2);margin-bottom:4px}
 .kind p{margin:0;font-size:13.5px;color:var(--ink)}
@@ -76,7 +76,7 @@ h2{margin:0 0 6px;font-size:clamp(22px,3.4vw,30px);letter-spacing:-.02em;color:v
 .pl .acts .code{flex:none;font-size:12px;font-weight:700;color:var(--ink);text-decoration:none;padding:8px 4px}
 .pl .acts .code:hover{color:var(--cy)}
 .empty{padding:26px;border-radius:16px;border:1.5px dashed var(--line);color:var(--ink);text-align:center;font-size:14px}
-.k-sonido{--k:var(--k-sonido)}.k-bandeja{--k:var(--k-bandeja)}.k-visual{--k:var(--k-visual)}
+.k-sonido{--k:var(--k-sonido)}.k-bandeja{--k:var(--k-bandeja)}.k-visual{--k:var(--k-visual)}.k-herramienta{--k:var(--k-herramienta)}
 
 /* pasos */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;counter-reset:s;margin:0;padding:0;list-style:none}
@@ -147,6 +147,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <div class="kind k-sonido"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 24V7.5l13-3.5v16"/><circle cx="8.6" cy="24" r="3.4"/><circle cx="21.6" cy="20" r="3.4"/></svg><b>Sonido</b><p>Estilos nuevos para cualquiera de los 8 instrumentos: aparecen al mantener apretado el ícono, junto a los que ya trae.</p></div>
     <div class="kind k-bandeja"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="16" r="12"/><circle cx="16" cy="16" r="3.5"/><path d="M16 4a12 12 0 018.5 3.5"/></svg><b>Bandejas</b><p>Perillas de efectos, botones que disparan sonidos y otra pinta para los discos.</p></div>
     <div class="kind k-visual"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="14" height="26" rx="3"/><path d="M13 22v-5M16 22V11M19 22v-8"/></svg><b>Visuales</b><p>Estilos nuevos para el video vertical que se baja desde Descargar.</p></div>
+    <div class="kind k-herramienta"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="24" height="24" rx="4"/><path d="M4 21l6-6 5 4 6-8 7 6"/></svg><b>Herramientas</b><p>Cosas que se suman a la pantalla mientras armás el tema: una onda que se mueve con la música, una guía para volver a armar un tema.</p></div>
   </div>
 
   <section id="catalogo">
@@ -160,7 +161,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
     <h2>Cómo se usan</h2>
     <ol class="steps">
       <li><b>Instalá</b> el plugin desde esta página. Queda guardado en este equipo y sigue andando sin conexión.</li>
-      <li><b>Volvé a GREENPAD.</b> Los instrumentos aparecen al mantener apretado el ícono de cada uno, las perillas y botones en las bandejas, y los visuales en Descargar, en el estilo del video.</li>
+      <li><b>Volvé a GREENPAD.</b> Los instrumentos aparecen al mantener apretado el ícono de cada uno, las perillas y botones en las bandejas (debajo de los dos canales), los visuales en Descargar, en el estilo del video, y las herramientas en el menú, en Herramientas.</li>
       <li><b>Administralos</b> desde el menú, en Plugins: ahí se prenden, se apagan o se quitan.</li>
     </ol>
   </section>
@@ -181,11 +182,11 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
   nombre: 'Mi plugin',
   autor: 'Tu nombre',
   version: '1.0',
-  tipo: 'sonido',           <span class="c">// sonido, bandeja o visual</span>
+  tipo: 'sonido',           <span class="c">// sonido, bandeja, visual o herramienta</span>
   descripcion: 'Qué hace, en una línea.',
 
   setup(gp) {
-    <span class="c">// acá van gp.instrumento, gp.efecto, gp.boton, gp.estilo y gp.visual</span>
+    <span class="c">// acá van gp.instrumento, gp.efecto, gp.boton, gp.estilo, gp.visual y gp.herramienta</span>
   },
 });</code></pre>
         <p style="margin-top:10px">Un mismo plugin puede sumar varias cosas (por ejemplo, tres instrumentos y una perilla).</p>
@@ -315,8 +316,48 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
         <p style="margin-top:10px">El logo de GREENPAD se dibuja solo, abajo. Con <code>logo: false</code> no aparece.</p>
       </div>
 
+      <div class="k-herramienta">
+        <h3>5. Una herramienta <small>Herramientas</small></h3>
+        <p>Una herramienta suma algo a la pantalla mientras se arma el tema. Puede dibujar sobre la barra de la canción, leer lo que suena, marcar botones de la grilla y decidir qué nota se pone al tocarlos. Los plugins <b>Onda</b> y <b>Shadow</b> de la lista son ejemplos completos.</p>
+<pre><code>gp.herramienta({
+  id: 'mi-guia',
+  nombre: 'Mi guía',                <span class="c">// aparece en el menú, en Herramientas</span>
+  detalle: 'Qué hace',
+  abrir() { <span class="c">/* se llama al tocar el botón del menú */</span> },
+});
+
+<span class="c">// una onda sobre la barra de la canción</span>
+const zona = gp.zona('cancion'), cv = document.createElement('canvas');
+zona.appendChild(cv);
+function cuadro() {
+  requestAnimationFrame(cuadro);
+  const an = gp.analizador(); if (!an) return;    <span class="c">// null hasta que suena algo por primera vez</span>
+  <span class="c">/* an.getFloatTimeDomainData(...) y dibujar en cv */</span>
+}
+requestAnimationFrame(cuadro);</code></pre>
+        <div class="tbl"><table>
+          <tr><th>Función</th><th>Para qué</th></tr>
+          <tr><td><code>gp.herramienta({...})</code></td><td>Un botón en el menú, en Herramientas, que llama a <code>abrir()</code>.</td></tr>
+          <tr><td><code>gp.zona('cancion')</code></td><td>Un lugar para dibujar sobre la barra de la canción. No tapa los toques: los bloques se siguen tocando.</td></tr>
+          <tr><td><code>gp.zona('pantalla')</code></td><td>Una capa encima de la app para carteles y paneles propios. Lo que pongas adentro se puede tocar; lo vacío deja pasar los toques.</td></tr>
+          <tr><td><code>gp.analizador()</code></td><td>Un <code>AnalyserNode</code> con lo que suena (fftSize 2048). Da <code>null</code> hasta que se toca algo por primera vez.</td></tr>
+          <tr><td><code>gp.notas()</code></td><td>Una copia de las notas de los 8 tracks: <code>[track][pista][paso]</code>, con 0 en los vacíos. En bajo, guitarra, acordes y melodía el número (1 a 8) es la altura.</td></tr>
+          <tr><td><code>gp.ponerNotas(notas)</code></td><td>Pone esas notas en los 8 tracks y lo guarda.</td></tr>
+          <tr><td><code>gp.poner(pista, paso, nota)</code></td><td>Pone una nota en el track que se está editando (0 la borra). <code>paso</code> va de 0 a 15.</td></tr>
+          <tr><td><code>gp.alTocar(fn)</code></td><td>Al marcar un paso en la grilla, <code>fn(pista, paso, track)</code> puede devolver la nota a poner (1 a 8), <code>0</code> para no dejar marcarlo, o nada para que sea lo normal. <code>gp.alTocar(null)</code> lo saca.</td></tr>
+          <tr><td><code>gp.marcar(pista, paso, tipo)</code></td><td>Pone <code>data-guia="tipo"</code> en ese botón de la grilla (sin tipo, lo saca). Se dibuja con <code>gp.estilo</code>, por ejemplo <code>.pad[data-guia]::after{...}</code>.</td></tr>
+          <tr><td><code>gp.marcarTrack(letra, tipo)</code></td><td>Lo mismo en las letras de los tracks (<code>.pb[data-guia]</code>).</td></tr>
+          <tr><td><code>gp.limpiarMarcas()</code></td><td>Saca todas las marcas.</td></tr>
+          <tr><td><code>gp.irATrack(letra)</code></td><td>Pasa a editar ese track.</td></tr>
+          <tr><td><code>gp.cancion()</code></td><td>Los bloques de la canción: <code>[{ track, veces }]</code>.</td></tr>
+          <tr><td><code>gp.cuando('toque', fn)</code></td><td>Cada vez que se marca o se borra un paso en la grilla: <code>fn({ pista, paso, valor, antes, track })</code>.</td></tr>
+          <tr><td><code>gp.cuando('track', fn)</code></td><td>Cuando se pasa a editar otro track: <code>fn({ track })</code>. También avisa una vez al abrir la página, ya con el tema cargado.</td></tr>
+          <tr><td><code>gp.cuando('cambio', fn)</code></td><td>Cuando cambia todo de golpe (deshacer, abrir un tema, un ejemplo).</td></tr>
+        </table></div>
+      </div>
+
       <div>
-        <h3>5. Otras ayudas de gp</h3>
+        <h3>6. Otras ayudas de gp</h3>
         <div class="tbl"><table>
           <tr><th>Función</th><th>Para qué</th></tr>
           <tr><td><code>gp.cuando('paso', fn)</code></td><td>Avisa en cada paso que suena: <code>fn({ paso, track })</code>. También hay <code>'play'</code> y <code>'stop'</code>.</td></tr>
@@ -329,7 +370,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       </div>
 
       <div>
-        <h3>6. Probarlo</h3>
+        <h3>7. Probarlo</h3>
         <ul>
           <li>Abrí GREENPAD, menú, <b>Plugins</b>, <b>Probar un plugin propio (.js)</b> y elegí tu archivo. La página se recarga con el plugin puesto.</li>
           <li>Cada vez que cambies el archivo, cargalo de nuevo: reemplaza al anterior.</li>
@@ -339,7 +380,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       </div>
 
       <div>
-        <h3>7. Para que entre en la lista</h3>
+        <h3>8. Para que entre en la lista</h3>
         <ul>
           <li>Un solo archivo <code>.js</code>, más los audios si usa grabaciones propias o con licencia libre.</li>
           <li>Tiene que andar sin conexión: nada de pedir cosas a otros sitios.</li>
@@ -365,7 +406,7 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
    Para sumar uno:
      1. Copiá el archivo .js del plugin a la carpeta plugins/ del repo (y sus audios, si trae).
      2. Agregá acá abajo una línea con sus datos. "archivo" es el nombre dentro de plugins/.
-        "tipo" es sonido, bandeja o visual. El "id" no se escribe: sale del propio archivo.
+        "tipo" es sonido, bandeja, visual o herramienta. El "id" no se escribe: sale del propio archivo.
      3. Si más adelante el plugin cambia, subí el número de "version": a quien lo tenga instalado
         le aparece el botón Actualizar.
    ========================================================================================== */
@@ -378,6 +419,8 @@ const PLUGINS = [
   { archivo: 'djkit.js',     tipo: 'bandeja', nombre: 'DJ Kit',        autor: 'GREENPAD', version: '2.1', descripcion: 'Micrófono en vivo con tres voces (limpia, con eco y robot), dos botones para grabar encima de las grabaciones 1 y 2, bocina, sirena, láser, subida, bomba y scratch con eco de dub, y las perillas bombeo, jet y radio.' },
   { archivo: 'envivo.js',    tipo: 'bandeja', nombre: 'En vivo',       autor: 'GREENPAD', version: '1.0', descripcion: 'Seis botones para mantener apretados sobre toda la mezcla: corte en 1/8 y 1/16, freno de cinta, filtro que cierra, filtro que sube y un eco que atrapa lo que suena.' },
   { archivo: 'cassette.js',  tipo: 'visual',  nombre: 'Cassette',      autor: 'GREENPAD', version: '1.0', descripcion: 'Un cassette con el título escrito a mano, carretes que giran con el tempo, vúmetros de aguja y un fondo de puntos que sube con el sonido.' },
+  { archivo: 'onda.js',      tipo: 'herramienta', nombre: 'Onda',     autor: 'GREENPAD', version: '1.0', descripcion: 'La onda de lo que suena, sobre la barra de la canción, mientras armás el tema. Corre al ritmo del tempo, con el color de cada track, y también muestra los golpes que vas probando en la grilla.' },
+  { archivo: 'shadow.js',    tipo: 'herramienta', nombre: 'Shadow',   autor: 'GREENPAD', version: '1.0', descripcion: 'Te guía para volver a armar un tema ya hecho mientras lo filmás: esconde las notas y marca en el centro qué botones tocar. Al tocarlos pone la nota exacta, con su altura, y avisa qué track sigue. El original queda guardado hasta que salgas.' },
   { archivo: 'boombox.js',   tipo: 'visual',  nombre: 'Boombox',       autor: 'GREENPAD', version: '1.0', descripcion: 'Un radiograbador de los 80: parlantes que empujan con el bombo, cassette que gira, dial que avanza con el tema y luces que siguen al sonido.' },
 ];
 
@@ -388,7 +431,7 @@ const ENVIAR = 'https://jeanphillippe.com';
 (() => {
 'use strict';
 const LS_PLUG = 'greenpad.plugins.v1', LS_PREF = 'greenband.pref.v1';
-const KIND = { sonido: 'Sonido', bandeja: 'Bandejas', visual: 'Visuales' };
+const KIND = { sonido: 'Sonido', bandeja: 'Bandejas', visual: 'Visuales', herramienta: 'Herramientas' };
 const $ = (s) => document.querySelector(s);
 const store = {
   get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } },
@@ -447,7 +490,7 @@ function render() {
   const list = installed(), counts = { todos: PLUGINS.length };
   for (const p of PLUGINS) counts[p.tipo] = (counts[p.tipo] || 0) + 1;
   const fw = $('#filt'); fw.innerHTML = '';
-  for (const k of ['todos', 'sonido', 'bandeja', 'visual']) {
+  for (const k of ['todos', 'sonido', 'bandeja', 'visual', 'herramienta']) {
     const b = document.createElement('button'); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', k === filter);
     b.className = k === filter ? 'on' : ''; b.textContent = k === 'todos' ? 'Todos' : KIND[k];
     const i = document.createElement('i'); i.textContent = counts[k] || 0; b.appendChild(i);

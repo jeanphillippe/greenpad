@@ -664,6 +664,10 @@ kbd{font-family:inherit;font-size:11px;font-weight:700;background:var(--pad);bor
 .sgb.nx{animation:qb .5s steps(2) infinite}
 #songBar{position:absolute;left:0;top:2px;bottom:2px;width:2px;border-radius:1px;background:var(--phon);box-shadow:0 0 6px var(--phon);pointer-events:none;display:none;will-change:transform}
 #song.pl #songBar{display:block}
+.sgwrap{isolation:isolate}
+.pzona.pz-cancion{position:absolute;left:0;top:0;width:100%;height:100%;z-index:2;pointer-events:none;overflow:hidden;border-radius:inherit}
+.pzona.pz-pantalla{position:fixed;inset:0;z-index:15;pointer-events:none}
+.pzona.pz-pantalla>*{pointer-events:auto}
 .sgempty{align-self:center;padding:0 8px;font-size:11px;color:var(--ink);white-space:nowrap}
 .sgempty b{color:var(--ink2)}
 .sgtools{display:flex;align-items:center;gap:4px;flex:none}
@@ -1014,6 +1018,10 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
       <button class="btn" id="recMenu">Grabar en vivo (R)</button>
       <button class="btn" id="dlMenu">Descargar canción</button>
     </div>
+  </section>
+  <section id="toolSec" hidden>
+    <h3>Herramientas</h3>
+    <div class="grid2" id="toolGrid"></div>
   </section>
   <section>
     <h3>Ejemplos</h3>
@@ -2028,7 +2036,7 @@ const stylesOf = (t) => { const p = effSt(t); return [p, ...bitsN(S.lay[t], NS(t
    prueban cargando el archivo desde el menú. Con ?sinplugins en la dirección no se carga ninguno.
    La guía para hacerlos está en plugins.html. */
 const LS_PLUG = 'greenpad.plugins.v1';
-const PLG = { list: [], pv: Array.from({ length: NT }, () => []), fx: [], pads: [], vis: [], on: { paso: [], play: [], stop: [] }, snd: new Map(), ex: [], mic: null, micS: null, micT: 0, miss: new Set(), cur: null, def: null, safe: /[?&]sinplugins\b/.test(location.search) };
+const PLG = { list: [], pv: Array.from({ length: NT }, () => []), fx: [], pads: [], vis: [], on: { paso: [], play: [], stop: [], toque: [], track: [], cambio: [] }, tools: [], val: null, an: null, z: {}, quiet: false, lastCur: -1, snd: new Map(), ex: [], mic: null, micS: null, micT: 0, miss: new Set(), cur: null, def: null, safe: /[?&]sinplugins\b/.test(location.search) };
 const PLUG_MAXV = 12; // instrumentos de plugins por pista, como máximo
 const plugId = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40);
 const plugTxt = (s, n) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim().slice(0, n);
@@ -2080,7 +2088,7 @@ function plugApi(rec) {
       rec.k.add('visual');
     },
     // ---- CSS propio (por ejemplo, otra pinta para los discos de las bandejas) ----
-    estilo(css) { const s = document.createElement('style'); s.dataset.plugin = rec.id; s.textContent = String(css); document.head.appendChild(s); rec.k.add('bandeja'); },
+    estilo(css) { const s = document.createElement('style'); s.dataset.plugin = rec.id; s.textContent = String(css); document.head.appendChild(s); rec.css = true; },
     // ---- avisos de la app: 'paso' (cada paso que suena), 'play' y 'stop' ----
     cuando(ev, f) { if (!PLG.on[ev]) throw new Error('cuando: no existe "' + ev + '"'); PLG.on[ev].push({ plug: rec, f: fn(f, 'de aviso') }); },
     // ---- un ejemplo para el menú (Ejemplos): ritmo, tempo, ambiente y qué estilo usa cada instrumento ----
@@ -2130,8 +2138,65 @@ function plugApi(rec) {
     aviso(msg, ms) { toast(plugTxt(msg, 160), ms); },
     estado() { try { return { bpm: S.bpm, tocando: P.playing, track: LET[P.playing ? P.pat : S.cur], paso: P.vstep, nombre: S.name, notaBase: S.key, bandejas: DJ.on, tema: PREF.theme }; } catch { return null; } }, // dentro de setup todavía no hay nada cargado
     pistas: TR.map(x => x.id),
+    // ---- herramientas: cosas que se suman a la pantalla mientras armás el tema ----
+    // un botón en el menú (sección Herramientas) que llama a abrir()
+    herramienta(def) { const key = own(def.id, def); PLG.tools.push({ key, plug: rec, n: plugTxt(def.nombre, 24) || rec.n, d: plugTxt(def.detalle, 140), abrir: fn(def.abrir, 'abrir') }); rec.k.add('herramienta'); },
+    // un lugar para dibujar: 'cancion' (sobre la barra de la canción, sin tapar los toques) o 'pantalla' (encima de todo, para avisos y paneles)
+    zona(lugar) { rec.k.add('herramienta'); return plugZone(String(lugar)); },
+    // lo que suena en este momento (AnalyserNode, fftSize 2048). Da null hasta que se toca algo por primera vez
+    analizador() { rec.k.add('herramienta'); return plugAnalyser(); },
+    // las notas de los 8 tracks: [track A..H][pista 0..7][paso 0..15], 0 = vacío. En bajo, guitarra, acordes y melodía, 1 a 8 es la altura
+    notas() { return S.pats.map(p => p.map(r => r.slice())); },
+    ponerNotas(n) { plugSetNotes(n); },
+    // pone (o borra, con 0) una nota en el track que se está editando
+    poner(pista, paso, valor) { plugPut(pista, paso, valor); },
+    // marcas en los botones de la grilla y en las letras de los tracks (data-guia="tipo" para dibujarlas con gp.estilo). Sin tipo, la saca
+    marcar(pista, paso, tipo) { try { const t = plugTrk(pista), el = pads[t] && pads[t][clamp(paso | 0, 0, STEPS - 1)]; if (!el) return; if (tipo) el.dataset.guia = String(tipo).slice(0, 40); else delete el.dataset.guia; } catch {} },
+    marcarTrack(letra, tipo) { try { const el = pbs[LET.indexOf(String(letra).toUpperCase())]; if (!el) return; if (tipo) el.dataset.guia = String(tipo).slice(0, 40); else delete el.dataset.guia; } catch {} },
+    limpiarMarcas() { try { pads.flat().concat(pbs).forEach(el => { delete el.dataset.guia; }); } catch {} },
+    irATrack(letra) { const i = LET.indexOf(String(letra).toUpperCase()); if (i >= 0) selectPattern(i); },
+    cancion() { try { return S.song.map(b => ({ track: LET[b.p], veces: b.n })); } catch { return []; } },
+    // al marcar un paso en la grilla: f(pista, paso, track) puede devolver la nota a poner (1 a 8), 0 para no dejar marcarlo, o nada para lo normal
+    alTocar(f) { PLG.val = typeof f === 'function' ? { plug: rec, f } : null; },
   };
   return Object.freeze(api);
+}
+const plugTrk = (pista) => { const t = typeof pista === 'number' ? pista - 1 : trackIndex(pista); if (!(t >= 0 && t < NT)) throw new Error('pista desconocida (' + pista + ')'); return t; };
+function plugZone(k) {
+  if (PLG.z[k]) return PLG.z[k];
+  const el = document.createElement('div'); el.className = 'pzona pz-' + k;
+  if (k === 'cancion') {
+    const w = document.querySelector('.sgwrap'); w.prepend(el);
+    w.addEventListener('scroll', () => { el.style.transform = `translateX(${w.scrollLeft}px)`; }, { passive: true }); // queda quieta aunque los bloques se deslicen
+  } else if (k === 'pantalla') document.body.appendChild(el);
+  else throw new Error('zona: no existe "' + k + '" (usá cancion o pantalla)');
+  PLG.z[k] = el; return el;
+}
+function plugAnalyser() {
+  const c = AU.ctx; if (!c || !AU.pfx) return null;
+  if (!PLG.an) { const a = c.createAnalyser(), z = c.createGain(); a.fftSize = 2048; a.smoothingTimeConstant = .5; z.gain.value = 0; AU.pfx.dst.connect(a); a.connect(z); z.connect(c.destination); PLG.an = a; }
+  return PLG.an;
+}
+function plugPut(pista, paso, valor) {
+  const t = plugTrk(pista), s = clamp(paso | 0, 0, STEPS - 1), v = clamp(Math.round(+valor || 0), 0, 8);
+  PLG.quiet = true; try { setCell(t, s, v); } finally { PLG.quiet = false; }
+  renderPats(); markEdit();
+}
+function plugSetNotes(n) {
+  if (!Array.isArray(n)) throw new Error('ponerNotas: hace falta la lista de tracks');
+  for (let p = 0; p < NP; p++) for (let t = 0; t < NT; t++) for (let s2 = 0; s2 < STEPS; s2++) {
+    const v = n[p] && n[p][t] ? n[p][t][s2] : 0; S.pats[p][t][s2] = clamp(Math.round(+v || 0), 0, 8);
+  }
+  renderPads(); renderPats(); renderSong(); markEdit();
+}
+function renderTools() {
+  const sec = $('#toolSec'), g = $('#toolGrid'); if (!sec) return;
+  g.innerHTML = ''; sec.hidden = !PLG.tools.length;
+  for (const x of PLG.tools) {
+    const b = document.createElement('button'); b.className = 'btn'; b.textContent = x.n; b.title = x.d || ('Plugin: ' + x.plug.n);
+    b.addEventListener('click', () => { closeAll(); try { x.abrir(); } catch (e) { plugErr(x.plug, e, 'herramienta ' + x.n); toast('La herramienta ' + x.n + ' no anduvo'); } });
+    g.appendChild(b);
+  }
 }
 // archivos de audio de los plugins: se bajan al registrar el plugin y se decodifican la primera vez que hacen falta
 function plugSound(url) {
@@ -2668,6 +2733,7 @@ function renderTracks() {
 }
 function renderPats() {
   renderSongTools(); renderMoreSum();
+  if (PLG.lastCur !== S.cur) { PLG.lastCur = S.cur; if (PLG.on.track.length) plugEmit('track', { track: LET[S.cur] }); }
   pbs.forEach((b, i) => {
     b.classList.toggle('cur', i === S.cur);
     b.classList.toggle('has', hasNotes(i));
@@ -2678,11 +2744,12 @@ function renderPats() {
 }
 function renderTone() { keySel.value = S.key; moodSel.value = Math.max(0, MOODS.findIndex(m => m.sc === S.scale)); renderMoreSum(); }
 function patChanged() { renderTracks(); renderTone(); if (SH.open) renderStyles(); }
-function renderAll(anim) { renderTracks(); renderPads(anim); renderPats(); renderTone(); renderSong(); renderHum(); }
+function renderAll(anim) { renderTracks(); renderPads(anim); renderPats(); renderTone(); renderSong(); renderHum(); if (PLG.on.cambio.length) plugEmit('cambio', { track: LET[S.cur] }); }
 function setCell(t, s, v) {
   const pat = S.pats[S.cur]; if (pat[t][s] === v) return false;
   const was = pat[t][s]; pat[t][s] = v; paintPad(t, s);
-  if (v && !was && TR[t].mel && !AMB.asked.has(S.cur) && !pat.some((row, k) => k >= 4 && row.some((x, j) => x && (k !== t || j !== s)))) ambAsk(); // primera nota melódica del track
+  if (!PLG.quiet && PLG.on.toque.length) plugEmit('toque', { pista: TR[t].id, i: t + 1, paso: s, valor: v, antes: was, track: LET[S.cur] });
+  if (v && !was && TR[t].mel && !PLG.val && !AMB.asked.has(S.cur) && !pat.some((row, k) => k >= 4 && row.some((x, j) => x && (k !== t || j !== s)))) ambAsk(); // primera nota melódica del track
   if (!RM) pads[t][s].animate(v && !was ? [{ transform: 'scale(.78)' }, { transform: 'scale(1.08)', offset: .6 }, { transform: 'scale(1)' }] : v ? [{ transform: 'translateY(-3px)' }, { transform: 'none' }] : [{ transform: 'scale(.9)' }, { transform: 'scale(1)' }], { duration: 200, easing: 'ease-out' });
   return true;
 }
@@ -4902,8 +4969,9 @@ function live(t) {
   const c = AU.ctx, now = c.currentTime, dur = stepDur(P.vstep);
   const target = now - P.vt > dur / 2 ? (P.vstep + 1) % STEPS : P.vstep;
   if (S.pats[S.cur][t][target]) return;
+  const lv = PLG.val ? newVal(t, target) : (TR[t].mel ? NOTE[t] : 1); if (!lv) return;
   if (!P.recUndo) { pushUndo(); P.recUndo = true; }
-  setCell(t, target, TR[t].mel ? NOTE[t] : 1); ring(t, target, true);
+  setCell(t, target, lv); ring(t, target, true);
   if (target !== P.vstep && !P.queue.some(q => q.s === target)) P.skip.add(S.cur + ':' + t + ':' + target);
   renderPats(); markEdit();
 }
@@ -4957,7 +5025,10 @@ $('#tap').addEventListener('pointerdown', (e) => { e.preventDefault(); tapTempo(
 /* ================= grid input ================= */
 const paint = { on: false, val: 0, last: null, id: null, t0: 0, s0: 0, pend: false, moved: false, lp: 0 };
 function padFromPoint(x, y) { const el = document.elementFromPoint(x, y); return el && el.classList && el.classList.contains('pad') ? el : null; }
-const newVal = (t) => TR[t].mel ? NOTE[t] : 1;
+const newVal = (t, s) => { // la nota que se pone al marcar un paso (un plugin puede elegirla o no dejar marcarlo)
+  if (PLG.val && s != null) { try { const r = PLG.val.f(TR[t].id, s, LET[S.cur]); if (typeof r === 'number' && isFinite(r)) return clamp(Math.round(r), 0, 8); } catch (e) { plugErr(PLG.val.plug, e, 'alTocar'); } }
+  return TR[t].mel ? NOTE[t] : 1;
+};
 board.addEventListener('pointerdown', (e) => {
   app.classList.remove('kb');
   const trk = e.target.closest('.trk');
@@ -4973,9 +5044,12 @@ function padDown(e, pad) {
   pushUndo();
   Object.assign(paint, { on: true, id: e.pointerId, last: pad, t0: t, s0: s, moved: false, pend: false, val: cur ? 0 : 1 });
   if (!cur) {
-    setCell(t, s, newVal(t));
-    if (!P.playing && !S.mutes[t]) { playTrack(t, null, .9, newVal(t), .35); MX.active = true; loop(); }
-    ring(t, s, true);
+    const nv = newVal(t, s);
+    if (nv) {
+      setCell(t, s, nv);
+      if (!P.playing && !S.mutes[t]) { playTrack(t, null, .9, nv, .35); MX.active = true; loop(); }
+      ring(t, s, true);
+    } else if (!RM) pad.animate([{ transform: 'translateX(-3px)' }, { transform: 'translateX(3px)' }, { transform: 'none' }], { duration: 160 }); // un plugin no deja marcarlo
   } else if (TR[t].mel) paint.pend = true; // se borra al soltar, salvo que se mantenga apretado
   else setCell(t, s, 0);
   if (TR[t].mel) paint.lp = setTimeout(() => {
@@ -4991,7 +5065,7 @@ addEventListener('pointermove', (e) => {
   paint.last = pad; paint.moved = true; clearTimeout(paint.lp);
   if (paint.pend) { setCell(paint.t0, paint.s0, 0); paint.pend = false; }
   const t = +pad.dataset.t, s = +pad.dataset.s;
-  const v = paint.val ? (S.pats[S.cur][t][s] || newVal(t)) : 0;
+  const v = paint.val ? (S.pats[S.cur][t][s] || newVal(t, s)) : 0;
   if (setCell(t, s, v) && v && !P.playing && !S.mutes[t]) playTrack(t, null, .7, v, .3);
 });
 function endPaint(e) {
@@ -6978,7 +7052,7 @@ addEventListener('keydown', (e) => {
     case 'ArrowDown': e.preventDefault(); V ? moveCursor(0, 1) : moveCursor(1, 0); return;
     case 'Enter': case 'KeyX': {
       e.preventDefault(); app.classList.add('kb'); const [t, s] = L.cur; ensureAudio(); pushUndo();
-      const v = S.pats[S.cur][t][s] ? 0 : newVal(t); setCell(t, s, v); if (v && !P.playing) playTrack(t, null, .9, v, .3); renderPats(); markEdit(); return;
+      const v = S.pats[S.cur][t][s] ? 0 : newVal(t, s); setCell(t, s, v); if (v && !P.playing) playTrack(t, null, .9, v, .3); renderPats(); markEdit(); return;
     }
     case 'PageUp': e.preventDefault(); setBpm(S.bpm + 10); return;
     case 'PageDown': e.preventDefault(); setBpm(S.bpm - 10); return;
@@ -7239,7 +7313,7 @@ if (LANG !== 'es') { gtCookie(LANG); GT.want = LANG; gtLoad(); }
 /* ================= plugins (menú) =================
    La lista de instalados, prenderlos o apagarlos, quitarlos y probar uno propio desde un archivo.
    Cualquier cambio recarga la página: los plugins se registran al abrirla. */
-const PLUG_KIND = { sonido: 'Sonido', bandeja: 'Bandejas', visual: 'Visual' };
+const PLUG_KIND = { sonido: 'Sonido', bandeja: 'Bandejas', visual: 'Visual', herramienta: 'Herramienta' };
 function plugMissToast() {
   if (!PLG.miss.size) return;
   const l = [...PLG.miss]; PLG.miss.clear();
@@ -7253,7 +7327,7 @@ function renderPlugs() {
     const li = document.createElement('li'); li.className = (r.on ? '' : 'off') + (r.err ? ' bad' : '');
     li.innerHTML = '<div class="pi"><b></b><small></small></div><button class="pt"></button><button class="pd" aria-label="Quitar plugin"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 9h5.6l.7-9"/></svg></button>';
     li.querySelector('b').textContent = r.n;
-    const kinds = [...r.k].map(k => PLUG_KIND[k]).join(' y ');
+    const kinds = [...r.k].map(k => PLUG_KIND[k]).join(' y ') || (r.css ? PLUG_KIND.bandeja : '');
     li.querySelector('small').textContent = r.err ? 'No anduvo: ' + r.err : [kinds || (r.on && !PLG.safe ? '' : 'Apagado'), r.v && 'v' + r.v, r.a && 'de ' + r.a, r.src === 'archivo' && 'de prueba'].filter(Boolean).join(' · ');
     const pt = li.querySelector('.pt'); pt.textContent = r.on ? 'SÍ' : 'NO'; pt.classList.toggle('on', r.on); pt.title = r.on ? 'Apagar este plugin' : 'Prender este plugin'; pt.setAttribute('aria-pressed', r.on);
     pt.addEventListener('click', () => { const l = plugStored(), e = l.find(x => plugId(x.id) === r.id); if (!e) return; e.on = !r.on; if (plugSave(l)) plugReload(); });
@@ -7284,7 +7358,7 @@ $('#plugIn').addEventListener('change', (e) => {
   };
   rd.readAsText(f);
 });
-renderPlugs();
+renderPlugs(); renderTools();
 
 /* ================= boot ================= */
 document.documentElement.dataset.theme = PREF.theme;
