@@ -6,6 +6,7 @@ Caja de ritmos y secuenciador de 16 pasos, inspirada en el drumpad de la consola
 
 ## Actualizaciones
 
+- **Visual Liquid A** (plugin): gotas de líquido sobre un parlante en 3D (WebGL), iluminado con una luz azul desde abajo a la izquierda y una roja desde arriba a la derecha. Las gotas saltan con el bombo, la onda del cono las empuja y con el sonido se juntan en dibujos que cambian según la zona de frecuencias que más suena; cada gota tira una sombra por luz. Sin WebGL se ve una versión simple en 2D.
 - **Herramientas: Onda y Shadow** (`greenpad-v1.21.0`): plugins de un tipo nuevo, Herramienta. Onda muestra la onda de lo que suena sobre la barra de la canción mientras armás el tema. Shadow guía para volver a armar un tema ya hecho (por ejemplo, mientras se filma). La API de plugins suma `gp.herramienta`, `gp.zona`, `gp.analizador`, notas, marcas y los avisos `toque`, `track` y `cambio`.
 - **Recordings and UX improvements** (`greenpad-v1.20.1`): 5 grabaciones de cualquier sonido, cortadas solas en trozos para repartir en los instrumentos con un toque (y Repartir en batería); grabar manteniendo apretado; GRABACIONES 1 a 5 en las bandejas; los plugins de bandejas pasan abajo de los dos canales; cabecera más liviana (2 filas en el teléfono) con el botón AMBIENTE al lado de los tracks y un aviso para elegir el ambiente al empezar las melodías de un track.
 
@@ -391,7 +392,7 @@ GREENPAD acepta plugins: archivos `.js` que suman instrumentos, mods para las ba
 | Archivo | Para qué |
 |---|---|
 | `plugins.html` | Landing de plugins: catálogo, instalar, quitar, actualizar y guía para crearlos |
-| `plugins/*.js` | Un archivo por plugin. Los que vienen: `guitarra.js`, `tuchacha.js`, `boombap.js`, `trap.js` y `arcade.js` (sonido), `djkit.js` y `envivo.js` (bandejas), `cassette.js` y `boombox.js` (visuales), `onda.js` y `shadow.js` (herramientas) |
+| `plugins/*.js` | Un archivo por plugin. Los que vienen: `guitarra.js`, `tuchacha.js`, `boombap.js`, `trap.js` y `arcade.js` (sonido), `djkit.js` y `envivo.js` (bandejas), `cassette.js`, `boombox.js` y `liquida.js` (visuales), `onda.js` y `shadow.js` (herramientas) |
 | `plugins/plantilla.js` | Plantilla que se baja desde la guía |
 
 **Sumar un plugin que te mandaron**
