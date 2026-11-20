@@ -103,6 +103,21 @@ tr:last-child td{border-bottom:0}
 th{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink)}
 td:first-child{white-space:nowrap}
 td{color:var(--ink)}
+.prompt{position:relative;margin-top:18px;border-radius:18px;background:var(--head);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--cy) 45%,var(--line));overflow:hidden}
+.prompt .ph{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px 12px}
+.prompt .ph b{display:block;font-size:16px;color:var(--ink2)}
+.prompt .ph small{display:block;font-size:12.5px;color:var(--ink)}
+.prompt pre{margin:0;border-radius:0;box-shadow:none;border-top:1px solid var(--line);max-height:230px;overflow:auto;white-space:pre-wrap;word-break:break-word;font-size:12px;line-height:1.55;color:var(--ink)}
+.prompt.open pre{max-height:none}
+.prompt .more{display:block;width:100%;padding:11px;font-size:13px;font-weight:700;color:var(--cy);border-top:1px solid var(--line);background:var(--head)}
+.prompt:not(.open) pre{-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent)}
+details.ref{margin-top:18px;border-radius:16px;background:var(--head);box-shadow:inset 0 0 0 1px var(--line);padding:0 16px}
+details.ref summary{cursor:pointer;padding:15px 0;font-weight:800;font-size:15px;color:var(--ink2);list-style:none;display:flex;align-items:center;gap:10px}
+details.ref summary::-webkit-details-marker{display:none}
+details.ref summary::before{content:"";width:8px;height:8px;border-right:2px solid var(--cy);border-bottom:2px solid var(--cy);transform:rotate(-45deg);transition:transform .15s}
+details.ref[open] summary::before{transform:rotate(45deg)}
+details.ref .doc{padding-bottom:18px}
+details.ref .doc>div:first-child h3{margin-top:4px}
 .send{margin-top:26px;padding:22px;border-radius:18px;background:var(--head);box-shadow:inset 0 0 0 1px var(--line);display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
 .send h3{margin:0 0 4px;font-size:19px;color:var(--ink2)}
 .send p{margin:0;font-size:14.5px;color:var(--ink);max-width:560px}
@@ -115,6 +130,10 @@ td{color:var(--ink)}
 :focus-visible{outline:2px solid var(--cy);outline-offset:2px}
 @media (max-width:760px){
   .kinds,.steps{grid-template-columns:1fr}
+  .steps{gap:8px}
+  .steps li{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;padding:13px 14px}
+  .steps li::before{margin:0}
+  .prompt .ph{flex-wrap:wrap}
   .top .btn span{display:none}
   .hero{padding:18px 0 20px}
 }
@@ -168,11 +187,73 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 
   <section id="hacer">
     <h2>Hacé tu plugin</h2>
-    <p class="sub">Un plugin es un solo archivo <code>.js</code>. No hace falta instalar nada: se escribe en cualquier editor de texto y se prueba en el navegador. Los de la lista de arriba sirven de ejemplo: cada uno tiene su enlace Ver código.</p>
-    <div class="row" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px">
-      <a class="btn pri" href="plugins/plantilla.js" download="mi-plugin.js"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v7.5M4.8 7l3.2 3.2L11.2 7"/><path d="M2.8 11.2v1.3a1.5 1.5 0 001.5 1.5h7.4a1.5 1.5 0 001.5-1.5v-1.3"/></svg>Bajar la plantilla</a>
+    <p class="sub">Un plugin es un archivo de texto que termina en <code>.js</code>. No hace falta saber programar: una IA (ChatGPT, Claude, Gemini) lo puede escribir con estas instrucciones.</p>
+    <ol class="steps">
+      <li><b>Copiá las instrucciones</b> de abajo y pegalas en la IA que uses.</li>
+      <li><b>Abajo de todo, contá qué querés</b> con tus palabras. Por ejemplo: "un bombo de reggaetón más grave" o "un visual con fuegos artificiales que exploten con la caja".</li>
+      <li><b>Guardá lo que te devuelve</b> como <code>mi-plugin.js</code> y probalo: en GREENPAD, menú, Plugins, <b>Probar un plugin propio</b>. Si algo falla, pasale el error a la IA.</li>
+    </ol>
+
+    <div class="prompt">
+      <div class="ph"><div><b>Instrucciones para la IA</b><small>Todo lo que necesita saber, en un solo texto</small></div><button class="btn pri" id="copyPrompt" type="button"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="8.5" height="8.5" rx="2"/><path d="M10.5 5V3.8A1.3 1.3 0 009.2 2.5H3.8a1.3 1.3 0 00-1.3 1.3v5.4a1.3 1.3 0 001.3 1.3H5"/></svg>Copiar</button></div>
+      <pre id="promptTxt" tabindex="0">Escribí un plugin para GREENPAD, una caja de ritmos web (16 pasos, 8 instrumentos, tracks A a H). Devolvé UN solo archivo .js completo, listo para guardar, y después explicá en 2 o 3 líneas cómo probarlo. Respondé en mi idioma. Si algo de lo que pido no se puede con lo de abajo, decilo y proponé lo más parecido.
+
+REGLAS
+- Todo va en: GREENPAD.plugin({ id, nombre, autor, version: &#x27;1.0&#x27;, tipo, descripcion, setup(gp) { ... } })
+  id: minúsculas, sin espacios. tipo: &#x27;sonido&#x27;, &#x27;bandeja&#x27;, &#x27;visual&#x27; o &#x27;herramienta&#x27;. Un plugin puede sumar varias cosas.
+- Solo JavaScript del navegador y Web Audio. Sin librerías, sin pedir nada a internet, sin guardar ni leer datos de la persona. Código legible y comentado.
+- El sonido se conecta a `salida` (nunca a ctx.destination) y se programa con el tiempo `t` (nada de setTimeout). Todo oscilador o fuente que arranca tiene su stop.
+- Textos que ve la persona (nombre, detalle): cortos.
+
+1. INSTRUMENTO (tipo &#x27;sonido&#x27;)
+gp.instrumento(pista, { id, nombre, detalle, tocar(ctx, salida, t, fuerza, nota, afin, info) })
+- pista: &#x27;BD&#x27; bombo, &#x27;SN&#x27; caja, &#x27;HH&#x27; hi-hat, &#x27;PC&#x27; percu, &#x27;BS&#x27; bajo, &#x27;GT&#x27; guitarra, &#x27;CH&#x27; acordes, &#x27;LD&#x27; melodía.
+- fuerza: 0 a 1. nota: en BS, GT, CH y LD es { f, fs, dur } (Hz, Hz del acorde en GT y CH, segundos); en batería es null.
+- afin: afinación (1 = normal), ya aplicada en nota; en batería multiplicá tus frecuencias por afin. info: { bpm, paso } (segundos por paso).
+- En SN, HH y PC el sonido se arma una vez y se repite; si tiene que armarse en cada golpe: enVivo: true.
+- Grabaciones de la app: usa: [&#x27;gt_electrica&#x27;] y adentro gp.nota(ctx, salida, t, fuerza, clave, f, dur, { volumen, cola, max, brillo, desafinar }) o gp.golpe(ctx, salida, t, fuerza, clave, { volumen, velocidad }). Claves: gp.grabaciones (gt_electrica, gt_acustica, gt_criolla, gt_muteada, bs_electrico, ch_piano, pc_conga, pc_palmas, bd_banda y más).
+- Ayudas: gp.distorsion(ctx, 1 a 60) da un nodo de distorsión. gp.ruido() da 1 segundo de ruido blanco (AudioBuffer).
+- Ritmo de ejemplo para el menú: gp.ejemplo({ nombre, detalle, bpm, notaBase: &#x27;Mi&#x27;, ambiente: &#x27;Oscuro&#x27;, estilos: { GT: &#x27;Nombre del estilo&#x27; }, ritmo: { BD: &#x27;x.......x.......&#x27;, GT: &#x27;1...3...5...3...&#x27; } })
+  notaBase: Do, Re, Mi, Fa, Sol, La, Si. ambiente: Oscuro, Triste, Alegre, Pop, Groove, Blues. ritmo: 16 caracteres por pista (x golpe, 1 a 8 altura, punto vacío).
+
+2. BANDEJAS (tipo &#x27;bandeja&#x27;)
+- Perilla sobre toda la mezcla: gp.efecto({ id, nombre (hasta 10 letras), crear(ctx) { return { entrada, salida, ajustar(valor, info) {} } } })
+  valor 0 a 1 (en 0 queda desenchufado). info: { bpm, ahora, inicio }. Con oculto: true no tiene perilla y queda siempre enchufado (para manejarlo desde botones).
+- Botón: gp.boton({ id, nombre, detalle, color, fijo, tocar(ctx, salida, t), soltar(ctx, t) }). soltar es opcional (para mantener apretado). fijo: queda prendido hasta tocarlo de nuevo.
+- Micrófono: gp.microfono() da una promesa con un nodo de audio; gp.soltarMicrofono(ms). Grabar: gp.grabar(1 a 5) y gp.pararGrabacion().
+- Pinta: gp.estilo(css). Selectores: #dj .disc (disco), .lab (etiqueta), .arm (brazo), .mxr (consola).
+
+3. VISUAL PARA EL VIDEO (tipo &#x27;visual&#x27;)
+gp.visual({ id, nombre, detalle, dibujar(g, v) })
+- dibujar se llama 30 veces por segundo. g: contexto 2D de un canvas de 720 x 1280. Para 3D se puede usar WebGL en un canvas propio y pasarlo con g.drawImage.
+- v: W, H, ahora y dur (segundos), pulsos (tiempo en negras), bombo y caja (0 a 1, saltan a 1 en cada golpe y bajan solos), graves, medios, niveles (8 valores, uno por instrumento), bandas(n) (n valores 0 a 1, de graves a agudos), frecuencias y onda (0 a 255), color, color2, colores, paso (0 a 15), track (letra), titulo, bpm, memoria (objeto que se conserva entre cuadros).
+- El logo de GREENPAD se dibuja solo abajo; logo: false lo saca.
+
+4. HERRAMIENTA (tipo &#x27;herramienta&#x27;)
+- gp.herramienta({ id, nombre, detalle, abrir() }): un botón en el menú, en Herramientas.
+- gp.zona(&#x27;cancion&#x27;) (sobre la barra de la canción, no tapa los toques) o gp.zona(&#x27;pantalla&#x27;) (capa encima de la app): un elemento donde poner lo tuyo.
+- gp.analizador(): AnalyserNode con lo que suena, o null hasta que suena algo.
+- Notas: gp.notas() da [track][pista][paso] (0 vacío, 1 a 8 altura); gp.ponerNotas(notas); gp.poner(pista, paso, nota); gp.cancion() da [{ track, veces }]; gp.irATrack(letra).
+- gp.alTocar(fn): al marcar un paso, fn(pista, paso, track) devuelve la nota (1 a 8), 0 para no dejar, o nada para lo normal.
+- Marcas: gp.marcar(pista, paso, tipo), gp.marcarTrack(letra, tipo), gp.limpiarMarcas(); se dibujan con gp.estilo usando .pad[data-guia] y .pb[data-guia].
+
+PARA TODOS
+- gp.cuando(evento, fn): &#x27;paso&#x27; ({ paso, track }), &#x27;play&#x27;, &#x27;stop&#x27;, &#x27;toque&#x27; ({ pista, paso, valor, antes, track }), &#x27;track&#x27; ({ track }), &#x27;cambio&#x27;.
+- gp.tocar(pista, nota): toca un instrumento de GREENPAD. gp.aviso(texto): un cartel corto. gp.estado(): tempo, si suena, track y nombre (después de setup).
+- Audios propios: const s = gp.sonido(&#x27;plugins/&lt;id&gt;/golpe.mp3&#x27;) en setup, y gp.tocarSonido(ctx, salida, t, fuerza, s, { velocidad }).
+
+LO QUE QUIERO:
+</pre>
+      <button class="more" id="promptMore" type="button">Ver todo</button>
     </div>
 
+    <p class="sub" style="margin-top:22px">¿Lo querés hacer a mano? Bajá la plantilla, mirá el código de los plugins de la lista (enlace Ver código) y abrí la guía completa.</p>
+    <div class="row" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:6px">
+      <a class="btn" href="plugins/plantilla.js" download="mi-plugin.js"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v7.5M4.8 7l3.2 3.2L11.2 7"/><path d="M2.8 11.2v1.3a1.5 1.5 0 001.5 1.5h7.4a1.5 1.5 0 001.5-1.5v-1.3"/></svg>Bajar la plantilla</a>
+    </div>
+
+    <details class="ref">
+    <summary>Guía completa, con ejemplos</summary>
     <div class="doc">
       <div>
         <h3>1. La forma del archivo</h3>
@@ -389,6 +470,7 @@ requestAnimationFrame(cuadro);</code></pre>
         </ul>
       </div>
     </div>
+    </details>
 
     <div class="send">
       <div><h3>¿Lo terminaste?</h3><p>Mandalo con tu nombre (o el apodo con el que querés figurar) y una línea que cuente qué hace. Se revisa y se suma a esta página.</p></div>
@@ -448,6 +530,21 @@ if (pref && pref.theme === 'day') { document.documentElement.dataset.theme = 'da
 $('#sendBtn').href = ENVIAR;
 
 let toastT = 0;
+// copiar las instrucciones para la IA
+(() => {
+  const box = document.querySelector('.prompt'), pre = document.getElementById('promptTxt'), more = document.getElementById('promptMore');
+  more.addEventListener('click', () => { const o = box.classList.toggle('open'); more.textContent = o ? 'Ver menos' : 'Ver todo'; });
+  document.getElementById('copyPrompt').addEventListener('click', async () => {
+    const txt = pre.textContent;
+    let ok = false;
+    try { await navigator.clipboard.writeText(txt); ok = true; } catch {}
+    if (!ok) { // navegadores viejos: seleccionar y copiar
+      const ta = document.createElement('textarea'); ta.value = txt; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;opacity:0';
+      document.body.appendChild(ta); ta.select(); try { ok = document.execCommand('copy'); } catch {} ta.remove();
+    }
+    toast(ok ? 'Copiado. Pegalo en la IA y abajo contá qué plugin querés.' : 'No se pudo copiar: seleccioná el texto y copialo a mano.');
+  });
+})();
 function toast(msg, link) {
   const t = $('#toast'); t.textContent = msg;
   if (link) { const a = document.createElement('a'); a.href = 'index.html'; a.textContent = 'Abrir GREENPAD'; t.appendChild(a); }

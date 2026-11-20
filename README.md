@@ -6,6 +6,7 @@ Caja de ritmos y secuenciador de 16 pasos, inspirada en el drumpad de la consola
 
 ## Actualizaciones
 
+- **Intro más directa y guía de plugins con IA** (`greenpad-v1.22.0`): la intro tiene una frase corta y un Play grande que arranca con un estilo al azar de los que mejor suenan; los demás estilos quedan chicos y quietos debajo. Un globito, sin cortar nada, explica que tocar un ícono de instrumento lo hace sonar y mantenerlo apretado lo cambia. En `plugins.html`, "Hacé tu plugin" empieza con 3 pasos y unas instrucciones para copiar y pegar en una IA junto con lo que se quiere hacer; la guía completa queda plegada abajo.
 - **Visual Liquid A** (plugin): gotas de líquido sobre un parlante en 3D (WebGL), iluminado con una luz azul desde abajo a la izquierda y una roja desde arriba a la derecha. Las gotas saltan con el bombo, la onda del cono las empuja y con el sonido se juntan en dibujos que cambian según la zona de frecuencias que más suena; cada gota tira una sombra por luz. Sin WebGL se ve una versión simple en 2D.
 - **Herramientas: Onda y Shadow** (`greenpad-v1.21.0`): plugins de un tipo nuevo, Herramienta. Onda muestra la onda de lo que suena sobre la barra de la canción mientras armás el tema. Shadow guía para volver a armar un tema ya hecho (por ejemplo, mientras se filma). La API de plugins suma `gp.herramienta`, `gp.zona`, `gp.analizador`, notas, marcas y los avisos `toque`, `track` y `cambio`.
 - **Recordings and UX improvements** (`greenpad-v1.20.1`): 5 grabaciones de cualquier sonido, cortadas solas en trozos para repartir en los instrumentos con un toque (y Repartir en batería); grabar manteniendo apretado; GRABACIONES 1 a 5 en las bandejas; los plugins de bandejas pasan abajo de los dos canales; cabecera más liviana (2 filas en el teléfono) con el botón AMBIENTE al lado de los tracks y un aviso para elegir el ambiente al empezar las melodías de un track.
@@ -361,13 +362,22 @@ El tercer botón del selector de pantalla (la cámara, debajo de grilla y bandej
 
 ### Intro
 
-La primera vez que se abre la página en un equipo aparece una pantalla de bienvenida sobre la app borrosa: el logo con la frase amarilla, un texto corto que termina en "..." (tocándolo se lee entero; es el mismo de `acerca.txt`), una fila de estilos para empezar que se desliza (Rock, 808, Hip hop, Lo-fi, Cumbia, Reggaetón, Cuarteto, Fogón, Jazz, Phonk y muchos más, cada uno con su ambiente y tempo a la vista; **Sorpresa** elige uno al azar). Cada estilo carga un ejemplo con sus instrumentos, estilos, ambiente, efectos y destiempo ya elegidos. Abajo está el botón **PLAY**: arranca un tema nuevo con el estilo elegido en el track A, empieza a sonar y cierra la intro. Lo que había no se pierde: el tema de ejemplo ("Primera banda") o el beat sin guardar quedan en Mis beats. Si la página se abrió con un enlace de un beat, la intro sale sin los estilos y Play toca ese beat.
+La primera vez que se abre la página en un equipo aparece una pantalla de bienvenida sobre la app borrosa: el logo con la frase amarilla, una frase corta ("Hacé tu tema tocando cuadros. No hace falta saber música.") y un botón **PLAY** grande que late despacio. Play arranca a sonar enseguida con un estilo al azar de los que mejor suenan, sin decir cuál, y cierra la intro. Debajo, chicos y quietos, está "O elegí un estilo" con una fila de estilos que se desliza a mano (Rock, 808, Hip hop, Lo-fi, Cumbia, Reggaetón, Cuarteto, Fogón, Jazz, Phonk y muchos más): tocar uno arranca ese (no hace falta tocar Play). Cada estilo carga un ejemplo con sus instrumentos, estilos, ambiente, efectos y destiempo ya elegidos. Lo que había no se pierde: el tema de ejemplo ("Primera banda") o el beat sin guardar quedan en Mis beats. Si la página se abrió con un enlace de un beat, la intro sale sin los estilos y Play toca ese beat.
 
 - En la compu: ← → eligen el estilo, Espacio o Enter es Play (con el estilo elegido, o uno al azar), Esc la cierra sin sonido.
-- Ningún estilo viene elegido: tocar uno arranca el tema con ese estilo (no hace falta tocar Play), y **PLAY** solo pone uno al azar. La fila de estilos se desliza sola y da la vuelta sin fin (se frena un momento al tocarla o pasar el mouse); con "reducir movimiento" activado no se mueve sola.
+- La frase está en `INTRO_TXT` y los estilos que puede elegir Play en `INTRO_PLAY` (por nombre de `INTRO_ST`), los dos en `index.html`.
 - Sale una sola vez por equipo. Para verla de nuevo, abrir la dirección con `?intro` al final (por ejemplo `…/index.html?intro`).
 - Los estilos están en `INTRO_ST`, en `index.html`: cada uno tiene nombre, detalle, el ejemplo de `PRESETS` que carga y el destiempo (`h`). Para sumar uno, se agrega un ejemplo a `PRESETS` y una línea a `INTRO_ST` que lo nombre.
-- El texto sale al instante: la página trae una copia de `acerca.txt` y, cuando llega el archivo, se actualiza si cambió. Conviene tocar las dos cosas juntas (`ABOUT0` en `index.html` y `acerca.txt`).
+
+### Pista de los íconos de instrumentos
+
+Tocar un ícono de la columna de instrumentos lo hace sonar; mantenerlo apretado abre sus estilos (cambiar el instrumento, capas, grabar). Para que se entienda sin cortar a nadie aparece un globito al lado del ícono, que no se puede tocar y se va solo:
+
+- Las primeras 3 veces que alguien toca un ícono.
+- Una vez sola, unos segundos después de empezar a sonar, si todavía no tocó ningún ícono (los íconos laten un poco).
+- Deja de salir para siempre cuando alguien abre los estilos manteniendo apretado (o con clic derecho o manteniendo la tecla del número).
+- Mientras se mantiene apretado, el ícono se va marcando con un borde hasta que se abren los estilos.
+
 - Arriba a la derecha está el selector de idioma (también en el menú, sección Vista). Usa el widget de Google Translate, que se carga solo cuando se elige otro idioma; el elegido queda guardado en el equipo. Volver a Español recarga la página si hace falta. El logo y la frase amarilla no se traducen.
 
 ### Frase sobre el logo
@@ -391,7 +401,7 @@ GREENPAD acepta plugins: archivos `.js` que suman instrumentos, mods para las ba
 
 | Archivo | Para qué |
 |---|---|
-| `plugins.html` | Landing de plugins: catálogo, instalar, quitar, actualizar y guía para crearlos |
+| `plugins.html` | Landing de plugins: catálogo, instalar, quitar, actualizar, instrucciones para hacer un plugin con una IA (texto para copiar, en `#promptTxt`) y guía completa plegada |
 | `plugins/*.js` | Un archivo por plugin. Los que vienen: `guitarra.js`, `tuchacha.js`, `boombap.js`, `trap.js` y `arcade.js` (sonido), `djkit.js` y `envivo.js` (bandejas), `cassette.js`, `boombox.js` y `liquida.js` (visuales), `onda.js` y `shadow.js` (herramientas) |
 | `plugins/plantilla.js` | Plantilla que se baja desde la guía |
 
