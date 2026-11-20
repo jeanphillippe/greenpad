@@ -20,11 +20,11 @@ GREENPAD.plugin({
   id: 'liquida',
   nombre: 'Liquid A',
   autor: 'GREENPAD',
-  version: '3.0',
+  version: '3.1',
   tipo: 'visual',
   descripcion: 'Gotas de líquido sobre un parlante, en 3D y en primer plano: caen, saltan con el bombo, salpican con la caja, vuelan hacia la cámara y se juntan en dibujos que cambian con la música. Luz azul y roja desde esquinas opuestas y el espectro dibujado alrededor.',
   setup(gp) {
-    const TAU = Math.PI * 2, N = 3200, RCONO = 0.78, FOV = 50 * Math.PI / 180, W = 720, H = 1280, NB = 64;
+    const TAU = Math.PI * 2, N = 2200, RCONO = 0.78, FOV = 50 * Math.PI / 180, W = 720, H = 1280, NB = 64;
     const LB = [-2.4, 0.6, 2.8], LR = [2.6, 0.7, -2.6];                    // luz azul (abajo a la izquierda) y roja (arriba a la derecha)
     const CB = [0.2, 0.42, 1.0], CR = [1.0, 0.14, 0.08];
     const TB = [0.92, 0.5, 0.22], TR = [0.22, 0.55, 0.95];                  // lo que deja pasar la sombra de cada luz
@@ -133,20 +133,20 @@ void main() {
     const VS_GOTA = `
 precision highp float;
 attribute vec4 aP; attribute float aB;
-uniform mat4 uVP; uniform float uPS, uHalo, uMax, uFoco, uPase;
+uniform mat4 uVP; uniform float uPS, uMax, uFoco, uPase;
 varying vec3 vC; varying float vR, vAire, vBlur;
 void main() {
   vec4 c = uVP * vec4(aP.xyz, 1.0); gl_Position = c;
   vC = aP.xyz; vR = aP.w; vAire = clamp((aP.y - aB - aP.w) * 5.0, 0.0, 1.0);
   vBlur = clamp((uFoco * 0.62 - c.w) / (uFoco * 0.4), 0.0, 1.0);             // más cerca de la cámara que el parlante: fuera de foco
-  float px = 2.0 * aP.w * uPS / c.w * (uHalo > 0.5 ? 4.0 : 1.0 + vBlur * 0.6);
+  float px = 2.0 * aP.w * uPS / c.w * (1.0 + vBlur * 0.6);
   gl_PointSize = min(px, uMax);
-  if (uHalo < 0.5 && (uPase < 0.5 ? vBlur > 0.02 : vBlur <= 0.02)) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);   // cada una en su pasada
+  if (uPase < 0.5 ? vBlur > 0.02 : vBlur <= 0.02) gl_Position = vec4(2.0, 2.0, 2.0, 1.0);   // cada una en su pasada
 }
 `;
     const FS_GOTA = `
 precision highp float;
-uniform vec3 uCam, uLB, uLR, uCB, uCR, uRt, uUp, uBk; uniform float uHalo;
+uniform vec3 uCam, uLB, uLR, uCB, uCR, uRt, uUp, uBk;
 varying vec3 vC; varying float vR, vAire, vBlur;
 vec3 gota(vec3 P, vec3 Nn, vec3 V, vec3 Lp, vec3 Lc) {
   vec3 L = Lp - P; float d2 = dot(L, L); L *= inversesqrt(d2);
@@ -156,20 +156,15 @@ vec3 gota(vec3 P, vec3 Nn, vec3 V, vec3 Lp, vec3 Lc) {
   vec3 R = reflect(-V, Nn);
   float brillo = pow(nh, 300.0) * 14.0 + pow(nh, 36.0) * 0.45;              // el punto de luz, chico y fuerte
   float refl = pow(max(dot(R, L), 0.0), 8.0) * (0.06 + fr * 1.2);            // el reflejo ancho de la luz
-  float pasa = pow(max(dot(Nn, -L), 0.0), 4.0) * 0.22 * (1.0 - fr);          // la luz que atraviesa y sale del otro lado
+  float pasa = pow(max(dot(Nn, -L), 0.0), 5.0) * 0.12 * (1.0 - fr);          // la luz que atraviesa y sale del otro lado
   return Lc * at * (brillo + refl + pasa + max(dot(Nn, L), 0.0) * 0.012);
 }
 void main() {
   vec2 q = gl_PointCoord * 2.0 - 1.0; q.y = -q.y; float d = dot(q, q);
   if (d > 1.0) discard;
-  float bl = uHalo > 0.5 ? 0.0 : vBlur;
+  float bl = vBlur;
   if (bl > 0.0) q *= 1.0 + bl * 0.6;                                         // la gota ocupa menos del punto: el resto es borde suave
   d = min(dot(q, q), 0.999);
-  if (uHalo > 0.5) {                                                         // halo: solo las gotas que van por el aire
-    vec3 L1 = uLB - vC, L2 = uLR - vC;
-    vec3 c = uCB / (1.0 + 0.5 * dot(L1, L1)) + uCR / (1.0 + 0.5 * dot(L2, L2));
-    gl_FragColor = vec4(c * exp(-d * 4.5) * vAire * 0.06, 1.0); return;
-  }
   vec3 nv = vec3(q, sqrt(1.0 - d)), Nn = normalize(uRt * nv.x + uUp * nv.y + uBk * nv.z);
   vec3 P = vC + Nn * vR, V = normalize(uCam - P);
   vec3 col = vec3(0.002, 0.0022, 0.003) + gota(P, Nn, V, uLB, uCB) + gota(P, Nn, V, uLR, uCR);
@@ -321,14 +316,15 @@ void main() {
       const r = Math.sqrt(Math.random()) * 0.74, a = Math.random() * TAU;
       m.x[i] = Math.cos(a) * r; m.z[i] = Math.sin(a) * r; m.y[i] = alto;
       m.vx[i] = (Math.random() - 0.5) * 0.12; m.vz[i] = (Math.random() - 0.5) * 0.12; m.vy[i] = -Math.random() * 0.5;
-      m.g[i] = 0; m.t[i] = 0; m.tv[i] = 2.5 + Math.random() * 6;
+      m.g[i] = 0; m.t[i] = 0; m.tv[i] = 1.5 + Math.random() * 4;
     }
     function iniciar(m) {
       for (const k of ['x', 'y', 'z', 'vx', 'vy', 'vz', 'rad', 't', 'tv']) m[k] = new Float32Array(N);
       m.g = new Uint8Array(N);
       m.fx = 0; m.fz = 1;                                                    // hacia dónde está la cámara, mirando desde arriba
+      m.gx = 0; m.gz = 0; m.lluvia = 0;
       for (let i = 0; i < N; i++) {
-        m.rad[i] = 0.004 + 0.012 * Math.pow(Math.random(), 2.8) + (Math.random() < 0.03 ? 0.01 : 0);
+        m.rad[i] = 0.007 + 0.019 * Math.pow(Math.random(), 2.2) + (Math.random() < 0.04 ? 0.016 : 0);
         nueva(m, i, 0.15 + Math.random() * 3.4);                           // al empezar llueven todas sobre el parlante
       }
       m.tAnt = null; m.antesB = 0; m.antesC = 0; m.E = 0; m.en = 0; m.modo = 2; m.pend = -1; m.fade = 1; m.cambio = -9; m.trk = null;
@@ -342,6 +338,13 @@ void main() {
       const bombo = v.bombo > 0.93 && m.antesB <= 0.93, caja = v.caja > 0.93 && m.antesC <= 0.93;
       m.antesB = v.bombo; m.antesC = v.caja;
       const fuerza = 0.65 + 0.45 * v.graves, grande = bombo ? 0.02 + 0.07 * v.graves : 0;
+      // ráfaga: cada bombo empuja todo el cono para un lado al azar, y se va calmando
+      if (bombo) { const a = Math.random() * TAU, f = 0.08 + 0.25 * v.graves; m.gx += Math.cos(a) * f; m.gz += Math.sin(a) * f; }
+      m.gx *= Math.exp(-dt * 3); m.gz *= Math.exp(-dt * 3);
+      // lluvia: siempre caen gotas nuevas desde arriba, más cuando suena más, y un chaparrón al cambiar de track
+      m.lluvia += dt * N * (0.012 + 0.05 * m.en + 0.12 * m.flB);
+      if (v.track !== m.trkLl) { if (m.trkLl !== undefined) m.lluvia += N * 0.22; m.trkLl = v.track; }
+      while (m.lluvia >= 1) { m.lluvia--; const i = Math.random() * N | 0; if (m.g[i]) nueva(m, i, 1.5 + Math.random() * 2.4); }
       const onda = (x, z, r0, a) => { const i = m.RA.indexOf(Math.min(...m.RA)); m.RX[i] = x; m.RZ[i] = z; m.RR[i] = r0; m.RA[i] = a; };
       if (bombo) { onda(0, 0, 0.2, 0.011 * fuerza); m.flB = 1; }
       let sx = 0, sz = 0;                                                    // la caja salpica en un punto al azar del cono
@@ -380,10 +383,14 @@ void main() {
           if (r < RCONO) {                                                   // sobre el cono
             const th = Math.atan2(z, x), ca = Math.cos(md[0] * th + m.giro), sa = Math.sin(md[0] * th + m.giro), sr = Math.sin(kn * r);
             const A = ca * sr, I = Math.abs(A) * en;
-            const s = I * 0.012 * paso;                                      // tiembla donde vibra: así se juntan donde no vibra
+            const s = (0.004 + I * 0.02) * paso;                             // tiembla (más donde vibra): así se juntan donde no vibra, pero sueltas
             x += (Math.random() - 0.5) * s; z += (Math.random() - 0.5) * s;
+            // una corriente que va cambiando y se mueve con los medios y la caja: desarma los dibujos de a ratos
+            const cs = (0.05 + 0.22 * v.medios + 0.35 * m.flR + 0.25 * m.flB) * dt, tt = v.ahora;
+            x += Math.sin(z * 4.3 + tt * 1.3 + Math.sin(x * 2.7 - tt * 0.9) * 1.6) * cs + m.gx * dt;
+            z += Math.cos(x * 4.1 - tt * 1.1 + Math.cos(z * 3.1 + tt * 0.7) * 1.6) * cs + m.gz * dt;
             const dr = ca * kn * Math.cos(kn * r), dq = -md[0] * sa * sr / Math.max(r, 0.05), cr = x / (r || 1), sn = z / (r || 1);
-            const kk = -A * en * 0.02;                                       // y se deslizan hacia donde el cono no vibra
+            const kk = -A * en * 0.009;                                       // y se deslizan hacia donde el cono no vibra
             VX[i] = VX[i] * 0.75 + (dr * cr - dq * sn) * kk; VZ[i] = VZ[i] * 0.75 + (dr * sn + dq * cr) * kk;
             x += VX[i] * dt; z += VZ[i] * dt;
             if (I > 0.4 && Math.random() < (I - 0.4) * 0.12 * paso) { VY[i] = I * (0.35 + Math.random() * 0.8); VX[i] += (Math.random() - 0.5) * 0.3 * I; VZ[i] += (Math.random() - 0.5) * 0.3 * I; G[i] = 0; }
@@ -428,6 +435,7 @@ void main() {
           const piso = suelo(r, Math.atan2(z, x), U) + R[i];
           if (Y[i] <= piso) {
             Y[i] = piso;
+            if (VY[i] < -3 && R[i] > 0.016 && r < 0.72 && Math.min(...m.RA) < 0.002) { const k = m.RA.indexOf(Math.min(...m.RA)); m.RX[k] = x; m.RZ[k] = z; m.RR[k] = 0; m.RA[k] = 0.0045; }
             if (VY[i] < -0.7) { VY[i] *= -0.3; VX[i] *= 0.6; VZ[i] *= 0.6; } // rebota
             else { VY[i] = 0; G[i] = 1; m.t[i] = 0; }
           }
@@ -504,10 +512,9 @@ void main() {
       gl.useProgram(gota.p); pon(gota);
       gl.uniform3fv(gota.u.uRt, cam.s); gl.uniform3fv(gota.u.uUp, cam.u); gl.uniform3fv(gota.u.uBk, cam.b); gl.uniform1f(gota.u.uFoco, foco);
       suelta = gotas(gota);
-      gl.uniform1f(gota.u.uHalo, 0); gl.uniform1f(gota.u.uPase, 0); gl.drawArrays(gl.POINTS, 0, N);     // nítidas
+      gl.uniform1f(gota.u.uPase, 0); gl.drawArrays(gl.POINTS, 0, N);     // nítidas
       gl.enable(gl.BLEND); gl.depthMask(false);
-      gl.blendFunc(gl.ONE, gl.ONE); gl.uniform1f(gota.u.uHalo, 1); gl.drawArrays(gl.POINTS, 0, N);       // halos
-      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.uniform1f(gota.u.uHalo, 0); gl.uniform1f(gota.u.uPase, 1); gl.drawArrays(gl.POINTS, 0, N);   // las de cerca, desenfocadas
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.uniform1f(gota.u.uPase, 1); gl.drawArrays(gl.POINTS, 0, N);   // las de cerca, desenfocadas
       suelta();
       // 4. la luz en el aire y la viñeta
       gl.disable(gl.DEPTH_TEST); gl.blendFunc(gl.ONE, gl.SRC_ALPHA);
