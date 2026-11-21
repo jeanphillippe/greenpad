@@ -163,6 +163,10 @@ svg{display:block}
 .pad{position:relative;border-radius:calc(var(--cell)*.1);background:var(--pad);box-shadow:inset 0 0 0 1px var(--line);cursor:pointer;contain:layout paint}
 .pad i{position:absolute;inset:17%;border-radius:50%;background:var(--pad-in);pointer-events:none;display:grid;place-items:center;
   font-style:normal;font-weight:800;font-size:clamp(7px,calc(var(--cell)*.25),12px);letter-spacing:-.02em;color:var(--note-ink);line-height:1}
+.pad i{translate:calc(var(--mt,0) * 76%) 0}
+.v .pad i{translate:0 calc(var(--mt,0) * 76%)}
+.pad.on.mt::after{content:"";position:absolute;left:50%;top:12%;bottom:12%;width:1.5px;margin-left:-.75px;border-radius:1px;background:currentColor;opacity:.18;pointer-events:none}
+.v .pad.on.mt::after{left:12%;right:12%;top:50%;bottom:auto;width:auto;height:1.5px;margin:-.75px 0 0}
 .pad.alt{background:var(--pad-alt)}
 .pad.alt i{background:var(--pad-alt-in)}
 .pad.gh{box-shadow:inset 0 0 0 1.5px var(--gh-edge)}
@@ -2143,7 +2147,9 @@ function plugApi(rec) {
     soltarMicrofono(ms) { clearTimeout(PLG.micT); PLG.micT = setTimeout(plugMicOff, Math.max(0, +ms || 0)); },
     // graba con el micrófono y pisa una de las grabaciones, de la 1 a la 5 (hasta 8 segundos). grabar da true cuando empezó; pararGrabacion guarda
     grabar(numero) { return plugRecStart(numero); },
-    pararGrabacion(cancelar) { return plugRecStop(!!cancelar); },  // con cancelar: no guarda lo grabado
+    pararGrabacion(cancelar, callado) { PREC.quiet = !!callado; return plugRecStop(!!cancelar).finally(() => { PREC.quiet = false; }); },  // cancelar: no guarda; callado: sin cartel
+    // la última grabación guardada: { numero, recorte (segundos de silencio sacados al principio), dur }
+    ultimaGrabacion() { return PREC.ult ? Object.assign({}, PREC.ult) : null; },
     // cuáles de las 5 grabaciones tienen sonido: promesa con [true, false, ...]
     misGrabaciones() { return loadSlots().then(() => VE.sl.map(Boolean)); },
     // toca una grabación entera (o el pedazo elegido en el editor), una vez
@@ -2190,7 +2196,7 @@ function plugApi(rec) {
     notas() { return S.pats.map(p => p.map(r => r.slice())); },
     ponerNotas(n) { plugSetNotes(n); },
     // pone (o borra, con 0) una nota en el track que se está editando
-    poner(pista, paso, valor) { plugPut(pista, paso, valor); },
+    poner(pista, paso, valor, corrimiento) { plugPut(pista, paso, valor, corrimiento); },  // corrimiento: de -50 a 50 (% del paso) para que suene antes o después
     // marcas en los botones de la grilla y en las letras de los tracks (data-guia="tipo" para dibujarlas con gp.estilo). Sin tipo, la saca
     marcar(pista, paso, tipo) { try { const t = plugTrk(pista), el = pads[t] && pads[t][clamp(paso | 0, 0, STEPS - 1)]; if (!el) return; if (tipo) el.dataset.guia = String(tipo).slice(0, 40); else delete el.dataset.guia; } catch {} },
     marcarTrack(letra, tipo) { try { const el = pbs[LET.indexOf(String(letra).toUpperCase())]; if (!el) return; if (tipo) el.dataset.guia = String(tipo).slice(0, 40); else delete el.dataset.guia; } catch {} },
@@ -2284,9 +2290,10 @@ function plugAnalyser() {
   if (!PLG.an) { const a = c.createAnalyser(), z = c.createGain(); a.fftSize = 2048; a.smoothingTimeConstant = .5; z.gain.value = 0; AU.pfx.dst.connect(a); a.connect(z); z.connect(c.destination); PLG.an = a; }
   return PLG.an;
 }
-function plugPut(pista, paso, valor) {
+function plugPut(pista, paso, valor, corr) {
   const t = plugTrk(pista), s = clamp(paso | 0, 0, STEPS - 1), v = clamp(Math.round(+valor || 0), 0, 8);
   PLG.quiet = true; try { setCell(t, s, v); } finally { PLG.quiet = false; }
+  const m = clamp(Math.round(+corr || 0), -50, 50); if (v && m && S.mt) { S.mt[S.cur + ',' + t + ',' + s] = m; paintPad(t, s); }
   renderPats(); markEdit();
 }
 function plugSetNotes(n) {
@@ -2360,7 +2367,13 @@ async function plugRecStop(cancelar) {
   try { r.mic.disconnect(r.proc); r.proc.disconnect(); r.mute.disconnect(); } catch {}
   if (cancelar) return false; // se suelta enseguida: no pisa la grabación que había
   let pcm = null;
-  if (r.n > r.sr * .12) { const all = new Float32Array(r.n); let o = 0; for (const ch of r.chunks) { all.set(ch, o); o += ch.length; } pcm = processRec(all, r.sr); }
+  let recorte = 0;
+  if (r.n > r.sr * .12) {
+    const all = new Float32Array(r.n); let o = 0; for (const ch of r.chunks) { all.set(ch, o); o += ch.length; } pcm = processRec(all, r.sr);
+    let pk = 0; for (let i = 0; i < all.length; i++) pk = Math.max(pk, Math.abs(all[i]));   // lo mismo que recorta processRec al principio
+    const th = Math.max(.015, pk * .08); let a = 0; while (a < all.length && Math.abs(all[a]) < th) a++;
+    recorte = Math.max(0, a - Math.round(r.sr * .012)) / r.sr;
+  }
   if (!pcm) { toast('No se escuchó nada. Probá más cerca del micrófono.'); return false; }
   await loadSlots();
   const k = r.k, b64 = pcmToB64(pcm);
@@ -2370,7 +2383,8 @@ async function plugRecStop(cancelar) {
   if (VE.slot === k) { loadSlot(k); VE.dest = -1; }
   saveSlotPrefs();
   renderGpads(); if ($('#voice').classList.contains('on')) { syncVoice(); drawVoice(); }
-  toast(`Grabación ${k + 1} lista. Tocala en GRABACIONES ${k + 1}.`, 2600);
+  PREC.ult = { numero: k + 1, recorte, dur: pcm.length / SR };
+  if (!PREC.quiet) toast(`Grabación ${k + 1} lista. Tocala en GRABACIONES ${k + 1}.`, 2600);
   return k + 1;
 }
 function plugRun(src) { // corre el archivo de un plugin y devuelve lo que declaró en GREENPAD.plugin({...})
@@ -2818,6 +2832,9 @@ function paintPad(t, s) {
   const el = pads[t][s], v = S.pats[S.cur][t][s], gv = v ? 0 : ghostVal(t, s);
   el.classList.toggle('on', !!v); el.classList.toggle('gh', !!gv); el.classList.toggle('mut', S.mutes[t]);
   if (TR[t].mel) { const h = (v || gv) ? ((v || gv) / 8).toFixed(3) : ''; if (el._h !== h) { el._h = h; el.firstChild.style.setProperty('--h', h || '.5'); } }
+  // tiempo exacto: la nota se corre dentro de su cuadro y una rayita marca dónde cae el paso
+  const m = v && S.mt ? (S.mt[S.cur + ',' + t + ',' + s] || 0) : 0;
+  if (el._m !== m) { el._m = m; el.firstChild.style.setProperty('--mt', (m / 100).toFixed(2)); el.classList.toggle('mt', !!m); }
 }
 function renderPads(anim) {
   for (let t = 0; t < NT; t++) for (let s = 0; s < STEPS; s++) paintPad(t, s);
@@ -5096,7 +5113,7 @@ function live(t) {
   setCell(t, target, lv); ring(t, target, true);
   // queda donde se tocó de verdad: cuánto antes o después del paso (en % del paso)
   const off = clamp(Math.round((now - (target === P.vstep ? P.vt : P.vt + dur)) / stepDur(target) * 100), -50, 50);
-  if (Math.abs(off) >= 3) S.mt[S.cur + ',' + t + ',' + target] = off;
+  if (Math.abs(off) >= 3) { S.mt[S.cur + ',' + t + ',' + target] = off; paintPad(t, target); }
   if (target !== P.vstep && !P.queue.some(q => q.s === target)) P.skip.add(S.cur + ':' + t + ':' + target);
   renderPats(); markEdit();
 }

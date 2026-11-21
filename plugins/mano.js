@@ -15,8 +15,14 @@
 //   instrumento reemplaza su ritmo y queda sonando en loop (si la música estaba quieta, arranca). Dos toques lo borran.
 // - Micrófono: tres botones (1, 2 y 3) en el rincón libre. Mantenelo apretado para grabar un sonido (hasta 8 segundos);
 //   un toque corto lo escucha. Después, mantené apretado cualquier instrumento y elegí MIC 1, 2 o 3 entre sus sonidos.
-// - "Acomodar" pide apoyar los 5 dedos: las almohadillas amarillas quedan justo ahí y el resto se mueve y se agranda o
-//   achica con la mano. Sirve para la mano derecha o la izquierda.
+// - Voz en loop: cada micrófono tiene su ↻. Mantenelo apretado y cantá (o hacé cualquier sonido): graba en tiempo,
+//   hasta un compás. Al soltar, la voz queda en la fila de un instrumento libre, como una nota en el paso donde empezó
+//   (con su corrimiento exacto), y suena en loop.
+// - GRILLA lleva a la grilla de GREENPAD sin cortar la música (ahí se ve todo lo grabado, cada nota corrida según cuándo
+//   se tocó); el botón MANO de abajo vuelve.
+// - "Acomodar" (en ⋯): cada almohadilla y cada botón se arrastra para moverlo y se agranda o achica con el punto amarillo
+//   de su borde o pellizcando con dos dedos. "5 dedos" es un atajo: apoyás los 5 dedos y todo se acomoda a tu mano, y
+//   después se ajusta a mano. Lo que acomodes queda guardado en el equipo.
 // - Grabar pasa de un track al siguiente: cada track suena 1, 2 o 4 vueltas mientras grabás encima y después entra el
 //   próximo track vacío (con los mismos instrumentos). Al terminar se arma la canción con lo grabado y le ponés nombre.
 // - En la compu: Espacio bombo, F caja, D hi-hat, S percu, A bajo, J guitarra, K acordes, L melodía; ← → cambian el
@@ -25,11 +31,11 @@ GREENPAD.plugin({
   id: 'mano',
   nombre: 'Mano',
   autor: 'GREENPAD',
-  version: '3.1',
+  version: '3.3',
   tipo: 'herramienta',
-  descripcion: 'Tocá con la mano apoyada en la pantalla: los 8 instrumentos a mano, un LOOP por instrumento, 3 sonidos propios con el micrófono y perillas de efectos. Graba respetando el tiempo de lo que tocás y al final le ponés nombre al tema.',
+  descripcion: 'Tocá con la mano apoyada en la pantalla: los 8 instrumentos a mano, un LOOP por instrumento y para tu voz, 3 sonidos propios con el micrófono y perillas de efectos. Todo queda en la grilla, respetando el tiempo de lo que tocás.',
   setup(gp) {
-    const NECESITA = ['usarGrabacion', 'tocarGrabacion', 'misGrabaciones', 'efectos', 'enVivo', 'grabarEnVivo', 'siguiente', 'estilos', 'elegirEstilo', 'estiloDe', 'ponerCancion', 'guardarComo', 'modoCancion', 'parar'];
+    const NECESITA = ['ultimaGrabacion', 'usarGrabacion', 'tocarGrabacion', 'misGrabaciones', 'efectos', 'enVivo', 'grabarEnVivo', 'siguiente', 'estilos', 'elegirEstilo', 'estiloDe', 'ponerCancion', 'guardarComo', 'modoCancion', 'parar'];
     // la distribución, en proporción de la pantalla (mano derecha), tal como se dibujó:
     // t: tipo (d: dedo, v: verde, p: punto) · r: radio en proporción del ancho
     const LUGARES = [
@@ -69,6 +75,12 @@ GREENPAD.plugin({
 .mano *{box-sizing:border-box}
 .mano button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .mano .mano-x{flex:none;width:34px;height:34px;border-radius:17px;background:rgba(255,255,255,.07);font-size:18px;line-height:34px;text-align:center}
+.mano .mano-gr{flex:none;height:34px;padding:0 10px;border-radius:17px;background:rgba(255,255,255,.07);font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#cfe0d6;display:flex;align-items:center;gap:5px}
+.mano .mano-gr svg{width:13px;height:13px;fill:currentColor}
+.mano-volver{position:fixed;right:12px;bottom:calc(env(safe-area-inset-bottom) + 14px);z-index:16;display:none;align-items:center;gap:6px;height:44px;padding:0 16px;border:0;border-radius:22px;
+  background:#0f1813;color:#dcff00;font:inherit;font-size:12px;font-weight:800;letter-spacing:.1em;box-shadow:0 6px 20px rgba(0,0,0,.4),inset 0 0 0 1.5px rgba(220,255,0,.5);cursor:pointer}
+.mano-volver.on{display:flex}
+.mano-volver.grab{color:#fff;background:#ff4b4b;box-shadow:0 6px 20px rgba(0,0,0,.4)}
 .mano-perillas{position:absolute;left:0;right:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:4px;padding:6px 10px}
 .mano-perillas.arriba{top:env(safe-area-inset-top)}
 .mano-perillas.abajo{bottom:env(safe-area-inset-bottom)}
@@ -103,6 +115,7 @@ GREENPAD.plugin({
 .mano-loop.suena{box-shadow:inset 0 0 0 1.5px var(--c);background:color-mix(in srgb,var(--c) 16%,transparent)}
 .mano-loop.on{transform:scale(1.15);background:var(--c);color:#06120c;box-shadow:0 0 18px 2px color-mix(in srgb,var(--c) 60%,transparent)}
 .mano-pad.enloop{box-shadow:inset 0 0 0 3px var(--c),0 0 0 4px rgba(255,255,255,.12)}
+.mano-loop.voz.grabando{background:#ff4b4b;color:#fff;box-shadow:0 0 0 6px rgba(255,75,75,.25);transform:scale(1.15)}
 .mano-pt.mic{font-size:0;color:#cfe0d6}
 .mano-pt.mic svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
 .mano-pt.mic i{position:absolute;right:-3px;top:-3px;min-width:15px;height:15px;border-radius:8px;background:#22302a;font-size:9.5px;font-style:normal;font-weight:800;line-height:15px;text-align:center;color:#cfe0d6}
@@ -114,6 +127,20 @@ GREENPAD.plugin({
 .mano-burb i{font-style:normal;font-size:18px;opacity:.45}
 .mano-burb span{display:flex;flex-direction:column;align-items:center;line-height:1.15}
 .mano-burb small{font-size:9.5px;letter-spacing:.1em;opacity:.55}
+.mano.edita .mano-pad,.mano.edita .mano-pt{outline:1.5px dashed rgba(220,255,0,.6);outline-offset:3px;cursor:move}
+.mano.edita .mano-pad.tq,.mano.edita .mano-pt.tq{outline-color:#dcff00}
+.mano.edita .mano-loop,.mano.edita .mano-perillas{visibility:hidden}
+.mano-asa{display:none;position:absolute;right:0;bottom:0;width:24px;height:24px;transform:translate(28%,28%);border-radius:50%;background:#dcff00;box-shadow:0 2px 8px rgba(0,0,0,.45);z-index:3;cursor:nwse-resize}
+.mano-asa::after{content:"";position:absolute;left:7px;top:7px;width:8px;height:8px;border-right:2px solid #0a120e;border-bottom:2px solid #0a120e}
+.mano.edita .mano-asa{display:block}
+.mano-edit{position:absolute;left:8px;right:8px;z-index:5;display:none;flex-direction:column;gap:7px;padding:9px 10px;border-radius:14px;background:rgba(15,24,19,.96);box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.mano-edit.arriba{top:calc(env(safe-area-inset-top) + 6px)}
+.mano-edit.abajo{bottom:calc(env(safe-area-inset-bottom) + 6px)}
+.mano.edita .mano-edit{display:flex}
+.mano-edit p{margin:0;font-size:12px;line-height:1.35;color:#cfe0d6;text-align:center}
+.mano-edit .bs{display:flex;gap:6px}
+.mano .mano-edit button{flex:1;height:34px;border-radius:10px;background:#18241e;font-size:12px;font-weight:800;color:#cfe0d6}
+.mano .mano-edit button.pri{background:#dcff00;color:#0a120e}
 .mano-calib{position:absolute;inset:0;z-index:6;background:rgba(5,8,6,.95);display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:30px}
 .mano-calib.on{display:flex}
 .mano-calib b{font-size:20px}
@@ -149,16 +176,17 @@ GREENPAD.plugin({
     function armar() {
       raiz = document.createElement('div'); raiz.className = 'mano'; raiz.setAttribute('role', 'dialog'); raiz.setAttribute('aria-label', 'Mano');
       raiz.innerHTML = `
-<div class="mano-perillas arriba"><button class="mano-x" data-a="cerrar" aria-label="Cerrar">×</button></div>
+<div class="mano-perillas arriba"><button class="mano-gr" data-a="grilla" aria-label="Ver la grilla"><svg viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1.2"/><rect x="9" y="1.5" width="5.5" height="5.5" rx="1.2"/><rect x="1.5" y="9" width="5.5" height="5.5" rx="1.2"/><rect x="9" y="9" width="5.5" height="5.5" rx="1.2"/></svg>GRILLA</button><button class="mano-x" data-a="cerrar" aria-label="Cerrar">×</button></div>
 <div class="mano-capa"></div>
+<div class="mano-edit arriba"><p>Arrastrá para mover. El punto amarillo (o pellizcar) cambia el tamaño.</p><div class="bs"><button data-a="original">Como al principio</button><button data-a="dedos">5 dedos</button><button class="pri" data-a="listo">Listo</button></div></div>
 <div class="mano-burb"><i>‹</i><span><small></small><b></b></span><i>›</i></div>
-<div class="mano-calib"><b>Apoyá la mano</b><p>Poné los 5 dedos sobre la pantalla, cómodos, como si fueras a tocar. Los amarillos van a quedar justo ahí y el resto se acomoda alrededor.</p><button class="mano-op" data-a="calibCancelar">Cancelar</button></div>
+<div class="mano-calib"><b>Apoyá la mano</b><p>Poné los 5 dedos sobre la pantalla, cómodos, como si fueras a tocar. Los dedos van a quedar justo ahí y el resto se acomoda alrededor. Después lo podés ajustar a mano.</p><button class="mano-op" data-a="calibCancelar">Cancelar</button></div>
 <div class="mano-hoja hoja-mas">
   <b>Más</b>
   <div class="mano-fila"><span>Vueltas por track al grabar</span><button class="mano-op" data-a="v1">×1</button><button class="mano-op" data-a="v2">×2</button><button class="mano-op" data-a="v4">×4</button></div>
   <div class="mano-fila"><span>Clic en cada tiempo al grabar</span><button class="mano-op" data-a="clic">Sí</button></div>
   <div class="mano-fila"><span>Mano</span><button class="mano-op" data-a="der">Derecha</button><button class="mano-op" data-a="izq">Izquierda</button></div>
-  <div class="bs"><button data-a="original">Como al principio</button><button class="pri" data-a="acomodar">Acomodar mi mano</button></div>
+  <div class="bs"><button data-a="original">Como al principio</button><button class="pri" data-a="acomodar">Acomodar</button></div>
 </div>
 <div class="mano-hoja hoja-nombre">
   <b>Ponele nombre</b>
@@ -168,10 +196,15 @@ GREENPAD.plugin({
 </div>`;
       gp.zona('pantalla').appendChild(raiz);
       const q = (s) => raiz.querySelector(s);
-      el = { capa: q('.mano-capa'), fila: q('.mano-perillas'),
+      el = { capa: q('.mano-capa'), fila: q('.mano-perillas'), edit: q('.mano-edit'),
         burb: q('.mano-burb'), calib: q('.mano-calib'), mas: q('.hoja-mas'), hoja: q('.hoja-nombre'),
         nombre: q('.hoja-nombre input[type=text]'), armarCancion: q('.hoja-nombre input[type=checkbox]'), resumen: q('.mano-resumen') };
       armarPerillas();
+      // el botón para volver a Mano desde la grilla
+      el.volver = document.createElement('button'); el.volver.className = 'mano-volver'; el.volver.type = 'button';
+      el.volver.innerHTML = '<svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M5 8V3.5a1 1 0 012 0V7M7 6.5V2.5a1 1 0 012 0V7M9 6.5V3.5a1 1 0 012 0v5.5c0 3-2 5-4.5 5S3 12 2.5 10.5L1.8 8.6a1 1 0 011.8-.8L5 9.5"/></svg>MANO';
+      el.volver.addEventListener('click', volver);
+      gp.zona('pantalla').appendChild(el.volver);
       raiz.addEventListener('click', alClic);
       el.capa.addEventListener('pointerdown', apoyar);
       el.fila.addEventListener('pointerdown', girarEmpieza);
@@ -188,6 +221,7 @@ GREENPAD.plugin({
     function lugares() {
       const W = innerWidth, H = innerHeight, esp = G.mano === 'izq';
       const base = LUGARES.map(L => ({ ...L, x: (esp ? 1 - L.x : L.x) * W, y: L.y * H, r: L.r * W }));
+      if (G.custom) return base.map(L => { const c = G.custom[L.k]; return c ? { ...L, x: c[0] * W, y: c[1] * H, r: c[2] * W, fijo: true } : L; });   // acomodado a mano
       if (!G.pos) return base;
       const A = DEDOS.map((_, i) => [base[i].x, base[i].y]), B = G.pos.map(([x, y]) => [x * W, y * H]);
       const ca = A.reduce((s, p) => [s[0] + p[0] / 5, s[1] + p[1] / 5], [0, 0]), cb = B.reduce((s, p) => [s[0] + p[0] / 5, s[1] + p[1] / 5], [0, 0]);
@@ -204,7 +238,7 @@ GREENPAD.plugin({
       el.capa.innerHTML = '';
       const W = innerWidth, H = innerHeight;
       const P = lugares();
-      P.forEach(L => { L.r = L.t === 'p' ? Math.max(19, Math.min(26, L.r)) : Math.max(L.k === 'pul' ? 44 : 30, Math.min(L.k === 'pul' ? 92 : 70, L.r)); });
+      P.forEach(L => { if (L.fijo) { L.r = Math.max(L.t === 'p' ? 16 : 24, Math.min(120, L.r)); return; } L.r = L.t === 'p' ? Math.max(19, Math.min(26, L.r)) : Math.max(L.k === 'pul' ? 44 : 30, Math.min(L.k === 'pul' ? 92 : 70, L.r)); });
       // la fila de perillas: arriba de los dedos, salvo que los dedos lleguen muy arriba y abajo haya más lugar
       const dd = P.filter(L => L.t === 'd'), alto = Math.min(...dd.map(L => L.y - L.r)), bajo = H - Math.max(...dd.map(L => L.y + L.r));
       const abajo = alto < 78 && bajo > alto;
@@ -215,14 +249,16 @@ GREENPAD.plugin({
         for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) {
           const a = P[i], b = P[j], dx = b.x - a.x, dy = b.y - a.y, d = Math.hypot(dx, dy) || 1, m = a.r + b.r + 6 - d;
           if (m <= 0) continue;
-          const fa = a.t === 'd' ? 0 : b.t === 'd' ? 1 : 0.5, fb = 1 - fa;
+          if (a.fijo && b.fijo) continue;
+          const fa = a.t === 'd' || a.fijo ? 0 : b.t === 'd' || b.fijo ? 1 : 0.5, fb = 1 - fa;
           a.x -= dx / d * m * fa; a.y -= dy / d * m * fa; b.x += dx / d * m * fb; b.y += dy / d * m * fb;
         }
-        for (const L of P) { if (L.t === 'd') continue; L.x = Math.min(W - L.r - 3, Math.max(L.r + 3, L.x)); L.y = Math.min(fondo - L.r, Math.max(top + L.r, L.y)); }   // los dedos quedan donde se apoyaron
+        for (const L of P) { if (L.t === 'd' || L.fijo) continue; L.x = Math.min(W - L.r - 3, Math.max(L.r + 3, L.x)); L.y = Math.min(fondo - L.r, Math.max(top + L.r, L.y)); }   // los dedos (y lo acomodado a mano) quedan donde están
       }
       E.pads = {}; E.geo = P;
+      for (const L of P) if (L.fijo) { L.x = Math.min(W - L.r * 0.3, Math.max(L.r * 0.3, L.x)); L.y = Math.min(H - L.r * 0.3, Math.max(L.r * 0.3, L.y)); }
       for (const L of P) {
-        const b = document.createElement('div');
+        const b = document.createElement('div'); b.dataset.k = L.k;
         b.style.left = L.x + 'px'; b.style.top = L.y + 'px'; b.style.width = b.style.height = L.r * 2 + 'px';
         if (L.t === 'p' && L.k.startsWith('mic')) {
           const n = +L.k[3]; b.className = 'mano-pt mic' + (E.mics[n - 1] ? ' lleno' : ''); b.dataset.k = L.k;
@@ -242,8 +278,8 @@ GREENPAD.plugin({
       E.loops = {};
       const ocupado = P.map(L => ({ x: L.x, y: L.y, r: L.r }));
       for (const L of P) {
-        if (L.t === 'p') continue;
-        const lr = 15, d = L.r + lr + 5, cand = [[0, -d], [0, d], [d, 0], [-d, 0], [d * .7, -d * .7], [-d * .7, -d * .7], [d * .7, d * .7], [-d * .7, d * .7]];
+        if (L.t === 'p' && !L.k.startsWith('mic')) continue;
+        const lr = 15, d = L.r + lr + 5, cand = L.t === 'p' ? [[-d, 0], [d, 0], [-d * .7, -d * .7]] : [[0, -d], [0, d], [d, 0], [-d, 0], [d * .7, -d * .7], [-d * .7, -d * .7], [d * .7, d * .7], [-d * .7, d * .7]];
         let pos = null;
         for (const [dx, dy] of cand) {
           const x = L.x + dx, y = L.y + dy;
@@ -253,11 +289,14 @@ GREENPAD.plugin({
         }
         if (!pos) pos = [L.x, Math.max(top + lr, L.y - d)];
         ocupado.push({ x: pos[0], y: pos[1], r: lr });
-        const b = document.createElement('div'); b.className = 'mano-loop'; b.dataset.p = L.p; b.style.setProperty('--c', COLOR[L.p]);
-        b.style.left = pos[0] + 'px'; b.style.top = pos[1] + 'px'; b.textContent = '↻'; b.setAttribute('aria-label', 'Loop de ' + NOMBRE[L.p]);
+        const b = document.createElement('div'); b.style.left = pos[0] + 'px'; b.style.top = pos[1] + 'px'; b.textContent = '↻';
+        if (L.t === 'p') { const n = +L.k[3]; b.className = 'mano-loop voz'; b.dataset.mic = n; b.style.setProperty('--c', '#dcff00'); b.setAttribute('aria-label', 'Voz en loop con el micrófono ' + n); el.capa.appendChild(b); continue; }
+        b.className = 'mano-loop'; b.dataset.p = L.p; b.style.setProperty('--c', COLOR[L.p]); b.setAttribute('aria-label', 'Loop de ' + NOMBRE[L.p]);
         el.capa.appendChild(b); E.loops[L.p] = b;
       }
       pintarPads(); pintarLoops();
+      el.edit.classList.toggle('arriba', !abajo); el.edit.classList.toggle('abajo', abajo);
+      if (E.edita) ponerAsas();
     }
 
     // ---------- las perillas de efectos ----------
@@ -273,7 +312,7 @@ GREENPAD.plugin({
     const pto = (a, r) => [24 + Math.sin(a) * r, 24 - Math.cos(a) * r];
     function arco(a0, a1, r) { if (Math.abs(a1 - a0) < 0.01) return ''; const [x0, y0] = pto(a0, r), [x1, y1] = pto(a1, r), g = Math.abs(a1 - a0) > Math.PI ? 1 : 0; return `M${x0} ${y0}A${r} ${r} 0 ${g} 1 ${x1} ${y1}`; }
     function armarPerillas() {
-      const x = el.fila.querySelector('.mano-x');
+      const x = el.fila.querySelector('.mano-gr');
       for (const K of PERILLAS) {
         const d = document.createElement('div'); d.className = 'mano-per'; d.dataset.f = K.id; d.style.setProperty('--c', K.c);
         d.innerHTML = `<svg viewBox="0 0 48 48"><path class="pista" d="${arco(-135 * Math.PI / 180, 135 * Math.PI / 180, 20)}"/><path class="arco"/><circle class="cuerpo" cx="24" cy="24" r="14"/><line class="marca"/></svg><b>${K.n}</b>`;
@@ -314,6 +353,37 @@ GREENPAD.plugin({
         t.pend = nv;
       };
       d.onpointerup = d.onpointercancel = (ev) => { E.per.delete(ev.pointerId); d.classList.remove('mueve'); };
+    }
+
+    // ---------- acomodar a mano: mover y cambiar el tamaño ----------
+    function ponerAsas() { raiz.querySelectorAll('.mano-capa .mano-pad,.mano-capa .mano-pt').forEach(b => { if (!b.querySelector('.mano-asa')) { const a = document.createElement('span'); a.className = 'mano-asa'; b.appendChild(a); } }); }
+    function editar(on) {
+      el.mas.classList.remove('on'); el.burb.classList.remove('on');
+      if (on) { E.edita = true; raiz.classList.add('edita'); ponerAsas(); return; }
+      guardarLugares(); E.edita = false; raiz.classList.remove('edita'); armarPads();
+    }
+    function guardarLugares() {
+      const W = innerWidth, H = innerHeight, c = {};
+      raiz.querySelectorAll('.mano-capa .mano-pad,.mano-capa .mano-pt').forEach(b => { const k = b.dataset.k; if (k) c[k] = [parseFloat(b.style.left) / W, parseFloat(b.style.top) / H, parseFloat(b.style.width) / 2 / W]; });
+      G.custom = c; guardarPref();
+    }
+    function tam(b, r) { const min = b.classList.contains('mano-pt') ? 16 : 24; r = Math.max(min, Math.min(120, r)); b.style.width = b.style.height = r * 2 + 'px'; }
+    function editaAbajo(e) {
+      const b = e.target.closest('.mano-pad,.mano-pt'); if (!b) return;
+      e.preventDefault(); try { raiz.setPointerCapture(e.pointerId); } catch {}
+      b.classList.add('tq');
+      // la barra de Acomodar se corre al otro lado si agarrás algo cerca de ella
+      const H = innerHeight; if (e.clientY < H * 0.4) { el.edit.classList.remove('arriba'); el.edit.classList.add('abajo'); } else if (e.clientY > H * 0.6) { el.edit.classList.remove('abajo'); el.edit.classList.add('arriba'); }
+      const r = parseFloat(b.style.width) / 2, otro = [...E.toques.values()].find(t => t.ed && t.b === b && t.ed !== 'pinza');
+      if (otro) { E.toques.set(e.pointerId, { ed: 'pinza', b, otro, x: e.clientX, y: e.clientY, d0: Math.hypot(e.clientX - otro.x, e.clientY - otro.y) || 1, r0: r }); return; }   // dos dedos: pellizcar
+      E.toques.set(e.pointerId, { ed: e.target.closest('.mano-asa') ? 'tam' : 'mover', b, x: e.clientX, y: e.clientY, sx: e.clientX, sy: e.clientY, cx: parseFloat(b.style.left), cy: parseFloat(b.style.top) });
+    }
+    function editaMueve(t, e) {
+      t.x = e.clientX; t.y = e.clientY;
+      const b = t.b, W = innerWidth, H = innerHeight;
+      if (t.ed === 'mover') { b.style.left = Math.min(W - 8, Math.max(8, t.cx + e.clientX - t.sx)) + 'px'; b.style.top = Math.min(H - 8, Math.max(8, t.cy + e.clientY - t.sy)) + 'px'; }
+      else if (t.ed === 'tam') tam(b, Math.hypot(e.clientX - parseFloat(b.style.left), e.clientY - parseFloat(b.style.top)) / 1.35);
+      else if (t.ed === 'pinza') tam(b, t.r0 * Math.hypot(e.clientX - t.otro.x, e.clientY - t.otro.y) / t.d0);
     }
 
     // ---------- pintar ----------
@@ -381,6 +451,41 @@ GREENPAD.plugin({
       E.toques.set(id, t);
       Promise.resolve(gp.grabar(n)).then((ok) => { if (ok && E.toques.get(id) === t) b.classList.add('grabando'); }, () => gp.aviso('Para grabar hace falta permiso para usar el micrófono', 2600));
     }
+    // voz en loop: graba mientras se mantiene (hasta un compás) y la deja como una nota en una fila, en el momento justo
+    function vozAbajo(b, id) {
+      const n = +b.dataset.mic, t = { voz: n, b, id };
+      E.toques.set(id, t);
+      const est = gp.estado() || {};
+      if (!est.tocando) { gp.modoCancion(false); gp.play(); }
+      Promise.resolve(gp.grabar(n)).then((ok) => {
+        if (!ok || E.toques.get(id) !== t) return;
+        t.inicio = performance.now(); b.classList.add('grabando');
+        const bpm = (gp.estado() || {}).bpm || 120, compas = Math.min(8000, 4 * 60000 / bpm);
+        t.tope = setTimeout(() => { if (E.toques.get(id) === t) { E.toques.delete(id); vozArriba(t); } }, compas);   // un compás como mucho
+      }, () => gp.aviso('Para grabar hace falta permiso para usar el micrófono', 2600));
+    }
+    function vozArriba(t) {
+      clearTimeout(t.tope); t.b.classList.remove('grabando');
+      if (!t.inicio) { gp.pararGrabacion(true); return; }                    // soltado antes de que empezara: nada
+      Promise.resolve(gp.pararGrabacion(false, true)).then(async (k) => {
+        if (!k) return;
+        const info = gp.ultimaGrabacion() || { recorte: 0 }, inicio = t.inicio + info.recorte * 1000;
+        // en qué paso (y cuánto corrida) empezó la voz, contando desde el último paso que sonó
+        const bpm = (gp.estado() || {}).bpm || 120, pasoMs = 60000 / bpm / 4;
+        let s0 = 0, corr = 0;
+        if (E.ref) { const pos = E.ref.paso + (inicio - E.ref.t) / pasoMs, r = Math.round(pos); s0 = ((r % 16) + 16) % 16; corr = Math.round((pos - r) * 100); }
+        // la fila: la que ya tenía este micrófono, o la primera libre en este track
+        const notas = gp.notas()[LETRAS.indexOf((gp.estado() || {}).track || E.track)] || [];
+        let p = Object.keys(E.micDe).find(q => E.micDe[q] === t.voz);
+        if (!p) p = ['LD', 'CH', 'GT', 'PC', 'BS', 'HH', 'SN', 'BD'].find(q => !E.micDe[q] && !(notas[ORDEN.indexOf(q)] || []).some(Boolean)) || 'LD';
+        await gp.usarGrabacion(t.voz, p); E.micDe[p] = t.voz;
+        for (let s2 = 0; s2 < 16; s2++) gp.poner(p, s2, 0);
+        gp.poner(p, s0, 1, corr);
+        E.mics[t.voz - 1] = true; const dot = raiz.querySelector(`.mano-pt[data-k=mic${t.voz}]`); if (dot) dot.classList.add('lleno');
+        pintarPads(); pintarLoops();
+        gp.aviso(`Voz en loop en ${NOMBRE[p]} (MIC ${t.voz})`, 2200);
+      });
+    }
     function micArriba(t) {
       t.b.classList.remove('grabando');
       const corto = performance.now() - t.t0 < 350;
@@ -406,10 +511,12 @@ GREENPAD.plugin({
     }
     function pintarBurbuja(t) { const p = t.pad.dataset.p; el.burb.querySelector('small').textContent = NOMBRE[p]; el.burb.querySelector('b').textContent = t.elige.l[t.elige.j].nombre; }
     function apoyar(e) {
+      if (E.edita) { editaAbajo(e); return; }
       const pad = e.target.closest('.mano-pad'), pt = e.target.closest('.mano-pt'), lp = e.target.closest('.mano-loop');
       if (!pad && !pt && !lp) return;
       e.preventDefault();
       try { raiz.setPointerCapture(e.pointerId); } catch {}
+      if (lp && lp.classList.contains('voz')) { vozAbajo(lp, e.pointerId); return; }
       if (lp) { loopAbajo(lp, e.pointerId); return; }
       if (pt && pt.classList.contains('mic')) { micAbajo(pt, e.pointerId); return; }
       if (pt) { pt.classList.add('tq'); setTimeout(() => pt.classList.remove('tq'), 120); accion(pt.dataset.k); return; }
@@ -419,7 +526,8 @@ GREENPAD.plugin({
       t.timer = setTimeout(() => { if (!t.movio) abrirBurbuja(t); }, 450);
     }
     function mover(e) {
-      const t = E.toques.get(e.pointerId); if (!t || !t.pad) return;
+      const t = E.toques.get(e.pointerId); if (t && t.ed) { editaMueve(t, e); return; }
+      if (!t || !t.pad) return;
       if (t.elige) {                                                         // eligiendo el sonido: cada 38 px, uno más
         const n = t.elige.l.length, j = ((t.elige.j0 + Math.round((e.clientX - t.elige.x0) / 38)) % n + n) % n;
         if (j !== t.elige.j) { t.elige.j = j; const p = t.pad.dataset.p; ponerSonido(p, t.elige.l[j]); pintarBurbuja(t); if (navigator.vibrate) try { navigator.vibrate(5); } catch {} }
@@ -431,6 +539,8 @@ GREENPAD.plugin({
     }
     function soltar(e) {
       const t = E.toques.get(e.pointerId); if (!t) return; E.toques.delete(e.pointerId);
+      if (t.ed) { if (![...E.toques.values()].some(o => o.b === t.b)) t.b.classList.remove('tq'); return; }
+      if (t.voz) { vozArriba(t); return; }
       if (t.loop) { loopArriba(t.loop); return; }
       if (t.mic) { micArriba(t); return; }
       clearTimeout(t.timer);
@@ -455,13 +565,14 @@ GREENPAD.plugin({
     }
     function terminar(abrirHoja) {
       if (!E.grab) return;
-      E.grab = false; raiz.classList.remove('grab');
+      E.grab = false; raiz.classList.remove('grab'); if (el.volver) el.volver.classList.remove('grab');
       gp.grabarEnVivo(false); gp.parar(); pintarPaso(-1);
       if (E.ses) E.ses.prox = null;
       pintarEst();
-      if (abrirHoja) hoja();
+      if (abrirHoja) { if (E.oculta) volver(); hoja(); }
     }
     function alPaso(ev) {
+      E.ref = { paso: ev.paso, t: performance.now() };
       if (!E.abierta) return;
       pintarPaso(ev.paso);
       if (ev.paso === 0) pintarLoops();
@@ -538,8 +649,8 @@ GREENPAD.plugin({
       // mano izquierda si los dedos van, vistos desde el pulgar, para el otro lado que en la foto
       const cruz = (orden[0][0] - pul[0]) * (orden[3][1] - pul[1]) - (orden[0][1] - pul[1]) * (orden[3][0] - pul[0]);
       G.mano = cruz > 0 ? 'der' : 'izq';                                      // como en la foto: derecha
-      G.pos = [pul, ...orden].map(([x, y]) => [x / innerWidth, y / innerHeight]); guardarPref();
-      setTimeout(() => { el.calib.classList.remove('on'); [...el.calib.querySelectorAll('.dot')].forEach(x => x.remove()); armarPads(); gp.aviso('Listo: todo quedó acomodado a tu mano'); }, 350);
+      G.pos = [pul, ...orden].map(([x, y]) => [x / innerWidth, y / innerHeight]); G.custom = null; guardarPref();
+      setTimeout(() => { el.calib.classList.remove('on'); [...el.calib.querySelectorAll('.dot')].forEach(x => x.remove()); armarPads(); gp.aviso(E.edita ? 'Listo: ahora podés ajustar cada uno a mano' : 'Listo: todo quedó acomodado a tu mano'); }, 350);
     }
 
     // ---------- botones y teclas ----------
@@ -552,24 +663,27 @@ GREENPAD.plugin({
       const b = e.target.closest('[data-a]'); if (!b) return;
       const a = b.dataset.a;
       if (a === 'cerrar') cerrar();
+      else if (a === 'grilla') aGrilla();
       else if (a === 'v1' || a === 'v2' || a === 'v4') { G.vueltas = +a[1]; guardarPref(); pintarMas(); pintarEst(); }
       else if (a === 'clic') { G.clic = !G.clic; guardarPref(); pintarMas(); }
-      else if (a === 'der' || a === 'izq') { G.mano = a; G.pos = null; guardarPref(); pintarMas(); armarPads(); }
-      else if (a === 'original') { G.pos = null; guardarPref(); el.mas.classList.remove('on'); armarPads(); }
-      else if (a === 'acomodar') { el.mas.classList.remove('on'); if (matchMedia('(pointer:coarse)').matches) el.calib.classList.add('on'); else gp.aviso('Acomodar se hace con la mano apoyada en la pantalla de un teléfono o tablet'); }
+      else if (a === 'der' || a === 'izq') { G.mano = a; G.pos = null; G.custom = null; guardarPref(); pintarMas(); armarPads(); }
+      else if (a === 'original') { G.pos = null; G.custom = null; guardarPref(); el.mas.classList.remove('on'); armarPads(); }
+      else if (a === 'acomodar') editar(true);
+      else if (a === 'listo') editar(false);
+      else if (a === 'dedos') { if (matchMedia('(pointer:coarse)').matches) el.calib.classList.add('on'); else gp.aviso('Para apoyar los 5 dedos hace falta una pantalla táctil; acá podés mover y agrandar con el mouse', 2800); }
       else if (a === 'calibCancelar') el.calib.classList.remove('on');
       else if (a === 'guardar') guardar();
       else if (a === 'seguir') { el.hoja.classList.remove('on'); el.nombre.blur(); }
     }
     function teclas(e) {
-      if (!E.abierta || e.ctrlKey || e.metaKey || e.target === el.nombre) return;
+      if (!E.abierta || E.oculta || e.ctrlKey || e.metaKey || e.target === el.nombre) return;
       const k = e.key.toLowerCase(), p = TECLA[k];
       if (p) { e.preventDefault(); e.stopImmediatePropagation(); if (!e.repeat && E.pads[p]) { const r = E.pads[p].getBoundingClientRect(); golpe(E.pads[p], r.top + r.height / 2); } return; }
       if (k === 'arrowleft' || k === 'arrowright') { e.preventDefault(); e.stopImmediatePropagation(); cambiarEstilo(k === 'arrowleft' ? -1 : 1); return; }
       if (k === 'r') { e.preventDefault(); e.stopImmediatePropagation(); accion('rec'); return; }
       if (k === 'escape') {
         e.preventDefault(); e.stopImmediatePropagation();
-        if (el.hoja.classList.contains('on')) el.hoja.classList.remove('on'); else if (el.mas.classList.contains('on')) el.mas.classList.remove('on'); else cerrar();
+        if (E.edita) editar(false); else if (el.hoja.classList.contains('on')) el.hoja.classList.remove('on'); else if (el.mas.classList.contains('on')) el.mas.classList.remove('on'); else cerrar();
       }
     }
 
@@ -577,15 +691,29 @@ GREENPAD.plugin({
     function abrir() {
       if (falta().length) { gp.aviso('Mano necesita la versión nueva de GREENPAD (recargá la página)', 3200); return; }
       if (!raiz) armar();
+      if (E.oculta) { volver(); return; }
       E.abierta = true; const est = gp.estado() || {}; E.track = est.track || 'A';
       raiz.style.display = ''; requestAnimationFrame(() => raiz.classList.add('on'));
       armarPads(); pintarEst(); pintarPerillas();
       Promise.resolve(gp.misGrabaciones()).then((l) => { E.mics = [0, 1, 2].map(i => !!(l && l[i])); armarPads(); }).catch(() => {});
     }
+    // a la grilla sin cortar nada (la grabación y los loops siguen); el botón MANO vuelve
+    function aGrilla() {
+      if (E.edita) editar(false);
+      E.oculta = true; raiz.classList.remove('on'); el.burb.classList.remove('on');
+      setTimeout(() => { if (E.oculta) raiz.style.display = 'none'; }, 200);
+      el.volver.classList.add('on'); el.volver.classList.toggle('grab', E.grab);
+    }
+    function volver() {
+      E.oculta = false; el.volver.classList.remove('on');
+      raiz.style.display = ''; requestAnimationFrame(() => raiz.classList.add('on'));
+      armarPads(); pintarPerillas(); pintarLoops();
+    }
     function cerrar() {
+      if (E.edita) editar(false);
       if (E.grab) terminar(false);
       if (E.loop.size) { E.loop.clear(); gp.grabarEnVivo(false); }
-      E.abierta = false; raiz.classList.remove('on'); el.hoja.classList.remove('on'); el.mas.classList.remove('on'); el.burb.classList.remove('on');
+      E.abierta = false; E.oculta = false; if (el.volver) el.volver.classList.remove('on'); raiz.classList.remove('on'); el.hoja.classList.remove('on'); el.mas.classList.remove('on'); el.burb.classList.remove('on');
       setTimeout(() => { if (!E.abierta) raiz.style.display = 'none'; }, 220);
     }
 
