@@ -7,6 +7,10 @@
 // - En los melódicos, la altura sale de dónde apoyás el dedo: arriba agudo, abajo grave. Si lo deslizás, va tocando
 //   cada nota que cruza.
 // - Los tres puntos chicos, al lado del pulgar: grabar, terminar y más (vueltas por track, clic, acomodar la mano).
+// - Arriba de los dedos, una fila de perillas con los efectos de todo el tema: FILTRO (a la izquierda deja los graves,
+//   a la derecha los agudos), REVERB, ECO, LO-FI y VINILO. Se giran arrastrando para arriba o para abajo; dos toques
+//   las vuelven a cero. Quedan guardadas con el tema y salen en Descargar. Si los dedos quedan muy arriba, la fila va abajo.
+// - Lo que tocás queda en la grilla en el paso más cercano, pero suena en el momento exacto en que lo tocaste.
 // - "Acomodar" pide apoyar los 5 dedos: las almohadillas amarillas quedan justo ahí y el resto se mueve y se agranda o
 //   achica con la mano. Sirve para la mano derecha o la izquierda.
 // - Grabar pasa de un track al siguiente: cada track suena 1, 2 o 4 vueltas mientras grabás encima y después entra el
@@ -17,11 +21,11 @@ GREENPAD.plugin({
   id: 'mano',
   nombre: 'Mano',
   autor: 'GREENPAD',
-  version: '2.0',
+  version: '3.0',
   tipo: 'herramienta',
-  descripcion: 'Tocá con la mano apoyada en la pantalla: los 8 instrumentos a mano (cada dedo uno y tres más al alcance), mantené apretado para cambiar el sonido. Graba pasando de un track al siguiente y al final le ponés nombre al tema.',
+  descripcion: 'Tocá con la mano apoyada en la pantalla: los 8 instrumentos a mano, mantené apretado para cambiar el sonido y girá las perillas de efectos. Graba respetando el tiempo de lo que tocás y al final le ponés nombre al tema.',
   setup(gp) {
-    const NECESITA = ['enVivo', 'grabarEnVivo', 'siguiente', 'estilos', 'elegirEstilo', 'estiloDe', 'ponerCancion', 'guardarComo', 'modoCancion', 'parar'];
+    const NECESITA = ['efectos', 'enVivo', 'grabarEnVivo', 'siguiente', 'estilos', 'elegirEstilo', 'estiloDe', 'ponerCancion', 'guardarComo', 'modoCancion', 'parar'];
     // la distribución, en proporción de la pantalla (mano derecha), tal como se dibujó:
     // t: tipo (d: dedo, v: verde, p: punto) · r: radio en proporción del ancho
     const LUGARES = [
@@ -47,23 +51,29 @@ GREENPAD.plugin({
 
     gp.estilo(`
 .mano{position:fixed;inset:0;z-index:60;color:#eef6f1;font-family:inherit;touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden;opacity:0;transition:opacity .2s;
-  /* tapete antiestático: goma verde mate, con grano, grilla fina impresa y las esquinas en sombra */
-  background-color:#2f6b4f;
-  background-image:radial-gradient(130% 95% at 50% 45%,transparent 55%,rgba(0,0,0,.38)),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E"),
-    linear-gradient(rgba(255,255,255,.075) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.075) 1px,transparent 1px),
-    linear-gradient(rgba(255,255,255,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.03) 1px,transparent 1px);
-  background-size:100% 100%,180px 180px,50px 50px,50px 50px,10px 10px,10px 10px}
-/* las reglas impresas en el borde de abajo y en el de la izquierda */
-.mano::before,.mano::after{content:"";position:absolute;pointer-events:none;z-index:0}
-.mano::before{left:0;right:0;bottom:0;height:14px;
-  background:repeating-linear-gradient(90deg,rgba(255,255,255,.4) 0 1px,transparent 1px 50px) bottom/100% 14px no-repeat,repeating-linear-gradient(90deg,rgba(255,255,255,.25) 0 1px,transparent 1px 10px) bottom/100% 7px no-repeat}
-.mano::after{left:0;top:0;bottom:0;width:14px;
-  background:repeating-linear-gradient(rgba(255,255,255,.4) 0 1px,transparent 1px 50px) left/14px 100% no-repeat,repeating-linear-gradient(rgba(255,255,255,.25) 0 1px,transparent 1px 10px) left/7px 100% no-repeat}
+  /* tapete oscuro: goma mate con estrías finas en diagonal, grano y las esquinas en sombra */
+  background-color:#0a0f0c;
+  background-image:radial-gradient(130% 95% at 50% 45%,transparent 50%,rgba(0,0,0,.55)),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.07'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(45deg,rgba(255,255,255,.035) 0 1px,transparent 1px 6px),
+    linear-gradient(135deg,#16231b,#080c0a 70%);
+  background-size:100% 100%,180px 180px,auto,100% 100%}
 .mano.on{opacity:1}
 .mano *{box-sizing:border-box}
 .mano button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
-.mano .mano-x{position:absolute;right:10px;top:calc(env(safe-area-inset-top) + 8px);width:34px;height:34px;border-radius:17px;background:rgba(0,0,0,.28);font-size:18px;line-height:34px;text-align:center;z-index:3}
+.mano .mano-x{flex:none;width:34px;height:34px;border-radius:17px;background:rgba(255,255,255,.07);font-size:18px;line-height:34px;text-align:center}
+.mano-perillas{position:absolute;left:0;right:0;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:4px;padding:6px 10px}
+.mano-perillas.arriba{top:env(safe-area-inset-top)}
+.mano-perillas.abajo{bottom:env(safe-area-inset-bottom)}
+.mano-per{flex:1;max-width:66px;display:flex;flex-direction:column;align-items:center;gap:1px;touch-action:none;cursor:ns-resize}
+.mano-per svg{width:46px;height:46px;overflow:visible}
+.mano-per .pista{fill:none;stroke:rgba(255,255,255,.1);stroke-width:3.5;stroke-linecap:round}
+.mano-per .arco{fill:none;stroke:var(--c);stroke-width:3.5;stroke-linecap:round}
+.mano-per .cuerpo{fill:#121a16;stroke:rgba(255,255,255,.08)}
+.mano-per .marca{stroke:#e8f2ec;stroke-width:2.5;stroke-linecap:round}
+.mano-per b{font-size:9.5px;font-weight:800;letter-spacing:.1em;color:rgba(238,246,241,.6)}
+.mano-per.on b{color:var(--c)}
+.mano-per.mueve .cuerpo{fill:#1b2620}
 .mano-pad{position:absolute;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;text-align:center;z-index:2;
   background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--c) 26%,#0c1410),#0a100d 75%);box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--c) 70%,transparent);
   transition:transform .08s,box-shadow .15s;transform:translate(-50%,-50%)}
@@ -75,10 +85,11 @@ GREENPAD.plugin({
 .mano-pad .al{position:absolute;inset:14% 24%;display:flex;flex-direction:column;justify-content:space-between;pointer-events:none;opacity:.32}
 .mano-pad .al i{height:1px;background:var(--c)}
 .mano-pad .al i.on{height:3px;border-radius:2px}
-.mano-pt{position:absolute;border-radius:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.32);display:grid;place-items:center;font-size:13px;font-weight:800;color:#cfe0d6;z-index:2}
-.mano-pt.tq{background:rgba(0,0,0,.5)}
+.mano-pt{position:absolute;border-radius:50%;transform:translate(-50%,-50%);background:rgba(255,255,255,.07);transition:box-shadow .1s;display:grid;place-items:center;font-size:13px;font-weight:800;color:#cfe0d6;z-index:2}
+.mano-pt.tq{background:rgba(255,255,255,.18)}
 .mano-pt[data-k=rec]{color:#ff4b4b;box-shadow:inset 0 0 0 1.5px #ff4b4b}
-.mano.grab .mano-pt[data-k=rec]{background:#ff4b4b;color:#fff;animation:manoLat 1s ease-in-out infinite}
+.mano.grab .mano-pt[data-k=rec]{background:#ff4b4b;color:#fff}
+.mano.grab .mano-pt[data-k=rec].tic{box-shadow:0 0 0 7px rgba(255,75,75,.25)}
 @keyframes manoLat{50%{box-shadow:0 0 0 7px rgba(255,75,75,.2)}}
 .mano-burb{position:absolute;z-index:4;transform:translate(-50%,-100%);padding:8px 12px;border-radius:14px;background:#f2f6f3;color:#0a120e;font-size:13px;font-weight:800;white-space:nowrap;
   display:none;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.45);pointer-events:none}
@@ -86,23 +97,6 @@ GREENPAD.plugin({
 .mano-burb i{font-style:normal;font-size:18px;opacity:.45}
 .mano-burb span{display:flex;flex-direction:column;align-items:center;line-height:1.15}
 .mano-burb small{font-size:9.5px;letter-spacing:.1em;opacity:.55}
-.mano-est{position:absolute;z-index:1;display:flex;flex-direction:column;gap:6px;padding:8px;border-radius:14px;background:rgba(0,0,0,.3);pointer-events:none}
-.mano-trks{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;pointer-events:auto}
-.mano .mano-trk{height:20px;border-radius:5px;background:rgba(0,0,0,.22);font-size:10.5px;font-weight:800;color:rgba(238,246,241,.45);display:grid;place-items:center}
-.mano .mano-trk.lleno{color:#b9cbc1;background:rgba(255,255,255,.1)}
-.mano .mano-trk.ya{box-shadow:inset 0 0 0 1.5px rgba(62,224,138,.55)}
-.mano .mano-trk.cur{background:#3ee08a;color:#062012}
-.mano .mano-trk.rec{background:#ff4b4b;color:#fff}
-.mano .mano-trk.prox{box-shadow:inset 0 0 0 1.5px #ff4b4b}
-.mano-pasos{display:grid;grid-template-columns:repeat(16,1fr);gap:2px;height:4px}
-.mano-pasos i{border-radius:2px;background:rgba(255,255,255,.09)}
-.mano-pasos i:nth-child(4n+1){background:rgba(255,255,255,.2)}
-.mano-pasos i.on{background:#3ee08a}
-.mano.grab .mano-pasos i.on{background:#ff4b4b}
-.mano-mini{display:grid;grid-template-columns:repeat(16,1fr);grid-auto-rows:3px;gap:1.5px}
-.mano-mini i{border-radius:1px;background:rgba(255,255,255,.04)}
-.mano-mini i.v{background:var(--c)}
-.mano-ayuda{font-size:10.5px;line-height:1.35;color:rgba(238,246,241,.72)}
 .mano-calib{position:absolute;inset:0;z-index:6;background:rgba(5,8,6,.95);display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:30px}
 .mano-calib.on{display:flex}
 .mano-calib b{font-size:20px}
@@ -138,9 +132,8 @@ GREENPAD.plugin({
     function armar() {
       raiz = document.createElement('div'); raiz.className = 'mano'; raiz.setAttribute('role', 'dialog'); raiz.setAttribute('aria-label', 'Mano');
       raiz.innerHTML = `
-<button class="mano-x" data-a="cerrar" aria-label="Cerrar">×</button>
+<div class="mano-perillas arriba"><button class="mano-x" data-a="cerrar" aria-label="Cerrar">×</button></div>
 <div class="mano-capa"></div>
-<div class="mano-est"><div class="mano-trks"></div><div class="mano-pasos"></div><div class="mano-mini"></div><div class="mano-ayuda"></div></div>
 <div class="mano-burb"><i>‹</i><span><small></small><b></b></span><i>›</i></div>
 <div class="mano-calib"><b>Apoyá la mano</b><p>Poné los 5 dedos sobre la pantalla, cómodos, como si fueras a tocar. Los amarillos van a quedar justo ahí y el resto se acomoda alrededor.</p><button class="mano-op" data-a="calibCancelar">Cancelar</button></div>
 <div class="mano-hoja hoja-mas">
@@ -158,15 +151,13 @@ GREENPAD.plugin({
 </div>`;
       gp.zona('pantalla').appendChild(raiz);
       const q = (s) => raiz.querySelector(s);
-      el = { capa: q('.mano-capa'), est: q('.mano-est'), trks: q('.mano-trks'), pasos: q('.mano-pasos'), mini: q('.mano-mini'), ayuda: q('.mano-ayuda'),
+      el = { capa: q('.mano-capa'), fila: q('.mano-perillas'),
         burb: q('.mano-burb'), calib: q('.mano-calib'), mas: q('.hoja-mas'), hoja: q('.hoja-nombre'),
         nombre: q('.hoja-nombre input[type=text]'), armarCancion: q('.hoja-nombre input[type=checkbox]'), resumen: q('.mano-resumen') };
-      for (let i = 0; i < 8; i++) { const b = document.createElement('button'); b.className = 'mano-trk'; b.textContent = LETRAS[i]; b.dataset.t = LETRAS[i]; el.trks.appendChild(b); }
-      for (let i = 0; i < 16; i++) el.pasos.appendChild(document.createElement('i'));
-      for (let i = 0; i < 8 * 16; i++) el.mini.appendChild(document.createElement('i'));
+      armarPerillas();
       raiz.addEventListener('click', alClic);
-      el.trks.addEventListener('click', (e) => { const b = e.target.closest('.mano-trk'); if (b && !E.grab) { gp.irATrack(b.dataset.t); E.track = b.dataset.t; pintarEst(); } });
       el.capa.addEventListener('pointerdown', apoyar);
+      el.fila.addEventListener('pointerdown', girarEmpieza);
       raiz.addEventListener('pointermove', mover);
       raiz.addEventListener('pointerup', soltar); raiz.addEventListener('pointercancel', soltar);
       el.calib.addEventListener('touchstart', calibrar, { passive: false });
@@ -194,9 +185,14 @@ GREENPAD.plugin({
     }
     function armarPads() {
       el.capa.innerHTML = '';
-      const W = innerWidth, H = innerHeight, top = (parseFloat(getComputedStyle(raiz).paddingTop) || 0) + 6;
+      const W = innerWidth, H = innerHeight;
       const P = lugares();
       P.forEach(L => { L.r = L.t === 'p' ? Math.max(19, Math.min(26, L.r)) : Math.max(L.k === 'pul' ? 44 : 30, Math.min(L.k === 'pul' ? 92 : 70, L.r)); });
+      // la fila de perillas: arriba de los dedos, salvo que los dedos lleguen muy arriba y abajo haya más lugar
+      const dd = P.filter(L => L.t === 'd'), alto = Math.min(...dd.map(L => L.y - L.r)), bajo = H - Math.max(...dd.map(L => L.y + L.r));
+      const abajo = alto < 78 && bajo > alto;
+      el.fila.classList.toggle('arriba', !abajo); el.fila.classList.toggle('abajo', abajo);
+      const fh = el.fila.offsetHeight || 70, top = abajo ? 6 : fh + 4, fondo = abajo ? H - fh - 4 : H - 3;
       // que no se salgan ni se pisen: los dedos quedan quietos y lo demás se corre
       for (let it = 0; it < 30; it++) {
         for (let i = 0; i < P.length; i++) for (let j = i + 1; j < P.length; j++) {
@@ -205,7 +201,7 @@ GREENPAD.plugin({
           const fa = a.t === 'd' ? 0 : b.t === 'd' ? 1 : 0.5, fb = 1 - fa;
           a.x -= dx / d * m * fa; a.y -= dy / d * m * fa; b.x += dx / d * m * fb; b.y += dy / d * m * fb;
         }
-        for (const L of P) { L.x = Math.min(W - L.r - 3, Math.max(L.r + 3, L.x)); L.y = Math.min(H - L.r - 3, Math.max(top + L.r, L.y)); }
+        for (const L of P) { if (L.t === 'd') continue; L.x = Math.min(W - L.r - 3, Math.max(L.r + 3, L.x)); L.y = Math.min(fondo - L.r, Math.max(top + L.r, L.y)); }   // los dedos quedan donde se apoyaron
       }
       E.pads = {}; E.geo = P;
       for (const L of P) {
@@ -221,12 +217,63 @@ GREENPAD.plugin({
         }
         el.capa.appendChild(b);
       }
-      // el cuadro con los tracks: en el rincón más libre (el que queda más lejos de todo)
-      const cw = 136, ch = 150, rincones = [[W - cw - 8, H - ch - 8], [8, H - ch - 8], [W - cw - 8, top + 40], [8, top]];
-      let mejor = rincones[0], md = -1;
-      for (const [x, y] of rincones) { let d = Infinity; for (const L of P) { const nx = Math.max(x, Math.min(L.x, x + cw)), ny = Math.max(y, Math.min(L.y, y + ch)); d = Math.min(d, Math.hypot(L.x - nx, L.y - ny) - L.r); } if (d > md) { md = d; mejor = [x, y]; } }
-      el.est.style.left = mejor[0] + 'px'; el.est.style.top = mejor[1] + 'px'; el.est.style.width = cw + 'px';
       pintarPads();
+    }
+
+    // ---------- las perillas de efectos ----------
+    // el filtro va de -1 a 1 y está apagado en el medio; VINILO se prende y se apaga
+    const PERILLAS = [
+      { id: 'filtro', n: 'FILTRO', c: '#dcff00', min: -1 },
+      { id: 'reverb', n: 'REVERB', c: '#6fc3ff', min: 0 },
+      { id: 'eco', n: 'ECO', c: '#b49cff', min: 0 },
+      { id: 'lofi', n: 'LO-FI', c: '#ffae5c', min: 0 },
+      { id: 'vinilo', n: 'VINILO', c: '#ff8fb1', min: 0, llave: true },
+    ];
+    const ang = (v, min) => (min < 0 ? v * 135 : -135 + v * 270) * Math.PI / 180;   // 0 arriba, en el sentido del reloj
+    const pto = (a, r) => [24 + Math.sin(a) * r, 24 - Math.cos(a) * r];
+    function arco(a0, a1, r) { if (Math.abs(a1 - a0) < 0.01) return ''; const [x0, y0] = pto(a0, r), [x1, y1] = pto(a1, r), g = Math.abs(a1 - a0) > Math.PI ? 1 : 0; return `M${x0} ${y0}A${r} ${r} 0 ${g} 1 ${x1} ${y1}`; }
+    function armarPerillas() {
+      const x = el.fila.querySelector('.mano-x');
+      for (const K of PERILLAS) {
+        const d = document.createElement('div'); d.className = 'mano-per'; d.dataset.f = K.id; d.style.setProperty('--c', K.c);
+        d.innerHTML = `<svg viewBox="0 0 48 48"><path class="pista" d="${arco(-135 * Math.PI / 180, 135 * Math.PI / 180, 20)}"/><path class="arco"/><circle class="cuerpo" cx="24" cy="24" r="14"/><line class="marca"/></svg><b>${K.n}</b>`;
+        d.setAttribute('role', 'slider'); d.setAttribute('aria-label', K.n);
+        el.fila.insertBefore(d, x);
+      }
+    }
+    function pintarPerillas() {
+      let fx; try { fx = gp.efectos(); } catch { return; }
+      for (const K of PERILLAS) {
+        const d = el.fila.querySelector(`[data-f=${K.id}]`), v = K.llave ? (fx[K.id] ? 1 : 0) : +fx[K.id] || 0;
+        const a = ang(v, K.min), a0 = K.min < 0 ? 0 : -135 * Math.PI / 180;
+        d.querySelector('.arco').setAttribute('d', a >= a0 ? arco(a0, a, 20) : arco(a, a0, 20));
+        const [x0, y0] = pto(a, 5), [x1, y1] = pto(a, 12), m = d.querySelector('.marca');
+        m.setAttribute('x1', x0); m.setAttribute('y1', y0); m.setAttribute('x2', x1); m.setAttribute('y2', y1);
+        d.classList.toggle('on', Math.abs(v) > 0.01);
+        d.querySelector('b').textContent = K.id === 'filtro' && v < -0.01 ? 'GRAVES' : K.id === 'filtro' && v > 0.01 ? 'AGUDOS' : K.n;
+        d.setAttribute('aria-valuenow', Math.round(v * 100));
+      }
+    }
+    // arrastrar para arriba sube y para abajo baja; dos toques seguidos la vuelven a cero
+    E.per = new Map();
+    function girarEmpieza(e) {
+      const d = e.target.closest('.mano-per'); if (!d) return;
+      e.preventDefault(); e.stopPropagation();
+      try { d.setPointerCapture(e.pointerId); } catch {}
+      const K = PERILLAS.find(k => k.id === d.dataset.f), fx = gp.efectos(), ahora = performance.now();
+      if (K.llave) { gp.efectos({ vinilo: !fx.vinilo }); pintarPerillas(); return; }
+      if (ahora - (d._ult || 0) < 320) { gp.efectos({ [K.id]: 0 }); pintarPerillas(); d._ult = 0; return; }
+      d._ult = ahora;
+      E.per.set(e.pointerId, { d, K, y0: e.clientY, v0: +fx[K.id] || 0, pend: null });
+      d.classList.add('mueve');
+      d.onpointermove = (ev) => {
+        const t = E.per.get(ev.pointerId); if (!t) return;
+        const rango = t.K.min < 0 ? 2 : 1, v = Math.min(1, Math.max(t.K.min, t.v0 + (t.y0 - ev.clientY) / 150 * rango));
+        const nv = Math.abs(v) < 0.03 && t.K.min < 0 ? 0 : v;              // el filtro se traba en el medio (apagado)
+        if (t.pend == null) requestAnimationFrame(() => { gp.efectos({ [t.K.id]: t.pend }); t.pend = null; pintarPerillas(); });
+        t.pend = nv;
+      };
+      d.onpointerup = d.onpointercancel = (ev) => { E.per.delete(ev.pointerId); d.classList.remove('mueve'); };
     }
 
     // ---------- pintar ----------
@@ -234,18 +281,11 @@ GREENPAD.plugin({
     function pintarPads() {
       for (const p of ORDEN) { const b = E.pads && E.pads[p]; if (!b) continue; b.querySelector('b').textContent = NOMBRE[p]; b.querySelector('small').textContent = estiloDe(p).n; }
     }
-    function pintarEst() {
-      const notas = gp.notas(), i0 = LETRAS.indexOf(E.track), ses = E.ses ? E.ses.bloques.map(b => b.track) : [];
-      [...el.trks.children].forEach((b, i) => {
-        const L = LETRAS[i], lleno = notas[i].some(r => r.some(Boolean));
-        b.className = 'mano-trk' + (lleno ? ' lleno' : '') + (ses.includes(L) ? ' ya' : '') + (L === E.track ? (E.grab ? ' rec' : ' cur') : '') + (E.ses && E.ses.prox === L ? ' prox' : '');
-      });
-      const pat = notas[i0] || [], mini = el.mini.children;
-      for (let t = 0; t < 8; t++) for (let s = 0; s < 16; s++) { const m = mini[t * 16 + s], v = pat[t] && pat[t][s]; m.className = v ? 'v' : ''; if (v) m.style.setProperty('--c', COLOR[ORDEN[t]]); }
-      if (E.grab && E.ses) el.ayuda.textContent = `Grabando ${E.track} · vuelta ${Math.min(E.ses.vuelta + 1, G.vueltas)}/${G.vueltas}` + (E.ses.prox ? ` · sigue ${E.ses.prox}` : E.ses.cerrar ? ' · último' : '');
-      else el.ayuda.textContent = 'Mantené apretado para cambiar el sonido. ● graba.';
+    function pintarEst() {}                                                   // (sin tracks ni grilla a la vista)
+    function pintarPaso(p) {                                                  // grabando, el punto rojo late en cada tiempo
+      const r = E.pads && raiz.querySelector('.mano-pt[data-k=rec]'); if (!r || p < 0 || p % 4) return;
+      r.classList.add('tic'); setTimeout(() => r.classList.remove('tic'), 110);
     }
-    function pintarPaso(p) { [...el.pasos.children].forEach((x, i) => x.classList.toggle('on', i === p)); }
 
     // ---------- tocar ----------
     function alturaDe(b, y) { const r = b.getBoundingClientRect(), f = 1 - (y - r.top - r.height * 0.14) / (r.height * 0.72); return Math.min(8, Math.max(1, Math.round(1 + f * 7))); }
@@ -365,7 +405,7 @@ GREENPAD.plugin({
       const est = gp.estado() || {}, b = E.ses ? E.ses.bloques : [];
       const d = new Date(), fecha = `${d.getDate()}/${d.getMonth() + 1} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
       el.nombre.value = est.nombre && !/^mi (tema|beat)$/i.test(est.nombre) ? est.nombre : 'Sesión ' + fecha;
-      el.resumen.textContent = b.length ? `Armar la canción con lo grabado: ${b.map(x => x.track + (x.veces > 1 ? ' ×' + x.veces : '')).join(', ')}` : 'Armar la canción con lo grabado';
+      el.resumen.textContent = b.length > 1 ? `Armar la canción con lo grabado (${b.length} partes)` : 'Armar la canción con lo grabado';
       el.armarCancion.checked = b.length > 0; el.armarCancion.disabled = !b.length;
       el.mas.classList.remove('on'); el.hoja.classList.add('on');
       setTimeout(() => { el.nombre.focus(); el.nombre.select(); }, 260);
@@ -438,7 +478,7 @@ GREENPAD.plugin({
       if (!raiz) armar();
       E.abierta = true; const est = gp.estado() || {}; E.track = est.track || 'A';
       raiz.style.display = ''; requestAnimationFrame(() => raiz.classList.add('on'));
-      armarPads(); pintarEst();
+      armarPads(); pintarEst(); pintarPerillas();
     }
     function cerrar() {
       if (E.grab) terminar(false);

@@ -1309,7 +1309,7 @@ function rowsToPat(rows) {
 function blank() {
   return withPS({ v: 7, id: null, name: 'Mi tema', bpm: 120, swing: 0, chain: false, vol: .8, cur: 0, dirty: false, key: 9,
     song: [], songOn: false, songLoop: true, hum: .6, vid: { off: 0, m: [] },
-    fx: { rev: 0, eco: 0, lofi: 0, vin: 0, px: {} }, dj: { a: 0, b: 1, x: 0, va: 1, vb: 1 },
+    fx: { rev: 0, eco: 0, lofi: 0, vin: 0, flt: 0, px: {} }, dj: { a: 0, b: 1, x: 0, va: 1, vb: 1 }, mt: {},
     ps: Array.from({ length: NP }, () => ({ st: Array(NT).fill(0), lay: Array(NT).fill(0), sc: 2, mix: 0, smp: Array(NT).fill(null) })),
     tune: Array(NT).fill(0), lvl: Array(NT).fill(1),
     mutes: Array(NT).fill(false), pats: Array.from({ length: NP }, emptyPat) });
@@ -1360,7 +1360,9 @@ function normalize(o) {
   for (let p = 0; p < NP; p++) { const sc = srcPS(p).sc; d.ps[p].sc = clamp(sc == null ? 2 : sc | 0, 0, SCALES.length - 1); }
   const legMix = (o.mix | 0) & 255; // beats viejos: una sola mezcla para todos los tracks
   const ofx = o.fx || {}, odj = o.dj || {};
-  d.fx = { rev: clamp(+ofx.rev || 0, 0, 1), eco: clamp(+ofx.eco || 0, 0, 1), lofi: clamp(+ofx.lofi || 0, 0, 1), vin: ofx.vin ? 1 : 0, px: {} };
+  d.fx = { rev: clamp(+ofx.rev || 0, 0, 1), eco: clamp(+ofx.eco || 0, 0, 1), lofi: clamp(+ofx.lofi || 0, 0, 1), vin: ofx.vin ? 1 : 0, flt: clamp(+ofx.flt || 0, -1, 1), px: {} };
+  // tiempo exacto de lo grabado en vivo: cuánto se corre cada nota de su paso ("track,pista,paso": -50 a 50, en % del paso)
+  if (o.mt && typeof o.mt === 'object') for (const k of Object.keys(o.mt).slice(0, 2048)) { const v = Math.round(+o.mt[k]); if (/^[0-7],[0-7],(\d|1[0-5])$/.test(k) && v) d.mt[k] = clamp(v, -50, 50); }
   if (ofx.px && typeof ofx.px === 'object') for (const k of Object.keys(ofx.px).slice(0, 40)) { const v = +ofx.px[k]; if (k.length < 90 && isFinite(v)) d.fx.px[k] = clamp(v, 0, 1); } // perillas de plugins
   d.dj = { a: clamp(odj.a | 0, 0, NP - 1), b: clamp(odj.b == null ? 1 : odj.b | 0, 0, NP - 1), x: clamp(+odj.x || 0, 0, 1), va: clamp(odj.va == null ? 1 : +odj.va, 0, 1.2), vb: clamp(odj.vb == null ? 1 : +odj.vb, 0, 1.2) };
   d.song = (Array.isArray(o.song) ? o.song : []).filter(b => b && b.p != null).slice(0, 48).map(b => ({ p: clamp(b.p | 0, 0, NP - 1), n: clamp(b.n | 0 || 1, 1, 16) }));
@@ -1541,6 +1543,10 @@ function crushCurve(lf) {
 }
 function buildFxCore(c) {
   const fxIn = c.createGain();
+  // filtro general: para un lado deja solo los graves, para el otro solo los agudos (S.fx.flt, de -1 a 1)
+  const fLP = c.createBiquadFilter(); fLP.type = 'lowpass'; fLP.frequency.value = 20000; fLP.Q.value = .9;
+  const fHP = c.createBiquadFilter(); fHP.type = 'highpass'; fHP.frequency.value = 10; fHP.Q.value = .9;
+  fxIn.connect(fLP); fLP.connect(fHP);
   const loLP = c.createBiquadFilter(); loLP.type = 'lowpass'; loLP.frequency.value = 20000; loLP.Q.value = .5;
   const loHP = c.createBiquadFilter(); loHP.type = 'highpass'; loHP.frequency.value = 15;
   const crush = c.createWaveShaper(); crush.curve = crushCurve(0);
@@ -1559,7 +1565,7 @@ function buildFxCore(c) {
   const crk = c.createBufferSource(); crk.buffer = makeCrackle(c); crk.loop = true;
   const crHP = c.createBiquadFilter(); crHP.type = 'highpass'; crHP.frequency.value = 500;
   const crG = c.createGain(); crG.gain.value = 0; crk.connect(crHP); crHP.connect(crG); crk.start(); // crG se conecta solo con vinilo
-  Object.assign(AU, { fxIn, loLP, loHP, crush, post, revSend, conv, revRet, revOn: false, loOn: null, crOn: false, dlySend, dly, dlyFb, crG });
+  Object.assign(AU, { fxIn, fLP, fHP, loLP, loHP, crush, post, revSend, conv, revRet, revOn: false, loOn: null, crOn: false, dlySend, dly, dlyFb, crG });
 }
 function buildFx(c) {
   buildFxCore(c);
@@ -1602,7 +1608,10 @@ function applyFx() {
   AU.loHP.frequency.setTargetAtTime(15 + X.lofi * 160, T, .03);
   AU.crush.curve = crushCurve(X.lofi);
   const lo = X.lofi > .005;
-  if (lo !== AU.loOn) { try { AU.fxIn.disconnect(); } catch {} AU.fxIn.connect(lo ? AU.loLP : AU.post); AU.loOn = lo; }
+  if (lo !== AU.loOn) { try { AU.fHP.disconnect(); } catch {} AU.fHP.connect(lo ? AU.loLP : AU.post); AU.loOn = lo; }
+  const f = X.flt || 0;
+  AU.fLP.frequency.setTargetAtTime(f < -.01 ? 20000 * Math.pow(220 / 20000, -f) : 20000, T, .03);
+  AU.fHP.frequency.setTargetAtTime(f > .01 ? 10 * Math.pow(3500 / 10, f) : 10, T, .03);
   if (!!X.vin !== AU.crOn) { AU.crOn = !!X.vin; if (AU.crOn) AU.crG.connect(AU.out); else try { AU.crG.disconnect(); } catch {} }
   AU.crG.gain.setTargetAtTime(X.vin ? .05 + X.lofi * .04 : 0, T, .08);
   applyPfx();
@@ -2212,6 +2221,17 @@ function plugApi(rec) {
       if (last && last.p === p) last.n = Math.min(16, last.n + n); else S.song.push({ p, n });
       renderSong(); save();
     },
+    // los efectos de todo el tema (los mismos de las bandejas): { reverb, eco, lofi, vinilo, filtro }.
+    // Sin datos devuelve cómo están; con datos cambia los que vengan. filtro: de -1 (solo graves) a 1 (solo agudos), 0 apagado
+    efectos(o) {
+      if (o && typeof o === 'object') {
+        const X = S.fx, n = (v, a, b) => clamp(+v || 0, a, b);
+        if (o.reverb != null) X.rev = n(o.reverb, 0, 1); if (o.eco != null) X.eco = n(o.eco, 0, 1); if (o.lofi != null) X.lofi = n(o.lofi, 0, 1);
+        if (o.vinilo != null) X.vin = o.vinilo ? 1 : 0; if (o.filtro != null) X.flt = n(o.filtro, -1, 1);
+        applyFx(); try { syncFxUI(); } catch {} save();
+      }
+      return { reverb: S.fx.rev, eco: S.fx.eco, lofi: S.fx.lofi, vinilo: !!S.fx.vin, filtro: S.fx.flt || 0 };
+    },
     // le pone nombre al tema y lo guarda en Mis beats (si ya estaba, lo actualiza). Devuelve el nombre que quedó
     guardarComo(nombre) {
       S.name = plugTxt(nombre, 60) || S.name || 'Mi tema'; $('#name').value = S.name;
@@ -2245,7 +2265,7 @@ function plugPut(pista, paso, valor) {
 function plugSetNotes(n) {
   if (!Array.isArray(n)) throw new Error('ponerNotas: hace falta la lista de tracks');
   for (let p = 0; p < NP; p++) for (let t = 0; t < NT; t++) for (let s2 = 0; s2 < STEPS; s2++) {
-    const v = n[p] && n[p][t] ? n[p][t][s2] : 0; S.pats[p][t][s2] = clamp(Math.round(+v || 0), 0, 8);
+    const v = n[p] && n[p][t] ? n[p][t][s2] : 0, nv = clamp(Math.round(+v || 0), 0, 8); if (S.pats[p][t][s2] !== nv && S.mt) delete S.mt[p + ',' + t + ',' + s2]; S.pats[p][t][s2] = nv;
   }
   renderPads(); renderPats(); renderSong(); markEdit();
 }
@@ -2642,9 +2662,12 @@ function stash() {
 }
 
 /* ================= undo ================= */
-const snap = () => JSON.stringify({ p: S.pats, b: S.bpm, k: S.key, ps: S.ps, sg: S.song });
+const snap = () => JSON.stringify({ p: S.pats, b: S.bpm, k: S.key, ps: S.ps, sg: S.song, mt: S.mt });
+// tiempo exacto: lo que se corre una nota grabada en vivo (en segundos) y borrar los corrimientos de un track (o de una pista)
+const mtOf = (p, tr, s) => { const v = S.mt && S.mt[p + ',' + tr + ',' + s]; return v ? v / 100 * stepDur(s) : 0; };
+function mtClear(p, tr) { if (!S.mt) return; for (const k of Object.keys(S.mt)) { const [a, b] = k.split(','); if (+a === p && (tr == null || +b === tr)) delete S.mt[k]; } }
 function pushUndo() { H.u.push(snap()); if (H.u.length > 80) H.u.shift(); H.r.length = 0; }
-function restore(j) { const o = JSON.parse(j); S.pats = o.p; S.key = o.k; if (o.ps) S.ps = o.ps; if (o.sg) S.song = o.sg; setBpm(o.b, true); renderAll(); markEdit(); }
+function restore(j) { const o = JSON.parse(j); S.pats = o.p; S.key = o.k; if (o.ps) S.ps = o.ps; if (o.sg) S.song = o.sg; S.mt = o.mt || {}; setBpm(o.b, true); renderAll(); markEdit(); }
 function undo() { if (!H.u.length) return toast('Nada para deshacer'); H.r.push(snap()); restore(H.u.pop()); toast('Deshecho'); }
 function redo() { if (!H.r.length) return toast('Nada para rehacer'); H.u.push(snap()); restore(H.r.pop()); toast('Rehecho'); }
 
@@ -2808,6 +2831,7 @@ function renderAll(anim) { renderTracks(); renderPads(anim); renderPats(); rende
 function setCell(t, s, v) {
   const pat = S.pats[S.cur]; if (pat[t][s] === v) return false;
   const was = pat[t][s]; pat[t][s] = v; paintPad(t, s);
+  if (S.mt) delete S.mt[S.cur + ',' + t + ',' + s];
   if (!PLG.quiet && PLG.on.toque.length) plugEmit('toque', { pista: TR[t].id, i: t + 1, paso: s, valor: v, antes: was, track: LET[S.cur] });
   if (v && !was && TR[t].mel && !PLG.val && !AMB.asked.has(S.cur) && !pat.some((row, k) => k >= 4 && row.some((x, j) => x && (k !== t || j !== s)))) ambAsk(); // primera nota melódica del track
   if (!RM) pads[t][s].animate(v && !was ? [{ transform: 'scale(.78)' }, { transform: 'scale(1.08)', offset: .6 }, { transform: 'scale(1)' }] : v ? [{ transform: 'translateY(-3px)' }, { transform: 'none' }] : [{ transform: 'scale(.9)' }, { transform: 'scale(1)' }], { duration: 200, easing: 'ease-out' });
@@ -2907,7 +2931,7 @@ function djSchedule(s, t) {
         if (done.has(key)) continue; done.add(key);
         CP = pp; // cada track suena con su sonido y ambiente
         const h = humanize(tr, s);
-        try { playTrack(tr, t + h.dt, h.v, v, TR[tr].mel ? noteLen(S.pats[pp][tr], s) : .3, dest); } finally { CP = null; }
+        try { playTrack(tr, t + h.dt + mtOf(pp, tr, s), h.v, v, TR[tr].mel ? noteLen(S.pats[pp][tr], s) : .3, dest); } finally { CP = null; }
       }
     }
   });
@@ -2927,7 +2951,7 @@ function schedule(s, t) {
       if (done.has(key)) continue; done.add(key);
       CP = p; // cada track suena con su propio sonido y ambiente, también al mezclarlos
       const h = humanize(tr, s);
-      try { playTrack(tr, t + h.dt, h.v, v, TR[tr].mel ? noteLen(S.pats[p][tr], s) : .3); } finally { CP = null; }
+      try { playTrack(tr, t + h.dt + mtOf(p, tr, s), h.v, v, TR[tr].mel ? noteLen(S.pats[p][tr], s) : .3); } finally { CP = null; }
     }
   }
   P.queue.push({ s, t, p: P.pat, si: songMode() ? P.si : null, sr: P.sr });
@@ -3382,9 +3406,9 @@ function scheduleOffline(p, st, t, ev) {
       const v = S.pats[pp][tr][st]; if (!v) continue;
       const q = S.ps[pp], key = (TR[tr].mel ? v + ':' + q.sc : 1) + ':' + q.st[tr] + ':' + q.lay[tr];
       if (done.has(key)) continue; done.add(key);
-      CP = pp; const h = humanize(tr, st);
-      try { playTrack(tr, t + h.dt, h.v, v, TR[tr].mel ? noteLen(S.pats[pp][tr], st) : .3); } finally { CP = null; }
-      ev.push({ t: t + h.dt, tr, v });
+      CP = pp; const h = humanize(tr, st), dt = h.dt + mtOf(pp, tr, st);
+      try { playTrack(tr, t + dt, h.v, v, TR[tr].mel ? noteLen(S.pats[pp][tr], st) : .3); } finally { CP = null; }
+      ev.push({ t: t + dt, tr, v });
     }
   }
 }
@@ -5027,18 +5051,24 @@ function live(t) {
   MX.active = true; loop();
   if (navigator.vibrate && !FINE) try { navigator.vibrate(6); } catch {}
   if (!P.playing || !P.rec || P.vstep < 0) return;
+  if (!S.mt) S.mt = {};
   const c = AU.ctx, now = c.currentTime, dur = stepDur(P.vstep);
   const target = now - P.vt > dur / 2 ? (P.vstep + 1) % STEPS : P.vstep;
   if (target === 0 && P.vstep === STEPS - 1 && P.pending >= 0 && P.pending !== S.cur && !songMode()) { // cae en el paso 1 del track que entra: va ahí
     const p = P.pending; if (S.pats[p][t][0]) return;
     const lv = TR[t].mel ? NOTE[t] : 1;
     if (!P.recUndo) { pushUndo(); P.recUndo = true; }
-    S.pats[p][t][0] = lv; P.skip.add(p + ':' + t + ':0'); renderPats(); markEdit(); return;
+    S.pats[p][t][0] = lv; P.skip.add(p + ':' + t + ':0');
+    const o0 = clamp(Math.round((now - (P.vt + dur)) / stepDur(0) * 100), -50, 50); if (Math.abs(o0) >= 3) S.mt[p + ',' + t + ',0'] = o0;
+    renderPats(); markEdit(); return;
   }
   if (S.pats[S.cur][t][target]) return;
   const lv = PLG.val ? newVal(t, target) : (TR[t].mel ? NOTE[t] : 1); if (!lv) return;
   if (!P.recUndo) { pushUndo(); P.recUndo = true; }
   setCell(t, target, lv); ring(t, target, true);
+  // queda donde se tocó de verdad: cuánto antes o después del paso (en % del paso)
+  const off = clamp(Math.round((now - (target === P.vstep ? P.vt : P.vt + dur)) / stepDur(target) * 100), -50, 50);
+  if (Math.abs(off) >= 3) S.mt[S.cur + ',' + t + ',' + target] = off;
   if (target !== P.vstep && !P.queue.some(q => q.s === target)) P.skip.add(S.cur + ':' + t + ':' + target);
   renderPats(); markEdit();
 }
@@ -5234,7 +5264,7 @@ function nudgeNote(d) {
 /* ================= pattern ops ================= */
 function clearPattern() {
   if (!hasNotes(S.cur)) return toast('El track ya está vacío');
-  pushUndo(); S.pats[S.cur] = emptyPat(); renderPads(true); renderPats(); markEdit();
+  pushUndo(); S.pats[S.cur] = emptyPat(); mtClear(S.cur); renderPads(true); renderPats(); markEdit();
   toast(`Track ${LET[S.cur]} borrado. ${FINE ? 'Ctrl+Z' : 'Deshacer'} lo recupera.`);
 }
 const PROGS = [[1, 6], [6, 7], [1, 4], [4, 5], [1, 7], [6, 4], [1, 5], [1, 3]];
@@ -5289,7 +5319,7 @@ function genTrack(t, pat, H) {
 }
 function inventTrack(t) {
   pushUndo();
-  const pat = S.pats[S.cur]; pat[t] = genTrack(t, pat, harmony(pat));
+  const pat = S.pats[S.cur]; pat[t] = genTrack(t, pat, harmony(pat)); mtClear(S.cur, t);
   renderPads(); renderPats(); markEdit();
   if (!RM) pads[t].forEach((el, s) => el.animate([{ transform: 'scale(.6)', opacity: .3 }, { transform: 'none', opacity: 1 }], { duration: 260, delay: s * 16, fill: 'backwards' }));
   if (!P.playing) play();
@@ -5302,16 +5332,16 @@ function randomPat() {
   if (Math.random() < .35) p[5] = Array(STEPS).fill(0);
   return p;
 }
-function dice() { pushUndo(); S.pats[S.cur] = randomPat(); renderPads(true); renderPats(); markEdit(); if (!P.playing) play(); toast('Track inventado. Tirá de nuevo o tocá Deshacer.', 1600); }
+function dice() { pushUndo(); S.pats[S.cur] = randomPat(); mtClear(S.cur); renderPads(true); renderPats(); markEdit(); if (!P.playing) play(); toast('Track inventado. Tirá de nuevo o tocá Deshacer.', 1600); }
 function copyPattern() { P.clip = { p: clone(S.pats[S.cur]), s: clone(S.ps[S.cur]) }; toast(`Track ${LET[S.cur]} copiado`); }
 function pastePattern() {
   if (!P.clip) return toast('Primero copiá un track');
-  pushUndo(); S.pats[S.cur] = clone(P.clip.p); S.ps[S.cur] = clone(P.clip.s); renderAll(true); markEdit(); toast(`Pegado en ${LET[S.cur]}`);
+  pushUndo(); S.pats[S.cur] = clone(P.clip.p); S.ps[S.cur] = clone(P.clip.s); mtClear(S.cur); renderAll(true); markEdit(); toast(`Pegado en ${LET[S.cur]}`);
 }
 function loadPreset(pr) {
   pushUndo();
-  S.pats[S.cur] = rowsToPat(pr.r); setBpm(pr.bpm); S.key = pr.key; S.scale = pr.sc; S.swing = pr.sw || 0;
-  if (pr.fx) { Object.assign(S.fx, { rev: 0, eco: 0, lofi: 0, vin: 0 }, pr.fx); applyFx(); syncFxUI(); }
+  S.pats[S.cur] = rowsToPat(pr.r); mtClear(S.cur); setBpm(pr.bpm); S.key = pr.key; S.scale = pr.sc; S.swing = pr.sw || 0;
+  if (pr.fx) { Object.assign(S.fx, { rev: 0, eco: 0, lofi: 0, vin: 0, flt: 0 }, pr.fx); applyFx(); syncFxUI(); }
   for (let t = 0; t < NT; t++) [S.st[t], S.lay[t]] = presetSt(pr, t);
   bankWarm();
   renderAll(true); markEdit();
