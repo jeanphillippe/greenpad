@@ -238,6 +238,7 @@ gp.visual({ id, nombre, detalle, dibujar(g, v) })
 - Tocar y grabar: gp.enVivo(pista, nota) toca como el ícono (y queda en la grilla si gp.grabarEnVivo(true) está prendido); gp.play(); gp.parar(); gp.modoCancion(true o false).
 - Tracks y sonido: gp.siguiente(letra, copiarSonido) (el track que entra al terminar el compás); gp.estilos(pista) da [{ indice, nombre }]; gp.estiloDe(pista); gp.elegirEstilo(pista, indice).
 - Canción y nombre: gp.ponerCancion([{ track, veces }], prender); gp.sumarACancion(letra, veces); gp.guardarComo(nombre) (guarda en Mis beats).
+- Micrófono: gp.grabar(1 a 5) y gp.pararGrabacion(cancelar); gp.misGrabaciones() (promesa con [true, false...]); gp.tocarGrabacion(numero); gp.usarGrabacion(numero, pista) (la pone como sonido de ese instrumento).
 - Efectos de todo el tema: gp.efectos() da { reverb, eco, lofi, vinilo, filtro }; gp.efectos({ filtro: -0.5 }) cambia los que vengan (filtro de -1 solo graves a 1 solo agudos, 0 apagado).
 - Lo grabado con gp.enVivo queda en el paso más cercano pero suena en el momento exacto en que se tocó.
 - Marcas: gp.marcar(pista, paso, tipo), gp.marcarTrack(letra, tipo), gp.limpiarMarcas(); se dibujan con gp.estilo usando .pad[data-guia] y .pb[data-guia].
@@ -449,6 +450,10 @@ requestAnimationFrame(cuadro);</code></pre>
           <tr><td><code>gp.ponerCancion(lista, prender)</code></td><td>Arma la línea de tiempo: <code>[{ track: 'A', veces: 2 }]</code>. Con <code>prender</code> prende o apaga CANCIÓN.</td></tr>
           <tr><td><code>gp.sumarACancion(letra, veces)</code></td><td>Suma un bloque al final de la línea de tiempo.</td></tr>
           <tr><td><code>gp.guardarComo(nombre)</code></td><td>Le pone nombre al tema y lo guarda en Mis beats. Devuelve el nombre que quedó.</td></tr>
+          <tr><td><code>gp.misGrabaciones()</code></td><td>Promesa con cuáles de las 5 grabaciones tienen sonido: <code>[true, false, ...]</code>.</td></tr>
+          <tr><td><code>gp.tocarGrabacion(numero)</code></td><td>Toca una grabación (de 1 a 5) una vez.</td></tr>
+          <tr><td><code>gp.usarGrabacion(numero, pista)</code></td><td>Pone esa grabación como sonido de un instrumento en el track que se edita (queda en el tema y sale en Descargar). Devuelve una promesa.</td></tr>
+          <tr><td><code>gp.pararGrabacion(cancelar)</code></td><td>Con <code>cancelar</code> en <code>true</code>, termina de grabar sin guardar (no pisa la que había).</td></tr>
           <tr><td><code>gp.efectos({...})</code></td><td>Los efectos de todo el tema: <code>{ reverb, eco, lofi, vinilo, filtro }</code> (de 0 a 1; vinilo sí o no; filtro de -1, solo graves, a 1, solo agudos, con 0 apagado). Sin datos devuelve cómo están; con datos cambia los que vengan. Quedan guardados con el tema y salen en Descargar.</td></tr>
         </table></div>
       </div>
@@ -521,7 +526,7 @@ const PLUGINS = [
   { archivo: 'shadow.js',    tipo: 'herramienta', nombre: 'Shadow',   autor: 'GREENPAD', version: '1.0', descripcion: 'Te guía para volver a armar un tema ya hecho mientras lo filmás: esconde las notas y marca en el centro qué botones tocar. Al tocarlos pone la nota exacta, con su altura, y avisa qué track sigue. El original queda guardado hasta que salgas.' },
   { archivo: 'boombox.js',   tipo: 'visual',  nombre: 'Boombox',       autor: 'GREENPAD', version: '1.0', descripcion: 'Un radiograbador de los 80: parlantes que empujan con el bombo, cassette que gira, dial que avanza con el tema y luces que siguen al sonido.' },
   { archivo: 'liquida.js',   tipo: 'visual',  nombre: 'Liquid A',      autor: 'GREENPAD', version: '4.0', descripcion: 'Un líquido negro y espeso sobre un parlante, en 3D: resbala al centro del cono, el bombo lo lanza por el aire, la caja lo salpica y siempre cae más desde arriba. Luz azul y roja desde esquinas opuestas, el espectro alrededor y la cámara cambiando de plano.' },
-  { archivo: 'mano.js',      tipo: 'herramienta', nombre: 'Mano',     autor: 'GREENPAD', version: '3.0', descripcion: 'Tocá con la mano apoyada en la pantalla: los 8 instrumentos a mano, mantené apretado para cambiar el sonido y girá las perillas de filtro, reverb, eco, lo-fi y vinilo. Graba respetando el tiempo de lo que tocás y al final le ponés nombre al tema.' },
+  { archivo: 'mano.js',      tipo: 'herramienta', nombre: 'Mano',     autor: 'GREENPAD', version: '3.1', descripcion: 'Tocá con la mano apoyada en la pantalla: los 8 instrumentos a mano, un LOOP por instrumento (mantenelo apretado y tocá), 3 sonidos propios con el micrófono y perillas de efectos. Graba respetando el tiempo de lo que tocás y al final le ponés nombre al tema.' },
 ];
 
 /* Adónde va el botón "Mandar mi plugin": una dirección web o un mailto:tu@correo */

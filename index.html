@@ -2143,7 +2143,34 @@ function plugApi(rec) {
     soltarMicrofono(ms) { clearTimeout(PLG.micT); PLG.micT = setTimeout(plugMicOff, Math.max(0, +ms || 0)); },
     // graba con el micrófono y pisa una de las grabaciones, de la 1 a la 5 (hasta 8 segundos). grabar da true cuando empezó; pararGrabacion guarda
     grabar(numero) { return plugRecStart(numero); },
-    pararGrabacion() { return plugRecStop(); },
+    pararGrabacion(cancelar) { return plugRecStop(!!cancelar); },  // con cancelar: no guarda lo grabado
+    // cuáles de las 5 grabaciones tienen sonido: promesa con [true, false, ...]
+    misGrabaciones() { return loadSlots().then(() => VE.sl.map(Boolean)); },
+    // toca una grabación entera (o el pedazo elegido en el editor), una vez
+    tocarGrabacion(numero) {
+      const k = clamp((+numero | 0) - 1, 0, NSL - 1), c = ensureAudio(), sl = gpadSlot(k); if (!c || !sl) return false;
+      const id = sl.id && SMP.has(sl.id) ? sl.id : tmpKey(k), buf = sampleBuf(id, sl.fx.rev); if (!buf) return false;
+      const s = c.createBufferSource(), g = c.createGain(); s.buffer = buf; s.playbackRate.value = Math.pow(2, (sl.pit || 0) / 12); g.gain.value = .95;
+      s.connect(g); g.connect(AU.fxIn);
+      const a = buf.duration * (sl.a || 0), e = Math.max(a + .03, buf.duration * sl.len); s.start(c.currentTime + .005, a, e - a);
+      return true;
+    },
+    // pone una grabación como sonido de un instrumento, en el track que se edita (queda en el tema y sale en Descargar)
+    usarGrabacion(numero, pista) {
+      const k = clamp((+numero | 0) - 1, 0, NSL - 1), t = plugTrk(pista);
+      return loadSlots().then(() => {
+        const sl = VE.sl[k]; if (!sl) return false;
+        let id = sl.id && SMP.has(sl.id) ? sl.id : null;
+        if (!id) {
+          const e = SMP.get(tmpKey(k)); if (!e) return false;
+          id = uid(); SMP.set(id, { b64: e.b64, pcm: e.pcm, buf: e.buf, rbuf: e.rbuf }); IDB.put(id, { b64: e.b64, t: Date.now() });
+          sl.id = id; if (VE.slot === k) VE.id = id; saveSlotPrefs();
+        }
+        S.smp[t] = { id, rev: sl.fx.rev, echo: sl.fx.echo, robot: sl.fx.robot, len: sl.len, a: sl.a || 0, pit: sl.pit || 0 };
+        S.st[t] = VC(t); S.lay[t] &= ~(1 << VC(t)); renderTracks(); markEdit();
+        return true;
+      });
+    },
     // ---- ayudas ----
     ruido() { return AU.white; },                                   // un segundo de ruido blanco (AudioBuffer)
     sonido(url) { return plugSound(String(url)); },                 // carga un archivo de audio; se usa con tocarSonido
@@ -2326,11 +2353,12 @@ function plugRecStart(num) {
     return true;
   }, (e) => { if (PREC.r === r) PREC.r = null; throw e; });
 }
-async function plugRecStop() {
+async function plugRecStop(cancelar) {
   const r = PREC.r; if (!r) return false;
   PREC.r = null; r.live = false;
   if (!r.on) return false;
   try { r.mic.disconnect(r.proc); r.proc.disconnect(); r.mute.disconnect(); } catch {}
+  if (cancelar) return false; // se suelta enseguida: no pisa la grabación que había
   let pcm = null;
   if (r.n > r.sr * .12) { const all = new Float32Array(r.n); let o = 0; for (const ch of r.chunks) { all.set(ch, o); o += ch.length; } pcm = processRec(all, r.sr); }
   if (!pcm) { toast('No se escuchó nada. Probá más cerca del micrófono.'); return false; }

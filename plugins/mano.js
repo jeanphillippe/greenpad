@@ -11,6 +11,10 @@
 //   a la derecha los agudos), REVERB, ECO, LO-FI y VINILO. Se giran arrastrando para arriba o para abajo; dos toques
 //   las vuelven a cero. Quedan guardadas con el tema y salen en Descargar. Si los dedos quedan muy arriba, la fila va abajo.
 // - Lo que tocás queda en la grilla en el paso más cercano, pero suena en el momento exacto en que lo tocaste.
+// - LOOP: cada instrumento tiene un botón chico arriba (o abajo). Mientras lo mantenés apretado, lo que toques en ese
+//   instrumento reemplaza su ritmo y queda sonando en loop (si la música estaba quieta, arranca). Dos toques lo borran.
+// - Micrófono: tres botones (1, 2 y 3) en el rincón libre. Mantenelo apretado para grabar un sonido (hasta 8 segundos);
+//   un toque corto lo escucha. Después, mantené apretado cualquier instrumento y elegí MIC 1, 2 o 3 entre sus sonidos.
 // - "Acomodar" pide apoyar los 5 dedos: las almohadillas amarillas quedan justo ahí y el resto se mueve y se agranda o
 //   achica con la mano. Sirve para la mano derecha o la izquierda.
 // - Grabar pasa de un track al siguiente: cada track suena 1, 2 o 4 vueltas mientras grabás encima y después entra el
@@ -21,11 +25,11 @@ GREENPAD.plugin({
   id: 'mano',
   nombre: 'Mano',
   autor: 'GREENPAD',
-  version: '3.0',
+  version: '3.1',
   tipo: 'herramienta',
-  descripcion: 'Tocá con la mano apoyada en la pantalla: los 8 instrumentos a mano, mantené apretado para cambiar el sonido y girá las perillas de efectos. Graba respetando el tiempo de lo que tocás y al final le ponés nombre al tema.',
+  descripcion: 'Tocá con la mano apoyada en la pantalla: los 8 instrumentos a mano, un LOOP por instrumento, 3 sonidos propios con el micrófono y perillas de efectos. Graba respetando el tiempo de lo que tocás y al final le ponés nombre al tema.',
   setup(gp) {
-    const NECESITA = ['efectos', 'enVivo', 'grabarEnVivo', 'siguiente', 'estilos', 'elegirEstilo', 'estiloDe', 'ponerCancion', 'guardarComo', 'modoCancion', 'parar'];
+    const NECESITA = ['usarGrabacion', 'tocarGrabacion', 'misGrabaciones', 'efectos', 'enVivo', 'grabarEnVivo', 'siguiente', 'estilos', 'elegirEstilo', 'estiloDe', 'ponerCancion', 'guardarComo', 'modoCancion', 'parar'];
     // la distribución, en proporción de la pantalla (mano derecha), tal como se dibujó:
     // t: tipo (d: dedo, v: verde, p: punto) · r: radio en proporción del ancho
     const LUGARES = [
@@ -40,6 +44,9 @@ GREENPAD.plugin({
       { k: 'rec', t: 'p', x: 0.085, y: 0.802, r: 0.036 },                 // los tres puntos, al lado del pulgar
       { k: 'fin', t: 'p', x: 0.088, y: 0.880, r: 0.036 },
       { k: 'mas', t: 'p', x: 0.083, y: 0.953, r: 0.036 },
+      { k: 'mic1', t: 'p', x: 0.915, y: 0.802, r: 0.036 },                // los tres micrófonos, en el rincón libre
+      { k: 'mic2', t: 'p', x: 0.915, y: 0.880, r: 0.036 },
+      { k: 'mic3', t: 'p', x: 0.915, y: 0.953, r: 0.036 },
     ];
     const DEDOS = LUGARES.slice(0, 5);
     const NOMBRE = { BD: 'BOMBO', SN: 'CAJA', HH: 'HI-HAT', PC: 'PERCU', BS: 'BAJO', GT: 'GUITARRA', CH: 'ACORDES', LD: 'MELODÍA' };
@@ -91,6 +98,16 @@ GREENPAD.plugin({
 .mano.grab .mano-pt[data-k=rec]{background:#ff4b4b;color:#fff}
 .mano.grab .mano-pt[data-k=rec].tic{box-shadow:0 0 0 7px rgba(255,75,75,.25)}
 @keyframes manoLat{50%{box-shadow:0 0 0 7px rgba(255,75,75,.2)}}
+.mano-loop{position:absolute;z-index:2;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;display:grid;place-items:center;font-size:15px;font-weight:800;
+  color:color-mix(in srgb,var(--c) 75%,#fff);background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--c) 40%,transparent);transition:transform .08s,box-shadow .12s}
+.mano-loop.suena{box-shadow:inset 0 0 0 1.5px var(--c);background:color-mix(in srgb,var(--c) 16%,transparent)}
+.mano-loop.on{transform:scale(1.15);background:var(--c);color:#06120c;box-shadow:0 0 18px 2px color-mix(in srgb,var(--c) 60%,transparent)}
+.mano-pad.enloop{box-shadow:inset 0 0 0 3px var(--c),0 0 0 4px rgba(255,255,255,.12)}
+.mano-pt.mic{font-size:0;color:#cfe0d6}
+.mano-pt.mic svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.mano-pt.mic i{position:absolute;right:-3px;top:-3px;min-width:15px;height:15px;border-radius:8px;background:#22302a;font-size:9.5px;font-style:normal;font-weight:800;line-height:15px;text-align:center;color:#cfe0d6}
+.mano-pt.mic.lleno{box-shadow:inset 0 0 0 1.5px #dcff00;color:#dcff00}
+.mano-pt.mic.grabando{background:#ff4b4b;color:#fff;box-shadow:0 0 0 6px rgba(255,75,75,.25)}
 .mano-burb{position:absolute;z-index:4;transform:translate(-50%,-100%);padding:8px 12px;border-radius:14px;background:#f2f6f3;color:#0a120e;font-size:13px;font-weight:800;white-space:nowrap;
   display:none;align-items:center;gap:10px;box-shadow:0 8px 24px rgba(0,0,0,.45);pointer-events:none}
 .mano-burb.on{display:flex}
@@ -124,7 +141,7 @@ GREENPAD.plugin({
     let G = { mano: 'der', pos: null, vueltas: 2, clic: true };
     try { const x = JSON.parse(localStorage.getItem(CLAVE) || 'null'); if (x) G = Object.assign(G, x); } catch {}
     const guardarPref = () => { try { localStorage.setItem(CLAVE, JSON.stringify(G)); } catch {} };
-    const E = { abierta: false, ultima: 'BD', grab: false, ses: null, track: 'A', toques: new Map(), alturas: {} };
+    const E = { abierta: false, ultima: 'BD', grab: false, ses: null, track: 'A', toques: new Map(), alturas: {}, loop: new Map(), mics: [false, false, false], micDe: {} };
     let raiz = null, el = {};
     const falta = () => NECESITA.filter(k => typeof gp[k] !== 'function');
 
@@ -207,7 +224,12 @@ GREENPAD.plugin({
       for (const L of P) {
         const b = document.createElement('div');
         b.style.left = L.x + 'px'; b.style.top = L.y + 'px'; b.style.width = b.style.height = L.r * 2 + 'px';
-        if (L.t === 'p') { b.className = 'mano-pt'; b.dataset.k = L.k; b.textContent = L.k === 'rec' ? '●' : L.k === 'fin' ? '■' : '⋯'; b.setAttribute('aria-label', L.k === 'rec' ? 'Grabar' : L.k === 'fin' ? 'Terminar' : 'Más'); }
+        if (L.t === 'p' && L.k.startsWith('mic')) {
+          const n = +L.k[3]; b.className = 'mano-pt mic' + (E.mics[n - 1] ? ' lleno' : ''); b.dataset.k = L.k;
+          b.innerHTML = `<svg viewBox="0 0 16 16"><rect x="5.5" y="1.8" width="5" height="8" rx="2.5"/><path d="M3.2 7.6a4.8 4.8 0 009.6 0M8 12.4v2.2"/></svg><i>${n}</i>`;
+          b.setAttribute('aria-label', 'Micrófono ' + n + ': mantené apretado para grabar');
+        }
+        else if (L.t === 'p') { b.className = 'mano-pt'; b.dataset.k = L.k; b.textContent = L.k === 'rec' ? '●' : L.k === 'fin' ? '■' : '⋯'; b.setAttribute('aria-label', L.k === 'rec' ? 'Grabar' : L.k === 'fin' ? 'Terminar' : 'Más'); }
         else {
           b.className = 'mano-pad' + (L.t === 'v' ? ' v' : ''); b.dataset.p = L.p; b.style.setProperty('--c', COLOR[L.p]);
           b.innerHTML = '<div class="al"></div><b></b><small></small>';
@@ -217,7 +239,25 @@ GREENPAD.plugin({
         }
         el.capa.appendChild(b);
       }
-      pintarPads();
+      E.loops = {};
+      const ocupado = P.map(L => ({ x: L.x, y: L.y, r: L.r }));
+      for (const L of P) {
+        if (L.t === 'p') continue;
+        const lr = 15, d = L.r + lr + 5, cand = [[0, -d], [0, d], [d, 0], [-d, 0], [d * .7, -d * .7], [-d * .7, -d * .7], [d * .7, d * .7], [-d * .7, d * .7]];
+        let pos = null;
+        for (const [dx, dy] of cand) {
+          const x = L.x + dx, y = L.y + dy;
+          if (x < lr + 3 || x > W - lr - 3 || y < top + lr || y > fondo - lr) continue;
+          if (ocupado.some(o => Math.hypot(o.x - x, o.y - y) < o.r + lr + 3)) continue;
+          pos = [x, y]; break;
+        }
+        if (!pos) pos = [L.x, Math.max(top + lr, L.y - d)];
+        ocupado.push({ x: pos[0], y: pos[1], r: lr });
+        const b = document.createElement('div'); b.className = 'mano-loop'; b.dataset.p = L.p; b.style.setProperty('--c', COLOR[L.p]);
+        b.style.left = pos[0] + 'px'; b.style.top = pos[1] + 'px'; b.textContent = '↻'; b.setAttribute('aria-label', 'Loop de ' + NOMBRE[L.p]);
+        el.capa.appendChild(b); E.loops[L.p] = b;
+      }
+      pintarPads(); pintarLoops();
     }
 
     // ---------- las perillas de efectos ----------
@@ -277,7 +317,19 @@ GREENPAD.plugin({
     }
 
     // ---------- pintar ----------
-    function estiloDe(p) { try { const l = gp.estilos(p), i = gp.estiloDe(p), j = l.findIndex(y => y.indice === i); return { l, j: Math.max(0, j), n: j >= 0 ? l[j].nombre : '' }; } catch { return { l: [], j: 0, n: '' }; } }
+    function estiloDe(p) {
+      try {
+        const l = gp.estilos(p).slice(), i = gp.estiloDe(p);
+        E.mics.forEach((ok, k) => { if (ok) l.push({ indice: 'mic' + (k + 1), nombre: 'MIC ' + (k + 1), mic: k + 1 }); });
+        let j = l.findIndex(y => y.indice === i);
+        if (j >= 0 && /^grabaci/i.test(l[j].nombre) && E.micDe[p]) { const m = l.findIndex(y => y.mic === E.micDe[p]); if (m >= 0) j = m; }
+        return { l, j: Math.max(0, j), n: j >= 0 ? l[j].nombre : '' };
+      } catch { return { l: [], j: 0, n: '' }; }
+    }
+    function ponerSonido(p, x) {                                               // un estilo, o un micrófono grabado
+      if (x.mic) { E.micDe[p] = x.mic; return Promise.resolve(gp.usarGrabacion(x.mic, p)).then(() => { gp.tocar(p); pintarPads(); }); }
+      delete E.micDe[p]; gp.elegirEstilo(p, x.indice); gp.tocar(p); pintarPads(); return Promise.resolve();
+    }
     function pintarPads() {
       for (const p of ORDEN) { const b = E.pads && E.pads[p]; if (!b) continue; b.querySelector('b').textContent = NOMBRE[p]; b.querySelector('small').textContent = estiloDe(p).n; }
     }
@@ -291,11 +343,55 @@ GREENPAD.plugin({
     function alturaDe(b, y) { const r = b.getBoundingClientRect(), f = 1 - (y - r.top - r.height * 0.14) / (r.height * 0.72); return Math.min(8, Math.max(1, Math.round(1 + f * 7))); }
     function golpe(b, y) {
       const p = b.dataset.p, n = MEL[p] ? alturaDe(b, y) : 0;
-      gp.enVivo(p, n || undefined);
+      const L = E.loop.get(p);
+      if (L && !L.borrado) { for (let s2 = 0; s2 < 16; s2++) gp.poner(p, s2, 0); L.borrado = true; }   // el primer golpe con LOOP reemplaza el ritmo de ese instrumento
+      if (E.loop.size && !L && !E.grab) gp.tocar(p, n || undefined);     // con un LOOP apretado, los demás suenan sin grabarse
+      else gp.enVivo(p, n || undefined);
       if (MEL[p]) { E.alturas[p] = n; [...b.querySelectorAll('.al i')].forEach((x, i) => x.classList.toggle('on', 8 - i === n)); }
       b.classList.add('tq'); clearTimeout(b._t); b._t = setTimeout(() => b.classList.remove('tq'), 90);
       E.ultima = p;
-      if (E.grab) setTimeout(pintarEst, 30);
+      if (L) setTimeout(pintarLoops, 40);
+    }
+    function pintarLoops() {
+      if (!E.loops) return;
+      let pat = null; try { const st = gp.estado() || {}, i = LETRAS.indexOf(st.track || E.track); pat = gp.notas()[i]; } catch {}
+      for (const p of ORDEN) { const b = E.loops[p]; if (!b) continue; b.classList.toggle('suena', !!(pat && pat[ORDEN.indexOf(p)].some(Boolean))); b.classList.toggle('on', E.loop.has(p)); }
+      for (const p of ORDEN) if (E.pads[p]) E.pads[p].classList.toggle('enloop', E.loop.has(p));
+    }
+    // LOOP apretado: arranca la música si estaba quieta y graba solo ese instrumento mientras se mantiene
+    function loopAbajo(b, id) {
+      const p = b.dataset.p, ahora = performance.now();
+      if (ahora - (b._ult || 0) < 320) { for (let s2 = 0; s2 < 16; s2++) gp.poner(p, s2, 0); b._ult = 0; gp.aviso(`${NOMBRE[p]}: loop borrado`, 900); pintarLoops(); return; }
+      b._ult = ahora;
+      E.loop.set(p, { borrado: false }); E.toques.set(id, { loop: p });
+      const est = gp.estado() || {};
+      if (!est.tocando) { gp.modoCancion(false); }
+      if (!E.grab) gp.grabarEnVivo(true);                                   // prende la música si estaba quieta
+      pintarLoops();
+      if (navigator.vibrate) try { navigator.vibrate(8); } catch {}
+    }
+    function loopArriba(p) {
+      E.loop.delete(p);
+      if (!E.loop.size && !E.grab) gp.grabarEnVivo(false);                  // la música sigue: el loop queda sonando
+      pintarLoops();
+    }
+    // micrófono: mantener apretado graba; soltar enseguida no pisa nada y deja escuchar lo que había
+    function micAbajo(b, id) {
+      const n = +b.dataset.k[3], t = { mic: n, t0: performance.now(), b };
+      E.toques.set(id, t);
+      Promise.resolve(gp.grabar(n)).then((ok) => { if (ok && E.toques.get(id) === t) b.classList.add('grabando'); }, () => gp.aviso('Para grabar hace falta permiso para usar el micrófono', 2600));
+    }
+    function micArriba(t) {
+      t.b.classList.remove('grabando');
+      const corto = performance.now() - t.t0 < 350;
+      Promise.resolve(gp.pararGrabacion(corto)).then((k) => {
+        if (corto) { if (E.mics[t.mic - 1]) gp.tocarGrabacion(t.mic); else gp.aviso(`Mantené apretado el ${t.mic} para grabar un sonido con el micrófono`, 2400); return; }
+        if (!k) return;
+        E.mics[t.mic - 1] = true; t.b.classList.add('lleno'); gp.tocarGrabacion(t.mic);
+        // si un instrumento ya usaba este micrófono, se actualiza solo
+        for (const p of Object.keys(E.micDe)) if (E.micDe[p] === t.mic) gp.usarGrabacion(t.mic, p);
+        gp.aviso(`MIC ${t.mic} listo: mantené apretado un instrumento y elegí MIC ${t.mic}`, 3000);
+      });
     }
     // mantener apretado: aparece el sonido arriba del dedo y deslizando a los costados se elige otro
     function abrirBurbuja(t) {
@@ -310,10 +406,12 @@ GREENPAD.plugin({
     }
     function pintarBurbuja(t) { const p = t.pad.dataset.p; el.burb.querySelector('small').textContent = NOMBRE[p]; el.burb.querySelector('b').textContent = t.elige.l[t.elige.j].nombre; }
     function apoyar(e) {
-      const pad = e.target.closest('.mano-pad'), pt = e.target.closest('.mano-pt');
-      if (!pad && !pt) return;
+      const pad = e.target.closest('.mano-pad'), pt = e.target.closest('.mano-pt'), lp = e.target.closest('.mano-loop');
+      if (!pad && !pt && !lp) return;
       e.preventDefault();
       try { raiz.setPointerCapture(e.pointerId); } catch {}
+      if (lp) { loopAbajo(lp, e.pointerId); return; }
+      if (pt && pt.classList.contains('mic')) { micAbajo(pt, e.pointerId); return; }
       if (pt) { pt.classList.add('tq'); setTimeout(() => pt.classList.remove('tq'), 120); accion(pt.dataset.k); return; }
       const t = { pad, x: e.clientX, y: e.clientY, movio: false };
       E.toques.set(e.pointerId, t);
@@ -321,10 +419,10 @@ GREENPAD.plugin({
       t.timer = setTimeout(() => { if (!t.movio) abrirBurbuja(t); }, 450);
     }
     function mover(e) {
-      const t = E.toques.get(e.pointerId); if (!t) return;
+      const t = E.toques.get(e.pointerId); if (!t || !t.pad) return;
       if (t.elige) {                                                         // eligiendo el sonido: cada 38 px, uno más
         const n = t.elige.l.length, j = ((t.elige.j0 + Math.round((e.clientX - t.elige.x0) / 38)) % n + n) % n;
-        if (j !== t.elige.j) { t.elige.j = j; const p = t.pad.dataset.p; gp.elegirEstilo(p, t.elige.l[j].indice); gp.tocar(p); pintarBurbuja(t); pintarPads(); if (navigator.vibrate) try { navigator.vibrate(5); } catch {} }
+        if (j !== t.elige.j) { t.elige.j = j; const p = t.pad.dataset.p; ponerSonido(p, t.elige.l[j]); pintarBurbuja(t); if (navigator.vibrate) try { navigator.vibrate(5); } catch {} }
         return;
       }
       if (Math.hypot(e.clientX - t.x, e.clientY - t.y) > 14) t.movio = true;
@@ -333,13 +431,15 @@ GREENPAD.plugin({
     }
     function soltar(e) {
       const t = E.toques.get(e.pointerId); if (!t) return; E.toques.delete(e.pointerId);
+      if (t.loop) { loopArriba(t.loop); return; }
+      if (t.mic) { micArriba(t); return; }
       clearTimeout(t.timer);
       if (t.elige) { t.pad.classList.remove('elige'); el.burb.classList.remove('on'); pintarPads(); }
     }
     function cambiarEstilo(dir) {
       const p = E.ultima, e = estiloDe(p); if (!e.l.length) return;
       const n = e.l[(e.j + dir + e.l.length) % e.l.length];
-      gp.elegirEstilo(p, n.indice); gp.tocar(p); pintarPads(); gp.aviso(`${NOMBRE[p]}: ${n.nombre}`, 900);
+      ponerSonido(p, n); gp.aviso(`${NOMBRE[p]}: ${n.nombre}`, 900);
     }
 
     // ---------- grabar pasando de track ----------
@@ -364,6 +464,7 @@ GREENPAD.plugin({
     function alPaso(ev) {
       if (!E.abierta) return;
       pintarPaso(ev.paso);
+      if (ev.paso === 0) pintarLoops();
       if (G.clic && E.grab && ev.paso % 4 === 0) clic(ev.paso === 0);
       if (ev.track !== E.track) {                                            // entró otro track
         E.track = ev.track;
@@ -479,9 +580,11 @@ GREENPAD.plugin({
       E.abierta = true; const est = gp.estado() || {}; E.track = est.track || 'A';
       raiz.style.display = ''; requestAnimationFrame(() => raiz.classList.add('on'));
       armarPads(); pintarEst(); pintarPerillas();
+      Promise.resolve(gp.misGrabaciones()).then((l) => { E.mics = [0, 1, 2].map(i => !!(l && l[i])); armarPads(); }).catch(() => {});
     }
     function cerrar() {
       if (E.grab) terminar(false);
+      if (E.loop.size) { E.loop.clear(); gp.grabarEnVivo(false); }
       E.abierta = false; raiz.classList.remove('on'); el.hoja.classList.remove('on'); el.mas.classList.remove('on'); el.burb.classList.remove('on');
       setTimeout(() => { if (!E.abierta) raiz.style.display = 'none'; }, 220);
     }
