@@ -235,6 +235,9 @@ gp.visual({ id, nombre, detalle, dibujar(g, v) })
 - gp.analizador(): AnalyserNode con lo que suena, o null hasta que suena algo.
 - Notas: gp.notas() da [track][pista][paso] (0 vacío, 1 a 8 altura); gp.ponerNotas(notas); gp.poner(pista, paso, nota); gp.cancion() da [{ track, veces }]; gp.irATrack(letra).
 - gp.alTocar(fn): al marcar un paso, fn(pista, paso, track) devuelve la nota (1 a 8), 0 para no dejar, o nada para lo normal.
+- Tocar y grabar: gp.enVivo(pista, nota) toca como el ícono (y queda en la grilla si gp.grabarEnVivo(true) está prendido); gp.play(); gp.parar(); gp.modoCancion(true o false).
+- Tracks y sonido: gp.siguiente(letra, copiarSonido) (el track que entra al terminar el compás); gp.estilos(pista) da [{ indice, nombre }]; gp.estiloDe(pista); gp.elegirEstilo(pista, indice).
+- Canción y nombre: gp.ponerCancion([{ track, veces }], prender); gp.sumarACancion(letra, veces); gp.guardarComo(nombre) (guarda en Mis beats).
 - Marcas: gp.marcar(pista, paso, tipo), gp.marcarTrack(letra, tipo), gp.limpiarMarcas(); se dibujan con gp.estilo usando .pad[data-guia] y .pb[data-guia].
 
 PARA TODOS
@@ -434,6 +437,16 @@ requestAnimationFrame(cuadro);</code></pre>
           <tr><td><code>gp.cuando('toque', fn)</code></td><td>Cada vez que se marca o se borra un paso en la grilla: <code>fn({ pista, paso, valor, antes, track })</code>.</td></tr>
           <tr><td><code>gp.cuando('track', fn)</code></td><td>Cuando se pasa a editar otro track: <code>fn({ track })</code>. También avisa una vez al abrir la página, ya con el tema cargado.</td></tr>
           <tr><td><code>gp.cuando('cambio', fn)</code></td><td>Cuando cambia todo de golpe (deshacer, abrir un tema, un ejemplo).</td></tr>
+          <tr><td><code>gp.enVivo(pista, nota)</code></td><td>Toca un instrumento como si se tocara su ícono (en bajo, guitarra, acordes y melodía, con la altura de 1 a 8). Con la grabación en vivo prendida, queda en la grilla en el paso más cercano.</td></tr>
+          <tr><td><code>gp.grabarEnVivo(true / false)</code></td><td>Prende o apaga la grabación en vivo, sin carteles. Prenderla arranca la música.</td></tr>
+          <tr><td><code>gp.play()</code>, <code>gp.parar()</code></td><td>Arranca o frena la música.</td></tr>
+          <tr><td><code>gp.modoCancion(true / false)</code></td><td>Prende o apaga CANCIÓN.</td></tr>
+          <tr><td><code>gp.siguiente(letra, copiarSonido)</code></td><td>El track que entra al terminar el compás, sin cartel. Con <code>copiarSonido</code>, si está vacío le pasa los instrumentos y el ambiente del que suena.</td></tr>
+          <tr><td><code>gp.estilos(pista)</code></td><td>Los estilos de un instrumento: <code>[{ indice, nombre }]</code>.</td></tr>
+          <tr><td><code>gp.estiloDe(pista)</code>, <code>gp.elegirEstilo(pista, indice)</code></td><td>El estilo que tiene un instrumento en el track que se edita, y cambiarlo.</td></tr>
+          <tr><td><code>gp.ponerCancion(lista, prender)</code></td><td>Arma la línea de tiempo: <code>[{ track: 'A', veces: 2 }]</code>. Con <code>prender</code> prende o apaga CANCIÓN.</td></tr>
+          <tr><td><code>gp.sumarACancion(letra, veces)</code></td><td>Suma un bloque al final de la línea de tiempo.</td></tr>
+          <tr><td><code>gp.guardarComo(nombre)</code></td><td>Le pone nombre al tema y lo guarda en Mis beats. Devuelve el nombre que quedó.</td></tr>
         </table></div>
       </div>
 
@@ -504,7 +517,8 @@ const PLUGINS = [
   { archivo: 'onda.js',      tipo: 'herramienta', nombre: 'Onda',     autor: 'GREENPAD', version: '1.0', descripcion: 'La onda de lo que suena, sobre la barra de la canción, mientras armás el tema. Corre al ritmo del tempo, con el color de cada track, y también muestra los golpes que vas probando en la grilla.' },
   { archivo: 'shadow.js',    tipo: 'herramienta', nombre: 'Shadow',   autor: 'GREENPAD', version: '1.0', descripcion: 'Te guía para volver a armar un tema ya hecho mientras lo filmás: esconde las notas y marca en el centro qué botones tocar. Al tocarlos pone la nota exacta, con su altura, y avisa qué track sigue. El original queda guardado hasta que salgas.' },
   { archivo: 'boombox.js',   tipo: 'visual',  nombre: 'Boombox',       autor: 'GREENPAD', version: '1.0', descripcion: 'Un radiograbador de los 80: parlantes que empujan con el bombo, cassette que gira, dial que avanza con el tema y luces que siguen al sonido.' },
-  { archivo: 'liquida.js',   tipo: 'visual',  nombre: 'Liquid A',      autor: 'GREENPAD', version: '3.1', descripcion: 'Gotas de líquido sobre un parlante, en 3D y en primer plano: caen, saltan con el bombo, salpican con la caja, vuelan hacia la cámara y se juntan en dibujos que cambian con la música. Luz azul y roja desde esquinas opuestas y el espectro dibujado alrededor.' },
+  { archivo: 'liquida.js',   tipo: 'visual',  nombre: 'Liquid A',      autor: 'GREENPAD', version: '4.0', descripcion: 'Un líquido negro y espeso sobre un parlante, en 3D: resbala al centro del cono, el bombo lo lanza por el aire, la caja lo salpica y siempre cae más desde arriba. Luz azul y roja desde esquinas opuestas, el espectro alrededor y la cámara cambiando de plano.' },
+  { archivo: 'mano.js',      tipo: 'herramienta', nombre: 'Mano',     autor: 'GREENPAD', version: '1.0', descripcion: 'Tocá con la mano apoyada en la pantalla: cada dedo un instrumento y el pulgar cambia de grupo y de sonido. Graba pasando de un track al siguiente y al final le ponés nombre al tema.' },
 ];
 
 /* Adónde va el botón "Mandar mi plugin": una dirección web o un mailto:tu@correo */

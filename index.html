@@ -2163,6 +2163,61 @@ function plugApi(rec) {
     cancion() { try { return S.song.map(b => ({ track: LET[b.p], veces: b.n })); } catch { return []; } },
     // al marcar un paso en la grilla: f(pista, paso, track) puede devolver la nota a poner (1 a 8), 0 para no dejar marcarlo, o nada para lo normal
     alTocar(f) { PLG.val = typeof f === 'function' ? { plug: rec, f } : null; },
+    // ---- tocar y grabar en vivo, para herramientas que son instrumentos ----
+    // enVivo: toca un instrumento como si se tocara su ícono (en los melódicos, con la altura que se pase, de 1 a 8).
+    // Si la grabación en vivo está prendida, el golpe queda en la grilla, en el paso más cercano
+    enVivo(pista, nota) { const t = plugTrk(pista); if (TR[t].mel && nota) NOTE[t] = clamp(Math.round(+nota), 1, 8); live(t); },
+    // prende o apaga la grabación en vivo, sin carteles. Prenderla arranca la música si estaba quieta
+    grabarEnVivo(on) {
+      on = !!on;
+      if (on !== !!P.rec) { P.rec = on; P.recUndo = false; $('#rec').classList.toggle('on', on); $('#recMenu').classList.toggle('on', on); }
+      if (on && !P.playing) play();
+      return P.rec;
+    },
+    play() { if (!P.playing) play(); },
+    parar() { if (P.playing || P.paused) stop(); },
+    // CANCIÓN prendido (Play toca la línea de tiempo) o apagado (Play repite el track que se edita)
+    modoCancion(on) { S.songOn = !!on; SG.jump = -1; renderSong(); save(); },
+    // siguiente: el track que entra al terminar el compás (o ya, si no está sonando), sin cartel.
+    // Con copiarSonido, si ese track está vacío le pasa los instrumentos y el ambiente del que se edita
+    siguiente(letra, copiarSonido) {
+      const i = LET.indexOf(String(letra).toUpperCase()); if (i < 0) return;
+      if (copiarSonido && i !== S.cur && !patHas(S.pats[i])) { const q = clone(S.ps[S.cur]); q.mix = 0; S.ps[i] = q; }
+      if (P.playing && !songMode()) { if (i !== P.pat) P.pending = i; }
+      else selectPattern(i);
+      renderPats(); save();
+    },
+    // los estilos de un instrumento: [{ indice, nombre }] (Grabación solo si ese instrumento tiene una)
+    estilos(pista) {
+      const t = plugTrk(pista), out = [];
+      for (let i = 0; i < NS(t); i++) { if (i === VC(t) && !hasSmp(t)) continue; out.push({ indice: i, nombre: styleName(t, i) }); }
+      return out;
+    },
+    estiloDe(pista) { return effSt(plugTrk(pista)); },
+    // elige el estilo de un instrumento en el track que se edita
+    elegirEstilo(pista, indice) {
+      const t = plugTrk(pista), i = clamp(indice | 0, 0, NS(t) - 1); if (i === VC(t) && !hasSmp(t)) return;
+      S.st[t] = i; S.lay[t] &= ~(1 << i); renderTracks(); if (SH.open && SH.t === t) renderStyles(); save();
+    },
+    // arma la línea de tiempo: [{ track: 'A', veces: 2 }, ...]. Con prender (true o false) prende o apaga CANCIÓN
+    ponerCancion(lista, prender) {
+      pushUndo();
+      S.song = (Array.isArray(lista) ? lista : []).map(b => ({ p: LET.indexOf(String(b && b.track).toUpperCase()), n: clamp((b && b.veces) | 0 || 1, 1, 16) })).filter(b => b.p >= 0);
+      if (prender != null) S.songOn = !!prender;
+      SG.sel = -1; renderSong(); save();
+    },
+    sumarACancion(letra, veces) {
+      const p = LET.indexOf(String(letra).toUpperCase()); if (p < 0) return;
+      const n = clamp(veces | 0 || 1, 1, 16), last = S.song[S.song.length - 1];
+      if (last && last.p === p) last.n = Math.min(16, last.n + n); else S.song.push({ p, n });
+      renderSong(); save();
+    },
+    // le pone nombre al tema y lo guarda en Mis beats (si ya estaba, lo actualiza). Devuelve el nombre que quedó
+    guardarComo(nombre) {
+      S.name = plugTxt(nombre, 60) || S.name || 'Mi tema'; $('#name').value = S.name;
+      if (!S.id) { S.id = addToLib(S, S.name); S.dirty = false; }
+      saveNow(); return S.name;
+    },
   };
   return Object.freeze(api);
 }
@@ -4974,6 +5029,12 @@ function live(t) {
   if (!P.playing || !P.rec || P.vstep < 0) return;
   const c = AU.ctx, now = c.currentTime, dur = stepDur(P.vstep);
   const target = now - P.vt > dur / 2 ? (P.vstep + 1) % STEPS : P.vstep;
+  if (target === 0 && P.vstep === STEPS - 1 && P.pending >= 0 && P.pending !== S.cur && !songMode()) { // cae en el paso 1 del track que entra: va ahí
+    const p = P.pending; if (S.pats[p][t][0]) return;
+    const lv = TR[t].mel ? NOTE[t] : 1;
+    if (!P.recUndo) { pushUndo(); P.recUndo = true; }
+    S.pats[p][t][0] = lv; P.skip.add(p + ':' + t + ':0'); renderPats(); markEdit(); return;
+  }
   if (S.pats[S.cur][t][target]) return;
   const lv = PLG.val ? newVal(t, target) : (TR[t].mel ? NOTE[t] : 1); if (!lv) return;
   if (!P.recUndo) { pushUndo(); P.recUndo = true; }
@@ -7227,8 +7288,10 @@ const TIP = { el: null, t: 0, n: +(store.get(LS_PREF + '.tipN') || 0), auto: 0 }
 const tipDone = () => !!store.get(LS_PREF + '.tipOk');
 function tipLearned() { if (!tipDone()) store.set(LS_PREF + '.tipOk', 1); hideTrkTip(); }
 function hideTrkTip() { clearTimeout(TIP.t); if (TIP.el) TIP.el.classList.remove('on'); trks.forEach(el => el.classList.remove('nudge')); }
+// una herramienta de plugin tapando la pantalla (por ejemplo Mano): ahí el globito no va
+const capaPlugin = () => { const z = PLG.z && PLG.z.pantalla; return !!z && [...z.children].some(c => c.getClientRects().length && getComputedStyle(c).opacity !== '0'); };
 function trkTip(t, auto) {
-  if (tipDone() || anyOpen()) return;
+  if (tipDone() || anyOpen() || capaPlugin()) return;
   if (!auto) { if (TIP.n >= 3) return; store.set(LS_PREF + '.tipN', ++TIP.n); }
   if (!TIP.el) { TIP.el = document.createElement('div'); TIP.el.className = 'ttip'; TIP.el.setAttribute('aria-hidden', 'true'); document.body.appendChild(TIP.el); }
   const el = TIP.el, r = trks[t].getBoundingClientRect();
