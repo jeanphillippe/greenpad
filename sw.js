@@ -1,16 +1,36 @@
-// Greenpad service worker. Subí VERSION en cada release para renovar la caché.
-const VERSION = 'greenpad-v1.26.0';
-const ASSETS = ['./', './index.html', './mini.html', './plugins.html', './manifest.webmanifest', './banda.webmanifest', './lame.min.js', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './caveat-bold.woff2', './frases.txt', './acerca.txt'];
+// Greenpad service worker.
+// VERSION es el nombre de la versión (el que va en las Actualizaciones del README). BUILD lo cambia solo
+// fuente/build.mjs cada vez que cambia index.html: con eso los teléfonos que ya abrieron GREENPAD reciben
+// la versión nueva en la próxima visita con internet, aunque nadie se acuerde de subir VERSION.
+const VERSION = 'greenpad-v1.28.0';
+const BUILD = '44dad159fe';
+const CACHE = VERSION + '-' + BUILD;
 const SOUNDS = 'greenpad-sonidos-v1'; // las grabaciones de Banda (no cambian entre versiones)
+// lo justo para abrir sin conexión. El resto (mini.html, plugins.html, el conversor a MP3) se guarda la primera vez que se usa.
+const SHELL = ['./', './banda.webmanifest', './manifest.webmanifest', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './caveat-bold.woff2', './frases.txt', './acerca.txt'];
+const NET_WAIT = 4000; // páginas: si la red tarda más que esto, se abre la copia guardada y la nueva queda lista para la próxima
+
+// Cloudflare Pages redirige /index.html a / y /mini.html a /mini: se guarda una copia sin la redirección,
+// porque una respuesta redirigida no sirve para abrir la página sin conexión
+const clean = (res) => (res.redirected ? res.blob().then((b) => new Response(b, { status: res.status, statusText: res.statusText, headers: res.headers })) : Promise.resolve(res));
+const put = (c, key, res) => clean(res).then((r) => c.put(key, r)).catch(() => {});
+// cada página se guarda por su dirección limpia: / , /mini , /plugins (sin .html, sin ?intro ni #b=...)
+const pageKey = (u) => { const url = new URL(u); return url.origin + url.pathname.replace(/index\.html$/, '').replace(/\.html$/, ''); };
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(caches.open(VERSION).then((c) => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then((c) => Promise.all(SHELL.map((u) =>
+    fetch(u, { cache: 'no-cache' }).then((res) => {
+      if (res.ok) return put(c, u === './' ? pageKey(new URL(u, location.href).href) : u, res);
+      if (u === './') throw new Error('sin página');
+    })
+  ))).then(() => self.skipWaiting()));
 });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== VERSION && k !== SOUNDS).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE && k !== SOUNDS).map((k) => caches.delete(k))))
+      .then(() => self.registration.navigationPreload && self.registration.navigationPreload.enable().catch(() => {}))
       .then(() => self.clients.claim())
   );
 });
@@ -27,36 +47,52 @@ self.addEventListener('fetch', (e) => {
     })));
     return;
   }
-  if (new URL(req.url).origin !== location.origin) return;
-  // páginas: red primero (para recibir versiones nuevas), caché si no hay conexión.
-  // Cada página se guarda con su propia dirección (index.html y mini.html no se pisan).
+  const url = new URL(req.url);
+  if (url.origin !== location.origin) return;
+
+  // páginas: red primero, así cada visita con internet trae la última versión. Sin conexión (o con una red que
+  // no responde en NET_WAIT) se abre la copia guardada, y lo que llegue después queda guardado para la próxima.
   if (req.mode === 'navigate') {
-    e.respondWith(
-      fetch(req)
-        .then((res) => { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); return res; })
-        .catch(() => caches.match(req).then((hit) => hit || caches.match('./index.html')))
-    );
+    const key = pageKey(req.url);
+    e.respondWith((async () => {
+      const c = await caches.open(CACHE);
+      const net = Promise.resolve(e.preloadResponse).then((pre) => pre || fetch(req)).then((res) => {
+        if (res && res.ok && res.type === 'basic') e.waitUntil(put(c, key, res.clone()));
+        return res;
+      });
+      e.waitUntil(net.catch(() => {}));
+      const hit = await caches.match(key);
+      if (!hit) return net.catch(() => caches.match(pageKey(new URL('./', location.href).href)).then((r) => r || Response.error()));
+      const late = new Promise((res) => setTimeout(() => res(null), NET_WAIT));
+      const first = await Promise.race([net.catch(() => null), late]);
+      return first || hit;
+    })());
     return;
   }
   // plugins (plugins/*.js): red primero, así la lista de plugins.html siempre instala la versión nueva; caché si no hay conexión
-  if (new URL(req.url).pathname.includes('/plugins/')) {
-    e.respondWith(fetch(req).then((res) => { if (res.ok) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); } return res; }).catch(() => caches.match(req)));
+  if (url.pathname.includes('/plugins/')) {
+    e.respondWith(fetch(req).then((res) => { if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); } return res; }).catch(() => caches.match(req)));
     return;
   }
   // textos editables del repo (así se ven los nuevos apenas se suben)
-  const txt = /\/(frases|acerca)\.txt$/.exec(new URL(req.url).pathname);
+  const txt = /\/(frases|acerca)\.txt$/.exec(url.pathname);
   if (txt) { // frases del logo y "Acerca de": red primero, caché si no hay conexión
     const key = './' + txt[1] + '.txt';
-    e.respondWith(fetch(req).then((res) => { if (res.ok) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(key, copy)); } return res; }).catch(() => caches.match(key)));
+    e.respondWith(fetch(req).then((res) => { if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(key, copy)); } return res; }).catch(() => caches.match(key)));
     return;
   }
   // grabaciones: se guardan la primera vez que se usan, así después suenan sin conexión
-  if (new URL(req.url).pathname.includes('/sonidos/')) {
+  if (url.pathname.includes('/sonidos/')) {
     e.respondWith(
       caches.open(SOUNDS).then((c) => c.match(req).then((hit) => hit || fetch(req).then((res) => { if (res.ok) c.put(req, res.clone()); return res; })))
     );
     return;
   }
-  // resto: caché primero
-  e.respondWith(caches.match(req).then((hit) => hit || fetch(req)));
+  // resto (íconos, fuente, manifest, conversor a MP3): sale de la copia guardada al instante y se renueva por detrás
+  e.respondWith(caches.open(CACHE).then(async (c) => {
+    const hit = await caches.match(req);
+    const net = fetch(req).then((res) => { if (res.ok && res.type === 'basic') e.waitUntil(put(c, req, res.clone())); return res; });
+    if (hit) { e.waitUntil(net.catch(() => {})); return hit; }
+    return net;
+  }));
 });

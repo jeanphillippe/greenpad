@@ -6,6 +6,8 @@ Caja de ritmos y secuenciador de 16 pasos, inspirada en el drumpad de la consola
 
 ## Actualizaciones
 
+- **Plantillas, variación y temas** (`greenpad-v1.28.0`): en el menú, **Plantillas de canción** arma un tema nuevo con las partes (Intro, Estrofa, Estribillo, Puente o Solo, Cierre) en tracks con nombre, el orden de la canción y la batería de cada parte; bajo, guitarra, acordes y melodía los suma quien hace el tema, y el cierre viene vacío. **Variación** (en el panel del track, en el menú o con la tecla `F`) copia el track a uno libre con cambios chicos. **temas.html** es la página de temas de la comunidad, enlazada desde el menú y el pie.
+- **Más liviana y siempre al día** (`greenpad-v1.27.0`): el `index.html` que se publica sale achicado de `fuente/index.html` con `node fuente/build.mjs` (564 KB a 399 KB; comprimido, 177 KB a 139 KB). Cada visita con internet trae la última versión y sin conexión abre la copia guardada (si la red tarda más de 4 segundos, también). Si GREENPAD quedó abierto en segundo plano, al volver busca la versión nueva y se recarga sola cuando no molesta (sin sonar, sin ventanas abiertas, sin grabar ni video cargado); si la persona la está usando, espera a que pase a otra app o la deje un minuto quieta, y avisa "GREENPAD se actualizó". Ya no hace falta subir `VERSION` a mano. La primera instalación baja la página una sola vez (antes dos) y ya no precarga `mini.html` ni `plugins.html`. Bandejas con el teléfono acostado: los dos discos grandes uno al lado del otro, tracks y FRENO / REBOBINAR entre ambos, crossfader abajo y la mezcla debajo (deslizando).
 - **Mano 3.3: acomodar a mano** (plugin): en ⋯, ACOMODAR deja arrastrar cada almohadilla y cada botón para moverlo y cambiar su tamaño con el punto amarillo del borde o pellizcando con dos dedos (sin tener que apoyar los 5 dedos a la vez). 5 DEDOS sigue como atajo: acomoda todo a la mano apoyada y después se ajusta a mano. LISTO guarda la distribución en el equipo; COMO AL PRINCIPIO vuelve a la de la foto. La barra de acomodar se corre al otro lado si se agarra algo cerca de ella.
 - **Mano 3.2: voz en loop y grilla** (`greenpad-v1.26.0`): cada micrófono de Mano tiene su ↻: mantenido apretado graba la voz en tiempo (hasta un compás) y al soltar la deja en la fila de un instrumento libre del track (o la que ya tenía ese micrófono) como una nota en el paso donde empezó, con su corrimiento exacto, y suena en loop. El botón GRILLA de Mano lleva a la grilla sin cortar la música ni la grabación, y el botón MANO de abajo vuelve. En la grilla, cada nota grabada en vivo se ve corrida dentro de su cuadro según cuándo se tocó (con una rayita en el centro del paso). La API de plugins suma el corrimiento en `gp.poner(pista, paso, nota, corrimiento)`, `gp.ultimaGrabacion()` y `gp.pararGrabacion(cancelar, callado)`.
 - **Mano 3.1: loops y micrófono** (`greenpad-v1.25.0`): cada instrumento tiene un botón LOOP chico arriba (o abajo, o al costado) de su almohadilla; mientras se mantiene apretado, lo que se toca en ese instrumento reemplaza su ritmo en el track y queda sonando (si la música estaba quieta, arranca; con un LOOP apretado los demás instrumentos suenan sin grabarse; dos toques lo borran). Tres botones de micrófono en el rincón libre: mantener apretado graba un sonido en las grabaciones 1 a 3 (hasta 8 segundos), un toque corto lo escucha sin pisarlo, y después cualquier instrumento puede usarlo eligiendo MIC 1, 2 o 3 entre sus sonidos (mantener apretado y deslizar). La API de plugins suma `gp.misGrabaciones`, `gp.tocarGrabacion`, `gp.usarGrabacion` y `gp.pararGrabacion(cancelar)`.
@@ -22,12 +24,16 @@ Caja de ritmos y secuenciador de 16 pasos, inspirada en el drumpad de la consola
 | Archivo | Para qué |
 |---|---|
 | `mini.html` | Greenpad Mini, toda la app: estilos, motor de audio (Web Audio, sonidos sintetizados, sin samples) y lógica |
-| `sw.js` | Service worker para uso offline. Subí `VERSION` en cada release |
+| `fuente/index.html` | **GREENPAD, el archivo que se edita** (legible, con comentarios) |
+| `fuente/build.mjs` | Arma el `index.html` achicado y renueva `BUILD` en `sw.js`. Correr `node fuente/build.mjs` después de cada cambio en `fuente/index.html` |
+| `index.html` | GREENPAD achicado: lo genera `fuente/build.mjs`, no editarlo a mano (se pisa) |
+| `sw.js` | Service worker: uso sin conexión y actualización sola. `VERSION` es el nombre de la versión; `BUILD` lo pone el build |
 | `manifest.webmanifest` | Permite "Agregar a pantalla de inicio" a Greenpad Mini como app |
 | `icon.svg`, `icon-*.png` | Íconos |
-| `_headers` | Cabeceras para Cloudflare Pages (sin caché para `index.html`, `mini.html` y `sw.js`) |
+| `temas.html` | Temas de la comunidad: la lista `TEMAS` de arriba del script se edita a mano |
+| `_headers` | Cabeceras para Cloudflare Pages (sin caché para `index.html`, `mini.html` y `sw.js`; `fuente/` fuera de Google) |
 
-No hay build, ni dependencias, ni `package.json`.
+No hay dependencias ni `package.json`. El único paso previo a subir es `node fuente/build.mjs` (necesita Node e internet la primera vez: baja esbuild solo, con `npx`, sin dejar archivos en la carpeta). Cloudflare Pages sigue publicando la carpeta tal cual, sin build.
 
 ## Subir a Cloudflare Pages (gratis)
 
@@ -40,7 +46,7 @@ No hay build, ni dependencias, ni `package.json`.
 4. Deploy. Cada push a la rama principal publica una versión nueva.
 5. Opcional: agregar un dominio propio en **Custom domains**.
 
-Cuando cambies algo, subí `VERSION` en `sw.js` (por ejemplo `greenpad-v1.2.1`) para que los teléfonos que ya la tienen instalada bajen la versión nueva.
+Cuando cambies GREENPAD: editá `fuente/index.html`, corré `node fuente/build.mjs` y subí `index.html`, `sw.js` y `fuente/`. El build cambia `BUILD` en `sw.js` y con eso los teléfonos que ya la tienen bajan la versión nueva en la próxima visita con internet. `VERSION` se sube solo para nombrar la versión en las Actualizaciones. Si cambiás solo `mini.html`, `plugins.html`, un plugin o los `.txt`, no hace falta el build: se renuevan solos.
 
 Para probar en local: `python3 -m http.server 8080` dentro de la carpeta y abrir `http://localhost:8080` (GREENPAD) o `http://localhost:8080/mini.html`. El service worker solo se registra en https.
 
@@ -188,6 +194,7 @@ MELODÍA   .... .... .... ....
 | Encadenar patrones | C |
 | Sonido para todos | K |
 | Inventar patrón (dado) | D |
+| Variación del track | F |
 | Grabar un sonido | V |
 | Borrar patrón | Supr |
 | Deshacer / rehacer | Ctrl+Z / Ctrl+Y |
@@ -303,6 +310,26 @@ DESTIEMPO: 60
 
 El enlace de "Copiar enlace" también lleva la canción, el destiempo y la mezcla de cada patrón (las grabaciones no, para eso está el `.txt`).
 
+### Plantillas de canción
+
+En el menú, **Plantillas de canción** (Trap, Trap melódico, Hip hop, Rock, Rock nacional, Funk, Cumbia, Reggaetón, Pop y Lo-fi) arma un tema nuevo (el anterior, si no estaba guardado, queda en Mis beats):
+
+- Cada parte va en un track con nombre: A Intro, B Estrofa, C Estribillo, D Puente (o Solo), E Cierre. Los demás quedan libres.
+- La canción ya trae el orden (por ejemplo `Intro×2 Estrofa×4 Estribillo×4 Estrofa×4 Estribillo×4 Puente×2 Estribillo×4 Cierre`) y queda prendida.
+- Tempo, sonidos, ambiente y efectos salen del ejemplo del mismo género.
+- Solo trae batería, con más o menos fuerza según la parte: la intro marca el pulso, la estrofa lleva el ritmo, el estribillo suma el platillo o el clap, el puente va a media velocidad. Bajo, guitarra, acordes y melodía los suma quien hace el tema. El **Cierre viene vacío**: lo arma quien hace el tema.
+- El nombre de cada parte se ve debajo de la letra en los bloques de la canción y en el panel del track. Viaja en el enlace y en el `.txt`, con una línea `SECCION: Estribillo` en el track. Las plantillas se cambian en `PLANTILLAS`, en `fuente/index.html` (nombre, ejemplo del que salen los sonidos, destiempo y partes con sus compases).
+
+### Variación
+
+**Variación** (en el panel del botón AMBIENTE, junto a Borrar track; en el menú, sección Track; o tecla `F`) copia el track que se edita al próximo track libre (vacío, sin nombre de parte y que no esté en la canción) con cambios chicos: más o menos golpes de hi-hat y bombo, un redoble en el último tiempo, el bajo que salta de octava y la melodía que cambia la segunda mitad. La armonía no cambia, así que combina con el original. Si el track tenía nombre de parte, la variación se llama igual con un 2 (Estribillo 2). Si no gusta, Deshacer.
+
+### Temas de la comunidad (`temas.html`)
+
+Página con temas hechos con GREENPAD, enlazada desde el menú (sección Temas) y desde el pie (TEMAS). Cada tema se abre en GREENPAD con un toque (queda en Mis beats) y se puede copiar su enlace. Muestra tempo y duración, leídos del propio enlace, y un filtro por género que se arma solo.
+
+Para sumar uno, agregá una línea en `TEMAS`, arriba del script de `temas.html`: `nombre`, `autor`, `genero`, `descripcion` y `enlace` (el de "Copiar enlace"; se puede pegar entero). El botón "Mandar mi tema" va a la dirección de `ENVIAR`. No hace falta build: `temas.html` se edita y se sube tal cual. Los temas con grabaciones o instrumentos de plugins no viajan enteros por enlace: para esos está el `.txt`.
+
 ### Descargar
 
 El botón verde de la flecha (en la compu y la tablet, en la fila de herramientas) abre **Descargar**. En el teléfono está en el menú, en Track (Descargar canción).
@@ -342,7 +369,7 @@ Parado o acostado, la cabecera se compacta para que la grilla tenga más lugar (
 
 ### Service worker y uso sin conexión
 
-`sw.js` guarda cada página con su dirección (`index.html` y `mini.html` no se pisan; antes guardaba cualquier página como `index.html`) y guarda las grabaciones en una caché aparte que no se borra al subir `VERSION`.
+`sw.js` guarda cada página con su dirección limpia (`/`, `/mini`, `/plugins`: Cloudflare Pages redirige `index.html` a `/` y la copia se guarda sin esa redirección, que no sirve para abrir sin conexión) y guarda las grabaciones en una caché aparte que no se borra con cada versión. Las páginas van por red primero, con un tope de 4 segundos: si la red no responde, abre la copia guardada y lo nuevo queda para la próxima. Íconos, fuente, manifest y el conversor a MP3 salen de la copia guardada al instante y se renuevan por detrás.
 
 Después de la primera carga (en https), la página baja de a poco, en segundo plano, todas las grabaciones que todavía no estaban guardadas (unos 7,5 MB; no lo hace con "ahorro de datos" prendido). Desde ahí la app funciona entera sin conexión, con todos los sonidos. La imagen de la firma también queda guardada.
 

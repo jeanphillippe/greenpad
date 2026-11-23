@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="es" data-theme="night">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Temas · GREENPAD</title>
+<meta name="description" content="Temas hechos con GREENPAD por quienes lo usan. Se abren con un toque en la app y se pueden cambiar. También cómo sumar el tuyo.">
+<meta name="theme-color" content="#0f1612">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-180.png">
+<style>
+:root{
+  --bg:#c5cdc7; --body:#e7ece8; --head:#eff3f0; --line:#d5ddd7; --pad:#f7faf7; --chip:#dfe6e1;
+  --ink:#6f7b73; --ink2:#35423a; --cy:#1fae5f; --or:#6f9a0a; --red:#e5484d; --acc-ink:#ffffff; --shadow:0 18px 50px rgba(0,0,0,.14);
+  --font:"Avenir Next","Avenir","Segoe UI",Roboto,"Helvetica Neue",system-ui,sans-serif;
+}
+:root[data-theme="night"]{
+  --bg:#060b08; --body:#0f1612; --head:#131c17; --line:#22302a; --pad:#18221d; --chip:#1a2520;
+  --ink:#8a9c91; --ink2:#c4d6cb; --cy:#3ee08a; --or:#c6f43a; --acc-ink:#062012; --shadow:0 18px 50px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:var(--font);color:var(--ink2);background:var(--bg);line-height:1.55;
+  background:radial-gradient(120% 60% at 50% 0%,color-mix(in srgb,var(--bg) 70%,#fff 30%),var(--bg)) no-repeat,var(--bg)}
+:root[data-theme="night"] body{background:radial-gradient(120% 700px at 50% 0%,#12201a,var(--bg)) no-repeat,var(--bg)}
+a{color:var(--cy)}
+button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 0}
+.logo{font-weight:800;font-size:26px;letter-spacing:-.03em;color:var(--cy);text-decoration:none;line-height:1}
+.logo span{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;border-radius:10px;background:var(--chip);font-size:13px;font-weight:700;color:var(--ink2);text-decoration:none;transition:transform .1s}
+.btn:active{transform:scale(.97)}
+.btn.pri{background:var(--cy);color:var(--acc-ink)}
+.btn svg{width:15px;height:15px;flex:none}
+
+.hero{padding:34px 0 18px}
+.lbl{font-size:11px;font-weight:800;letter-spacing:.18em;color:var(--ink);text-transform:uppercase}
+h1{margin:10px 0 12px;font-size:clamp(34px,7vw,60px);line-height:1.02;letter-spacing:-.035em;color:var(--ink2);text-wrap:balance}
+h1 em{font-style:normal;color:var(--cy)}
+.lead{max-width:640px;margin:0;font-size:clamp(16px,2.2vw,19px);color:var(--ink)}
+.hero .row{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+
+section{padding:34px 0 6px}
+h2{margin:0 0 6px;font-size:clamp(22px,3.4vw,30px);letter-spacing:-.02em;color:var(--ink2)}
+.sub{margin:0 0 18px;color:var(--ink);font-size:15px;max-width:680px}
+.filt{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px}
+.filt button{padding:8px 14px;border-radius:999px;background:var(--chip);font-size:13px;font-weight:700;color:var(--ink)}
+.filt button.on{background:var(--ink2);color:var(--body)}
+.filt button i{font-style:normal;opacity:.6;margin-left:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.tm{display:flex;flex-direction:column;gap:8px;padding:16px;border-radius:16px;background:var(--pad);box-shadow:inset 0 0 0 1px var(--line)}
+.tm .tag{align-self:flex-start;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--k,var(--cy));box-shadow:inset 0 0 0 1.5px var(--k,var(--cy))}
+.tm h3{margin:2px 0 0;font-size:19px;letter-spacing:-.01em;color:var(--ink2)}
+.tm p{margin:0;font-size:14px;color:var(--ink);flex:1}
+.tm .meta{font-size:12px;color:var(--ink)}
+.tm .acts{display:flex;gap:8px;align-items:center;margin-top:6px}
+.tm .acts .btn.pri{flex:1}
+.tm .acts .cp{flex:none;font-size:12px;font-weight:700;color:var(--ink);padding:8px 4px}
+.tm .acts .cp:hover{color:var(--cy)}
+.empty{padding:26px;border-radius:16px;border:1.5px dashed var(--line);color:var(--ink);text-align:center;font-size:14px;grid-column:1/-1}
+
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;counter-reset:s;margin:0;padding:0;list-style:none}
+.steps li{counter-increment:s;padding:16px;border-radius:16px;background:var(--head);box-shadow:inset 0 0 0 1px var(--line);font-size:14px;color:var(--ink)}
+.steps li::before{content:counter(s);display:grid;place-items:center;width:28px;height:28px;border-radius:9px;background:var(--cy);color:var(--acc-ink);font-weight:800;font-size:14px;margin-bottom:10px}
+.steps b{color:var(--ink2)}
+.send{margin-top:18px;padding:22px;border-radius:18px;background:var(--head);box-shadow:inset 0 0 0 1px var(--line);display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between}
+.send h3{margin:0 0 4px;font-size:19px;color:var(--ink2)}
+.send p{margin:0;font-size:14.5px;color:var(--ink);max-width:560px}
+
+.madeby{padding:44px 0 26px;text-align:center}
+.madeby img{display:inline-block;max-width:100%;height:auto;opacity:.8;max-height:60px}
+#toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 22px);transform:translate(-50%,20px);max-width:min(520px,calc(100vw - 32px));padding:12px 16px;border-radius:12px;background:var(--ink2);color:var(--body);font-size:14px;font-weight:600;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:10}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+@media (max-width:760px){
+  .steps{grid-template-columns:1fr;gap:8px}
+  .steps li{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;padding:13px 14px}
+  .steps li::before{margin:0}
+  .top .btn span{display:none}
+  .hero{padding:18px 0 14px}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+</style>
+<script async src="https://www.googletagmanager.com/gtm.js?id=GTM-TNBX6VG2"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
+</script>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="./" aria-label="GREENPAD, volver a la app">GREEN<span>PAD</span></a>
+    <a class="btn" href="./"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 3.5L5 8l4.5 4.5"/></svg><span>Volver a GREENPAD</span></a>
+  </header>
+
+  <div class="hero">
+    <span class="lbl">Temas</span>
+    <h1>Temas hechos con <em>GREENPAD</em></h1>
+    <p class="lead">Abrilos con un toque y cambialos como quieras: cada tema llega a GREENPAD con sus partes, sonidos y efectos, y queda guardado en Mis beats.</p>
+    <div class="row">
+      <a class="btn pri" href="#lista">Ver los temas</a>
+      <a class="btn" href="#sumar">Sumar el tuyo</a>
+    </div>
+  </div>
+
+  <section id="lista">
+    <h2>Temas</h2>
+    <p class="sub">Tocá <b>Abrir en GREENPAD</b> y después Play. Si tenías un tema sin guardar, queda en Mis beats.</p>
+    <div class="filt" id="filt" role="tablist" aria-label="Filtrar por género"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="sumar">
+    <h2>Sumá el tuyo</h2>
+    <ol class="steps">
+      <li><b>Armá tu tema</b> en GREENPAD. Con una plantilla de canción (en el menú) es más fácil: las partes y el orden ya están.</li>
+      <li><b>Copiá el enlace</b>: en el menú, Archivo de texto, <b>Copiar enlace</b>. El tema entero viaja adentro del enlace.</li>
+      <li><b>Mandalo</b> con tu nombre (o el apodo con el que querés figurar), el nombre del tema y el género. Se escucha y se suma a esta página.</li>
+    </ol>
+    <div class="send">
+      <div><h3>¿Lo terminaste?</h3><p>Si tu tema usa grabaciones o instrumentos de plugins, el enlace no los lleva: exportá el .txt desde el menú (Archivo de texto) y mandá el archivo.</p></div>
+      <a class="btn pri" id="sendBtn" href="#" target="_blank" rel="noopener">Mandar mi tema</a>
+    </div>
+  </section>
+</div>
+
+<footer class="madeby"><a href="https://jeanphillippe.com" target="_blank"><img src="https://jeanphillippe.com/madeby-light.png" alt="Hecho en La Pampa por Jean Phillippe Studio"></a></footer>
+<div id="toast" role="status"></div>
+
+<script>
+/* ==========================================================================================
+   LISTA DE TEMAS
+   Para sumar uno, agregá una línea con sus datos (los más nuevos, arriba):
+     nombre, autor, genero (el filtro de arriba se arma solo con los géneros que haya),
+     descripcion (una o dos líneas) y enlace.
+   El enlace es el que se copia en GREENPAD (menú, Archivo de texto, Copiar enlace). Podés pegarlo
+   entero, con https://...: se usa desde #b= en adelante. El nombre que figura acá es el que se ve
+   en esta página; el tema se abre con el nombre que trae adentro.
+   ========================================================================================== */
+const TEMAS = [
+  { nombre: 'Noche 808', autor: 'GREENPAD', genero: 'Trap', descripcion: 'Trap oscuro con campanita y 808. Hecho con la plantilla Trap: intro, estrofa, estribillo, puente y cierre.', enlace: '#b=7.140.0.0.0.36333006.000000000000000000000000.cccccccc.kkkkkkkk.0.0000000000000000.1.1ze1c1c1c1zzo5c3c8c6c1f1b1m1g111111111a1a1111p1f1b1zk5g3g1f1b1m1g111111111a1a1111h1g1f1b6zk5c3c8c6c1i1m1g1c1c1c1zzo8g6g1zzk1zu1.03633300600000000000000000363330060000000000000000036333006000000000000000003633300600000000000000000363330060000000000000000036333006000000000000000003633300600000000000000000363330060000000000000000.0000.a2b4c4b4c4d2c4e1.30.Intro~Estrofa~Estribillo~Puente~Cierre~~~.Noche%20808' },
+  { nombre: 'Patio de verano', autor: 'GREENPAD', genero: 'Cumbia', descripcion: 'Cumbia con güiro, órgano y flauta. Hecha con la plantilla Cumbia, sumando bajo, acordes y melodía a cada parte.', enlace: '#b=7.95.0.2.0.04020041.000000000000000000000000.cccccccc.kkkkkkkk.0.0000000000000000.1.1zu1c1c1c1zk1c1c5c5q1g1k1g1s1a111a111a111a111c5c1c5u1c1c5c5q1g1k1g1s1a111a111a111a111c5c1c5u1c1c5c5a5a4a3a2a1c5c1w1zzu4c4c5c5a3g2g1zzk1ze1.00402004100000000000000000040200410000000000000000004020041000000000000000000402004100000000000000000040200410000000000000000004020041000000000000000000402004100000000000000000040200410000000000000000.0000.a2b4c4b4c4d2c4e1.3C.Intro~Estrofa~Estribillo~Puente~Cierre~~~.Patio%20de%20verano' },
+  { nombre: 'Garage', autor: 'GREENPAD', genero: 'Rock', descripcion: 'Rock con guitarra saturada y un solo en el medio. Hecho con la plantilla Rock.', enlace: '#b=7.118.0.4.0.00040300.000000000000000000000000.cccccccc.kkkkkkkk.0.0000000000000000.1.1ze1c1c1c1zi1c1c6c7zi1g1a1i1g1c1a1a1a1a1a1a1a1q1a1a1a1a6a6a7a7a1c1c6c7zi1g1a1i1g1c1a1a1a1a1a1a1a1a1o1a1a1a1a4a4a5a5a1a1a1a1a4a4a5a5zg1g1a1i1g1c1a1a1a1a1a1a1a1a1o1a1a1a1a6a6a7a7a1a3a5a3a6a5a3a2zg1zu1o1o1.00004030000000000000000000000403000000000000000000000040300000000000000000000004030000000000000000000000403000000000000000000000040300000000000000000000004030000000000000000000000403000000000000000000.8000.a2b4c4b4c4d4c4e1.3w.Intro~Estrofa~Estribillo~Solo~Cierre~~~.Garage' },
+  { nombre: 'Primera banda', autor: 'GREENPAD', genero: 'Rock nacional', descripcion: 'El tema que trae GREENPAD la primera vez: rasguido, bajo y batería en estrofa, estribillo y puente.', enlace: '#b=6.104.0.9.0.00000600.000000000000000000000000.cccccccc.kkkkkkkk.0.0000000000000000.0.1e1a1k1g1c1a1a1a1a1a1a1a1q1e1a6e6a1a1a1a1a6a6a6a6zg1a1c1a1a1c1e1g1c1a1a1a1a1a1a1a1a1o1a1a1a1a4a4a5a5a1c1c4c5c1g4c5c5a5a6a5a3c1c1g1k1g1c1c1a1a1c1a1q6g4w6g4g3a2a1c5.00000060000000000000000000005403000000000000000000014601022000000000000000000000060000000000000000000000006000000000000000000000000600000000000000000000000060000000000000000000000006000000000000000000.9000.a2b2a2b2c2b4.3C.Primera%20banda' },
+];
+
+/* Adónde va el botón "Mandar mi tema": una dirección web o un mailto:tu@correo */
+const ENVIAR = 'https://jeanphillippe.com';
+
+/* ============================== de acá para abajo no hace falta tocar ============================== */
+(() => {
+'use strict';
+const LS_PREF = 'greenband.pref.v1';
+const B64 = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_';
+const $ = (s) => document.querySelector(s);
+const txt = (s, n) => String(s == null ? '' : s).replace(/\s+/g, ' ').trim().slice(0, n);
+const norm = (s) => txt(s, 40).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+
+// mismo tema (oscuro o claro) que se eligió en GREENPAD
+let pref = null; try { pref = JSON.parse(localStorage.getItem(LS_PREF)); } catch {}
+if (pref && pref.theme === 'day') { document.documentElement.dataset.theme = 'day'; document.querySelector('meta[name="theme-color"]').content = '#e7ece8'; }
+$('#sendBtn').href = ENVIAR;
+
+let toastT = 0;
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 3200); }
+
+// "#b=..." desde lo que se haya pegado (enlace entero, con o sin #)
+const hashOf = (e) => { const s = String(e || '').trim(), i = s.indexOf('b='); return i < 0 ? '' : '#' + s.slice(i); };
+// tempo y duración, leídos del propio enlace
+function info(h) {
+  const p = h.slice(3).split('.'); if (!/^[3-7]$/.test(p[0])) return {};
+  const bpm = +p[1] || 0; let bars = 0;
+  if (p[0] >= '6' && p[15] && p[15] !== '-') for (let i = 0; i + 1 < p[15].length; i += 2) bars += Math.max(1, B64.indexOf(p[15][i + 1]));
+  const sec = bpm && bars ? Math.round(bars * 240 / bpm) : 0;
+  return { bpm, dur: sec ? `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}` : '' };
+}
+// un color por género, siempre el mismo
+const COLORS = ['#3ee08a', '#6fc3ff', '#ff8fb1', '#ffae5c', '#c6f43a', '#b49cff', '#5ee0d0', '#ffd75e'];
+const colorOf = (g) => { let h = 0; for (const c of norm(g)) h = (h * 31 + c.charCodeAt(0)) >>> 0; return COLORS[h % COLORS.length]; };
+
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch {}
+  const ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;opacity:0';
+  document.body.appendChild(ta); ta.select(); let ok = false; try { ok = document.execCommand('copy'); } catch {} ta.remove(); return ok;
+}
+
+const list = TEMAS.map(t => ({ ...t, h: hashOf(t.enlace), g: txt(t.genero, 30) || 'Otros' })).filter(t => t.h);
+let filter = '';
+function render() {
+  const fw = $('#filt'); fw.innerHTML = '';
+  const gens = [...new Map(list.map(t => [norm(t.g), t.g])).entries()];
+  if (gens.length > 1) for (const [k, name] of [['', 'Todos'], ...gens]) {
+    const b = document.createElement('button'); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', k === filter);
+    b.className = k === filter ? 'on' : ''; b.textContent = name;
+    const i = document.createElement('i'); i.textContent = k ? list.filter(t => norm(t.g) === k).length : list.length; b.appendChild(i);
+    b.addEventListener('click', () => { filter = k; render(); }); fw.appendChild(b);
+  }
+  const grid = $('#grid'); grid.innerHTML = '';
+  const show = list.filter(t => !filter || norm(t.g) === filter);
+  if (!show.length) { const e = document.createElement('div'); e.className = 'empty'; e.textContent = 'Todavía no hay temas publicados. Puede ser el tuyo.'; grid.appendChild(e); return; }
+  for (const t of show) {
+    const el = document.createElement('article'); el.className = 'tm'; el.style.setProperty('--k', colorOf(t.g));
+    el.innerHTML = '<span class="tag"></span><h3></h3><p></p><div class="meta"></div><div class="acts"><a class="btn pri">Abrir en GREENPAD</a><button class="cp" type="button">Copiar enlace</button></div>';
+    el.querySelector('.tag').textContent = t.g;
+    el.querySelector('h3').textContent = txt(t.nombre, 60) || 'Sin nombre';
+    el.querySelector('p').textContent = txt(t.descripcion, 240);
+    const m = info(t.h);
+    el.querySelector('.meta').textContent = [t.autor && 'de ' + txt(t.autor, 40), m.bpm && m.bpm + ' bpm', m.dur].filter(Boolean).join(' · ');
+    el.querySelector('.btn').href = './' + t.h;
+    el.querySelector('.cp').addEventListener('click', async () => {
+      const ok = await copy(new URL('./', location.href).href + t.h);
+      toast(ok ? 'Enlace copiado. Pegalo donde quieras: se abre en GREENPAD.' : 'No se pudo copiar el enlace.');
+    });
+    grid.appendChild(el);
+  }
+}
+render();
+})();
+</script>
+</body>
+</html>
