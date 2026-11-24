@@ -131,8 +131,15 @@ details.ref .doc>div:first-child h3{margin-top:4px}
 @media (max-width:760px){
   .kinds,.steps{grid-template-columns:1fr}
   .steps{gap:8px}
-  .steps li{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;padding:13px 14px}
-  .steps li::before{margin:0}
+  .steps li{position:relative;padding:13px 14px 13px 54px;min-height:54px}
+  .steps li::before{position:absolute;left:14px;top:13px;margin:0}
+  /* tablas de la guía: en el teléfono, cada fila apilada (nombre arriba, explicación abajo) */
+  .tbl table,.tbl tbody,.tbl tr,.tbl td{display:block;width:100%}
+  .tbl tr:has(th){display:none}
+  .tbl tr{padding:10px 14px;border-bottom:1px solid var(--line)}
+  .tbl tr:last-child{border-bottom:0}
+  .tbl td{padding:0;border:0}
+  .tbl td:first-child{white-space:normal;word-break:break-word;margin-bottom:3px}
   .prompt .ph{flex-wrap:wrap}
   .top .btn span{display:none}
   .hero{padding:18px 0 20px}
@@ -530,8 +537,10 @@ const PLUGINS = [
   { archivo: 'mano.js',      tipo: 'herramienta', nombre: 'Mano',     autor: 'GREENPAD', version: '3.3', descripcion: 'Tocá con la mano apoyada en la pantalla: los 8 instrumentos a mano (movelos y agrandalos a tu gusto), un LOOP por instrumento y para tu voz, 3 sonidos propios con el micrófono y perillas de efectos. Todo queda en la grilla, respetando el tiempo de lo que tocás.' },
 ];
 
-/* Adónde va el botón "Mandar mi plugin": una dirección web o un mailto:tu@correo */
-const ENVIAR = 'https://jeanphillippe.com';
+/* Adónde va el botón "Mandar mi plugin": el correo, el asunto y el texto con el que arranca el mail */
+const ENVIAR = 'hello@jeanphillippe.com';
+const ASUNTO = 'Plugin para GREENPAD';
+const TEXTO = 'Hola, te mando mi plugin para GREENPAD.\n\nNombre del plugin:\nQué hace (una línea):\nMi nombre o apodo:\n\n(Adjunto el archivo .js)';
 
 /* ============================== de acá para abajo no hace falta tocar ============================== */
 (() => {
@@ -550,7 +559,7 @@ const installed = () => { const l = store.get(LS_PLUG); return Array.isArray(l) 
 // mismo tema (oscuro o claro) que se eligió en GREENPAD
 const pref = store.get(LS_PREF);
 if (pref && pref.theme === 'day') { document.documentElement.dataset.theme = 'day'; document.querySelector('meta[name="theme-color"]').content = '#e7ece8'; }
-$('#sendBtn').href = ENVIAR;
+$('#sendBtn').href = `mailto:${ENVIAR}?subject=${encodeURIComponent(ASUNTO)}&body=${encodeURIComponent(TEXTO)}`; $('#sendBtn').removeAttribute('target');
 
 let toastT = 0;
 // copiar las instrucciones para la IA

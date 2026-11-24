@@ -76,8 +76,8 @@ h2{margin:0 0 6px;font-size:clamp(22px,3.4vw,30px);letter-spacing:-.02em;color:v
 :focus-visible{outline:2px solid var(--cy);outline-offset:2px}
 @media (max-width:760px){
   .steps{grid-template-columns:1fr;gap:8px}
-  .steps li{display:grid;grid-template-columns:28px 1fr;gap:12px;align-items:start;padding:13px 14px}
-  .steps li::before{margin:0}
+  .steps li{position:relative;padding:13px 14px 13px 54px;min-height:54px}
+  .steps li::before{position:absolute;left:14px;top:13px;margin:0}
   .top .btn span{display:none}
   .hero{padding:18px 0 14px}
 }
@@ -147,8 +147,10 @@ const TEMAS = [
   { nombre: 'Primera banda', autor: 'GREENPAD', genero: 'Rock nacional', descripcion: 'El tema que trae GREENPAD la primera vez: rasguido, bajo y batería en estrofa, estribillo y puente.', enlace: '#b=6.104.0.9.0.00000600.000000000000000000000000.cccccccc.kkkkkkkk.0.0000000000000000.0.1e1a1k1g1c1a1a1a1a1a1a1a1q1e1a6e6a1a1a1a1a6a6a6a6zg1a1c1a1a1c1e1g1c1a1a1a1a1a1a1a1a1o1a1a1a1a4a4a5a5a1c1c4c5c1g4c5c5a5a6a5a3c1c1g1k1g1c1c1a1a1c1a1q6g4w6g4g3a2a1c5.00000060000000000000000000005403000000000000000000014601022000000000000000000000060000000000000000000000006000000000000000000000000600000000000000000000000060000000000000000000000006000000000000000000.9000.a2b2a2b2c2b4.3C.Primera%20banda' },
 ];
 
-/* Adónde va el botón "Mandar mi tema": una dirección web o un mailto:tu@correo */
-const ENVIAR = 'https://jeanphillippe.com';
+/* Adónde va el botón "Mandar mi tema": el correo, el asunto y el texto con el que arranca el mail */
+const ENVIAR = 'hello@jeanphillippe.com';
+const ASUNTO = 'Tema para GREENPAD';
+const TEXTO = 'Hola, te mando mi tema hecho con GREENPAD.\n\nNombre del tema:\nGénero:\nMi nombre o apodo:\nEnlace:\n';
 
 /* ============================== de acá para abajo no hace falta tocar ============================== */
 (() => {
@@ -162,7 +164,7 @@ const norm = (s) => txt(s, 40).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g
 // mismo tema (oscuro o claro) que se eligió en GREENPAD
 let pref = null; try { pref = JSON.parse(localStorage.getItem(LS_PREF)); } catch {}
 if (pref && pref.theme === 'day') { document.documentElement.dataset.theme = 'day'; document.querySelector('meta[name="theme-color"]').content = '#e7ece8'; }
-$('#sendBtn').href = ENVIAR;
+$('#sendBtn').href = `mailto:${ENVIAR}?subject=${encodeURIComponent(ASUNTO)}&body=${encodeURIComponent(TEXTO)}`; $('#sendBtn').removeAttribute('target');
 
 let toastT = 0;
 function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 3200); }

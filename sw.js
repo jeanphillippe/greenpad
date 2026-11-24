@@ -1,10 +1,9 @@
 // Greenpad service worker.
-// VERSION es el nombre de la versión (el que va en las Actualizaciones del README). BUILD lo cambia solo
-// fuente/build.mjs cada vez que cambia index.html: con eso los teléfonos que ya abrieron GREENPAD reciben
-// la versión nueva en la próxima visita con internet, aunque nadie se acuerde de subir VERSION.
-const VERSION = 'greenpad-v1.28.0';
-const BUILD = '44dad159fe';
-const CACHE = VERSION + '-' + BUILD;
+// No hace falta tocar VERSION en cada cambio: las páginas van por red primero (cada visita con internet trae la
+// última) y la app abierta se fija sola si el index.html publicado cambió. VERSION es el nombre de la caché:
+// subilo solo cuando cambies este archivo, para que se renueve todo lo guardado.
+const VERSION = 'greenpad-v1.28.1';
+const CACHE = VERSION;
 const SOUNDS = 'greenpad-sonidos-v1'; // las grabaciones de Banda (no cambian entre versiones)
 // lo justo para abrir sin conexión. El resto (mini.html, plugins.html, el conversor a MP3) se guarda la primera vez que se usa.
 const SHELL = ['./', './banda.webmanifest', './manifest.webmanifest', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './caveat-bold.woff2', './frases.txt', './acerca.txt'];
