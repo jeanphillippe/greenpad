@@ -73,6 +73,7 @@ h2{margin:0 0 6px;font-size:clamp(22px,3.4vw,30px);letter-spacing:-.02em;color:v
 .pl .meta{font-size:12px;color:var(--ink)}
 .pl .acts{display:flex;gap:8px;align-items:center;margin-top:6px}
 .pl .acts .btn{flex:1}
+.pl .acts .btn:disabled{opacity:.75;cursor:default}
 .pl .acts .code{flex:none;font-size:12px;font-weight:700;color:var(--ink);text-decoration:none;padding:8px 4px}
 .pl .acts .code:hover{color:var(--cy)}
 .empty{padding:26px;border-radius:16px;border:1.5px dashed var(--line);color:var(--ink);text-align:center;font-size:14px}
@@ -520,12 +521,14 @@ requestAnimationFrame(cuadro);</code></pre>
         "tipo" es sonido, bandeja, visual o herramienta. El "id" no se escribe: sale del propio archivo.
      3. Si más adelante el plugin cambia, subí el número de "version": a quien lo tenga instalado
         le aparece el botón Actualizar.
+   incluido: true marca los que vienen prendidos con GREENPAD (los que se cargan en index.html, en PLUG_BASE).
+   Esos no se instalan: se apagan desde el menú de GREENPAD, en Plugins.
    ========================================================================================== */
 const PLUGINS = [
-  { archivo: 'guitarra.js',  tipo: 'sonido',  nombre: 'Guitarra',      autor: 'GREENPAD', version: '1.0', descripcion: 'Guitarras de verdad con pedales: crunch, metal, wah, chorus, trémolo, arpegio, 12 cuerdas, rasgueo eléctrico y solo con vibrato. Trae ejemplos que las combinan.' },
-  { archivo: 'tuchacha.js',  tipo: 'sonido',  nombre: 'Tu Cha Cha',    autor: 'GREENPAD', version: '1.0', descripcion: 'Funk brasileño: tum, cha, atabaques, agogô, lata, grave distorsionado, golpe de orquesta y puntito. Con los ritmos tum cha cha ya armados en Ejemplos.' },
-  { archivo: 'boombap.js',   tipo: 'sonido',  nombre: 'Boom Bap',      autor: 'GREENPAD', version: '1.0', descripcion: 'Hip hop de los 90: bombo y caja polvorientos, hi-hat crujiente, scratch, bajo redondo, piano eléctrico y el silbido agudo del G-funk.' },
-  { archivo: 'trap.js',      tipo: 'sonido',  nombre: 'Trap',          autor: 'GREENPAD', version: '1.0', descripcion: 'Bombo corto, clap, hi-hat que redobla solo, un 808 que resbala de nota en nota, cuerdas cortas y campana oscura.' },
+  { archivo: 'guitarra.js', incluido: true, tipo: 'sonido',  nombre: 'Guitarra',      autor: 'GREENPAD', version: '1.0', descripcion: 'Guitarras de verdad con pedales: crunch, metal, wah, chorus, trémolo, arpegio, 12 cuerdas, rasgueo eléctrico y solo con vibrato. Trae ejemplos que las combinan.' },
+  { archivo: 'tuchacha.js', incluido: true, tipo: 'sonido',  nombre: 'Tu Cha Cha',    autor: 'GREENPAD', version: '1.0', descripcion: 'Funk brasileño: tum, cha, atabaques, agogô, lata, grave distorsionado, golpe de orquesta y puntito. Con los ritmos tum cha cha ya armados en Ejemplos.' },
+  { archivo: 'boombap.js', incluido: true, tipo: 'sonido',  nombre: 'Boom Bap',      autor: 'GREENPAD', version: '1.0', descripcion: 'Hip hop de los 90: bombo y caja polvorientos, hi-hat crujiente, scratch, bajo redondo, piano eléctrico y el silbido agudo del G-funk.' },
+  { archivo: 'trap.js', incluido: true, tipo: 'sonido',  nombre: 'Trap',          autor: 'GREENPAD', version: '1.0', descripcion: 'Bombo corto, clap, hi-hat que redobla solo, un 808 que resbala de nota en nota, cuerdas cortas y campana oscura.' },
   { archivo: 'arcade.js',    tipo: 'sonido',  nombre: 'Arcade',        autor: 'GREENPAD', version: '1.0', descripcion: 'Una consola de 8 bits completa: batería de ruido, bajo de triángulo, acordes en arpegio rápido y melodía de onda cuadrada con vibrato.' },
   { archivo: 'djkit.js',     tipo: 'bandeja', nombre: 'DJ Kit',        autor: 'GREENPAD', version: '2.1', descripcion: 'Micrófono en vivo con tres voces (limpia, con eco y robot), dos botones para grabar encima de las grabaciones 1 y 2, bocina, sirena, láser, subida, bomba y scratch con eco de dub, y las perillas bombeo, jet y radio.' },
   { archivo: 'envivo.js',    tipo: 'bandeja', nombre: 'En vivo',       autor: 'GREENPAD', version: '1.0', descripcion: 'Seis botones para mantener apretados sobre toda la mezcla: corte en 1/8 y 1/16, freno de cinta, filtro que cierra, filtro que sube y un eco que atrapa lo que suena.' },
@@ -545,7 +548,7 @@ const TEXTO = 'Hola, te mando mi plugin para GREENPAD.\n\nNombre del plugin:\nQu
 /* ============================== de acá para abajo no hace falta tocar ============================== */
 (() => {
 'use strict';
-const LS_PLUG = 'greenpad.plugins.v1', LS_PREF = 'greenband.pref.v1';
+const LS_PLUG = 'greenpad.plugins.v1', LS_PREF = 'greenband.pref.v1', LS_OFF = 'greenpad.plugins.apagados.v1';
 const KIND = { sonido: 'Sonido', bandeja: 'Bandejas', visual: 'Visuales', herramienta: 'Herramientas' };
 const $ = (s) => document.querySelector(s);
 const store = {
@@ -630,16 +633,18 @@ function render() {
   const show = PLUGINS.filter(p => filter === 'todos' || p.tipo === filter);
   if (!show.length) { const e = document.createElement('div'); e.className = 'empty'; e.style.gridColumn = '1/-1'; e.textContent = filter === 'todos' ? 'Todavía no hay plugins publicados.' : 'Todavía no hay plugins de este tipo. Puede ser el tuyo.'; grid.appendChild(e); return; }
   for (const p of show) {
-    const cur = find(p, list), kind = KIND[p.tipo] ? p.tipo : 'sonido';
-    const el = document.createElement('article'); el.className = `pl k-${kind}` + (cur ? ' inst' : '');
+    const inc = !!p.incluido, cur = inc ? null : find(p, list), kind = KIND[p.tipo] ? p.tipo : 'sonido';
+    const off = inc && (store.get(LS_OFF) || []).includes(keyOf(p));
+    const el = document.createElement('article'); el.className = `pl k-${kind}` + (cur || (inc && !off) ? ' inst' : '');
     el.innerHTML = '<span class="tag"></span><h3></h3><p></p><div class="meta"></div><div class="acts"><button class="btn"></button><a class="code" target="_blank" rel="noopener">Ver código</a></div>';
     el.querySelector('.tag').textContent = KIND[kind];
     el.querySelector('h3').textContent = p.nombre;
     el.querySelector('p').textContent = p.descripcion || '';
-    el.querySelector('.meta').textContent = [p.autor && 'de ' + p.autor, p.version && 'v' + p.version, cur && (cur.on === false ? 'instalado, apagado' : 'instalado')].filter(Boolean).join(' · ');
+    el.querySelector('.meta').textContent = [p.autor && 'de ' + p.autor, p.version && 'v' + p.version, cur && (cur.on === false ? 'instalado, apagado' : 'instalado'), inc && (off ? 'apagado en este equipo' : 'prendido')].filter(Boolean).join(' · ');
     el.querySelector('.code').href = 'plugins/' + p.archivo;
     const b = el.querySelector('.btn'), acts = el.querySelector('.acts');
-    if (!cur) { b.classList.add('pri'); b.textContent = 'Instalar'; b.addEventListener('click', () => install(p, b)); }
+    if (inc) { b.textContent = 'Viene con GREENPAD'; b.disabled = true; b.title = off ? 'Se prende desde el menú de GREENPAD, en Plugins' : 'Ya está prendido. Se apaga desde el menú de GREENPAD, en Plugins'; }
+    else if (!cur) { b.classList.add('pri'); b.textContent = 'Instalar'; b.addEventListener('click', () => install(p, b)); }
     else if (txt(p.version, 12) && cur.v !== txt(p.version, 12)) {
       b.classList.add('pri'); b.textContent = 'Actualizar a v' + p.version; b.addEventListener('click', () => install(p, b));
     } else { b.textContent = 'Quitar'; b.addEventListener('click', () => remove(p)); }
@@ -647,7 +652,7 @@ function render() {
   }
 }
 render();
-addEventListener('storage', (e) => { if (e.key === LS_PLUG) render(); });
+addEventListener('storage', (e) => { if (e.key === LS_PLUG || e.key === LS_OFF) render(); });
 addEventListener('pageshow', render);
 })();
 </script>

@@ -1289,6 +1289,13 @@ dataLayer.push({'gtm.start': new Date().getTime(), event: 'gtm.js'});
 <input type="file" id="vdFile" accept="video/*" hidden>
 <input type="file" id="plugIn" accept=".js,text/javascript,application/javascript" hidden>
 
+<!-- Plugins que vienen prendidos con GREENPAD. Se leen de plugins/ como cualquier otro, así quedan al día solos.
+     Para sumar o sacar uno, agregá o borrá su línea (y su id en PLUG_BASE, más abajo en el código). -->
+<script>window.GREENPAD = { plugin(d) { (window.GP_BASE = window.GP_BASE || []).push(d); } };</script>
+<script src="plugins/guitarra.js"></script>
+<script src="plugins/tuchacha.js"></script>
+<script src="plugins/boombap.js"></script>
+<script src="plugins/trap.js"></script>
 <script>
 (() => {
 'use strict';
@@ -1943,22 +1950,158 @@ function smpNote(c, o, t, v, key, f, dur, op = {}) {
     const fl = c.createBiquadFilter(); fl.type = 'lowpass'; fl.Q.value = .4;
     fl.frequency.value = Math.min(18000, (op.lp || 14000) * (.35 + .65 * vv * vv)); node.connect(fl); node = fl;
   }
-  const g = c.createGain(), pk = Math.max(.0002, (op.g || 1) * vv), att = op.att || .002;
-  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(pk, t + att);
+  const g = c.createGain(), pk = Math.max(.0002, (op.g || 1) * vv), att = op.att || .002, sp = op.sopla;
+  g.gain.setValueAtTime(0, t);
+  if (sp) { g.gain.linearRampToValueAtTime(pk * 1.08, t + att); g.gain.setTargetAtTime(pk * .86, t + att, .09); } // vientos: entran con un acento y se asientan
+  else g.gain.linearRampToValueAtTime(pk, t + att);
   const len = z.b.duration / rate;
   let hold = op.sus ? dur : dur + (op.ring == null ? .1 : op.ring);
   if (op.max) hold = Math.min(hold, op.max);
   hold = Math.max(att + .01, hold);
   const rel = op.rel || (op.sus ? .12 : .07);
   let end = t + len;
-  if (hold < len) { g.gain.setValueAtTime(pk, t + hold); g.gain.setTargetAtTime(0, t + hold, rel / 3); end = Math.min(end, t + hold + rel * 3); }
-  node.connect(g); g.connect(o); s.start(t, op.off || 0); s.stop(end + .02);
+  if (hold < len) { if (!sp) g.gain.setValueAtTime(pk, t + hold); g.gain.setTargetAtTime(0, t + hold, rel / 3); end = Math.min(end, t + hold + rel * 3); }
+  if (sp) soplar(c, s, g, t, end, rate, hold, vv, sp);
+  node.connect(g); g.connect(op.pan ? panNode(c, o, (m - 62) / 30 * op.pan) : o); s.start(t, op.off || 0); s.stop(end + .02);
   return g;
+}
+// lo que hace un músico con un viento y que una grabación suelta no tiene: entra un poquito abajo y sube a la nota,
+// se escucha el aire al empezar (y en la flauta, todo el tiempo) y las notas largas tienen vibrato, que llega de a poco
+function soplar(c, s, g, t, end, rate, hold, vv, sp) {
+  if (Math.random() < .7) { // no todas las notas: un músico no las ataca todas igual
+    const sc = sp.sc * (.45 + Math.random() * .55) * Math.min(1, hold / .25);
+    s.playbackRate.setValueAtTime(rate * Math.pow(2, -sc / 1200), t); s.playbackRate.exponentialRampToValueAtTime(rate, t + .045 + sc / 1000);
+  }
+  if (hold > .28 && sp.vib) {
+    const lf = c.createOscillator(), lg = c.createGain(), d = rate * (Math.pow(2, sp.vib / 1200) - 1);
+    lf.frequency.value = sp.hz * (.94 + Math.random() * .12);
+    lg.gain.setValueAtTime(0, t); lg.gain.setValueAtTime(0, t + .18); lg.gain.linearRampToValueAtTime(d, t + Math.min(hold, .75));
+    lf.connect(lg); lg.connect(s.playbackRate); lf.start(t); lf.stop(end + .05);
+  }
+  if (sp.ch || sp.aire) {
+    const nz = c.createBufferSource(); nz.buffer = NZ(c); nz.loop = true;
+    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = sp.bf * (.9 + vv * .25); bp.Q.value = 1.1;
+    const ng = c.createGain(), a = sp.aire || 0;
+    ng.gain.setValueAtTime(0, t); ng.gain.linearRampToValueAtTime(sp.ch * vv, t + .012); ng.gain.setTargetAtTime(a, t + .012, .035);
+    nz.connect(bp); bp.connect(ng); ng.connect(g); nz.start(t, Math.random() * .5); nz.stop(end + .02);
+  }
 }
 function smpChord(c, o, t, v, key, n, op = {}) {
   if (!bankGet(key)) return null;
   const fs = n.fs || [n.f]; let g = null;
+  if (op.voz) { // mano derecha en la misma zona y, si hay mano izquierda, la fundamental abajo
+    voicing(fs, op.voz, op.izq).forEach((x, i) => { g = smpNote(c, o, t + (x.izq ? 0 : Math.random() * (op.spread == null ? .014 : op.spread)), v * x.g * (.88 + Math.random() * .12), key, x.f, n.dur, op) || g; });
+    return g;
+  }
   fs.forEach((f, i) => { g = smpNote(c, o, t + (i ? Math.random() * (op.spread == null ? .012 : op.spread) : 0), v * (i ? .86 : 1), key, f, n.dur, op) || g; });
+  return g;
+}
+// cómo arma el acorde un tecladista: en vez de subir el acorde entero con cada nota (y saltar de grave a agudo),
+// elige la inversión que cae en la misma zona del teclado. "lo" es la nota más grave de esa zona (MIDI).
+// Con "izq" suma la fundamental abajo, más suave, como la mano izquierda.
+function voicing(fs, lo, izq) {
+  const oct = (m, a) => { while (m < a) m += 12; while (m >= a + 12) m -= 12; return m; };
+  const ms = fs.map(f => Math.round(midiF(f)));
+  const r = ms.map(m => oct(m, lo)).sort((a, b) => a - b).map(m => ({ f: mtof(m), g: 1 }));
+  if (izq) r.unshift({ f: mtof(oct(ms[0], izq)), g: .45, izq: true });
+  return r;
+}
+
+/* ================= cuerpo de teclados y vientos =================
+   Las grabaciones son mono y secas, y así suenan chatas. Cada instrumento melódico pasa por su "cuerpo":
+   ecualización, el parlante giratorio del órgano, el motor del vibráfono o el rebote de un viento en la sala,
+   y una sala corta en estéreo (aparte de la reverb general). Las notas de teclados y mazos se abren en estéreo
+   según su altura, graves a la izquierda y agudos a la derecha, como se escucha un piano.
+   Cada cuerpo se arma una sola vez por salida (y por cada render de Descargar), no por nota. */
+const NZ = (c) => c.__gpNz || (c.__gpNz = makeNoise(c, false));
+function panNode(c, o, p) {
+  if (typeof c.createStereoPanner !== 'function') return o;
+  const n = c.createStereoPanner(); n.pan.value = clamp(p, -.6, .6); n.connect(o); return n;
+}
+const bq = (c, type, f, q, gn) => { const b = c.createBiquadFilter(); b.type = type; b.frequency.value = f; if (q != null) b.Q.value = q; if (gn != null) b.gain.value = gn; return b; };
+const gn = (c, v) => { const g = c.createGain(); g.gain.value = v; return g; };
+function lfoTo(c, hz, depth, ...params) { const o = c.createOscillator(); o.frequency.value = hz; const g = gn(c, depth); o.connect(g); params.forEach(p => g.connect(p)); o.start(); return o; }
+function panLfo(c, o, hz, depth) { // un paneo que va y viene
+  if (typeof c.createStereoPanner !== 'function') return o;
+  const p = c.createStereoPanner(); p.connect(o); lfoTo(c, hz, depth, p.pan); return p;
+}
+function salaFor(c, o) { // sala corta estéreo, una por salida
+  if (PREF.lite) return null;
+  const m = o.__gpSala; if (m && m.c === c) return m.n;
+  const hp = bq(c, 'highpass', 240), cv = c.createConvolver(), lp = bq(c, 'lowpass', 7500), r = gn(c, .8);
+  cv.buffer = makeIR(c, .85, 3.6); hp.connect(cv); cv.connect(lp); lp.connect(r); r.connect(o);
+  o.__gpSala = { c, n: hp }; return hp;
+}
+const CUERPOS = {
+  piano(c, o, sala) { // un poco menos de barro, un poco más de aire
+    const a = bq(c, 'lowshelf', 220, null, -2), b = bq(c, 'peaking', 2600, .9, 1), d = bq(c, 'highshelf', 7000, null, 2.5);
+    a.connect(b); b.connect(d); d.connect(o); if (sala) { const s = gn(c, .2); d.connect(s); s.connect(sala); } return a;
+  },
+  vertical(c, o, sala) { // piano de pared: más medios y más sala
+    const a = bq(c, 'lowshelf', 260, null, -1.5), b = bq(c, 'peaking', 1800, .8, 2);
+    a.connect(b); b.connect(o); if (sala) { const s = gn(c, .28); b.connect(s); s.connect(sala); } return a;
+  },
+  organo(c, o, sala) { // válvula que calienta y parlante giratorio: la bocina de agudos gira rápido, el tambor de graves más lento
+    const inp = gn(c, 1.5), ws = c.createWaveShaper(), post = gn(c, .62); ws.curve = distCurve(1.6); ws.oversample = '2x';
+    inp.connect(ws); ws.connect(post);
+    const lo = bq(c, 'lowpass', 800, .6), hi = bq(c, 'highpass', 800, .6); post.connect(lo); post.connect(hi);
+    const loG = gn(c, .86), loP = panLfo(c, o, 5.1, .2); lfoTo(c, 5.1, .12, loG.gain); lo.connect(loG); loG.connect(loP);
+    const dl = c.createDelay(.02); dl.delayTime.value = .004; const hiG = gn(c, .78), hiP = panLfo(c, o, 6.5, .6);
+    lfoTo(c, 6.5, .00045, dl.delayTime); lfoTo(c, 6.5, .22, hiG.gain); hi.connect(dl); dl.connect(hiG); hiG.connect(hiP);
+    if (sala) { const s = gn(c, .2); post.connect(s); s.connect(sala); }
+    return inp;
+  },
+  vibra(c, o, sala) { // el motor del vibráfono: el volumen sube y baja y se mueve apenas de lado a lado
+    const g = gn(c, .8), p = panLfo(c, o, 5.3, .18); lfoTo(c, 5.3, .2, g.gain); g.connect(p);
+    const inp = gn(c, 1); inp.connect(g); if (sala) { const s = gn(c, .26); inp.connect(s); s.connect(sala); } return inp;
+  },
+  viento(c, o, sala) { // presencia de micrófono cerca y el rebote en las paredes a los dos lados
+    const a = bq(c, 'highpass', 90), b = bq(c, 'peaking', 1500, .8, 2.5), d = bq(c, 'highshelf', 8500, null, -3);
+    a.connect(b); b.connect(d); d.connect(o);
+    [[.021, -.55, .12], [.033, .55, .1]].forEach(([dt, pn, lv]) => { const dl = c.createDelay(.05); dl.delayTime.value = dt; const g = gn(c, lv); d.connect(dl); dl.connect(g); g.connect(panNode(c, o, pn)); });
+    if (sala) { const s = gn(c, .26); d.connect(s); s.connect(sala); }
+    return a;
+  },
+  mazo(c, o, sala) { const inp = gn(c, 1); inp.connect(o); if (sala) { const s = gn(c, .22); inp.connect(s); s.connect(sala); } return inp; },
+  ancho(c, o, sala) { // coro: dos copias que se mueven despacio, una a cada lado
+    const inp = gn(c, 1); inp.connect(o);
+    [[.012, .6, -.7], [.017, .83, .7]].forEach(([dt, hz, pn]) => { const dl = c.createDelay(.05); dl.delayTime.value = dt; lfoTo(c, hz, .0022, dl.delayTime); const g = gn(c, .36); inp.connect(dl); dl.connect(g); g.connect(panNode(c, o, pn)); });
+    if (sala) { const s = gn(c, .18); inp.connect(s); s.connect(sala); }
+    return inp;
+  },
+};
+function cuerpoFor(c, o, k) {
+  const m = o.__gpCu || (o.__gpCu = {}), b = m[k]; if (b && b.c === c) return b.n;
+  let n; try { n = CUERPOS[k](c, o, salaFor(c, o)); } catch { n = o; }
+  m[k] = { c, n }; return n;
+}
+
+// órgano de ruedas fónicas, el de soul, reggae y cumbia: cada registro es una onda pura y todos juntos son una sola onda.
+// Los armónicos cuentan desde una octava abajo de la nota (registro de 16 pies): 16', 8', 5 1/3', 4', 2 2/3', 2', 1'
+const ORG_H = [[1, .5], [2, 1], [3, .6], [4, .38], [6, .14], [8, .18], [16, .05]];
+function orgWave(c) {
+  if (c.__gpOrg) return c.__gpOrg;
+  const re = new Float32Array(17), im = new Float32Array(17); for (const [h, a] of ORG_H) im[h] = a;
+  return (c.__gpOrg = c.createPeriodicWave(re, im));
+}
+function organ(c, o, t, v, n) {
+  const fs = n.fs || [n.f], vv = Math.min(1.1, v), end = t + Math.max(.06, n.dur);
+  let g = null;
+  voicing(fs, 55).forEach((x) => {
+    const f = x.f * PF, os = c.createOscillator(); os.setPeriodicWave(orgWave(c)); os.frequency.value = f / 2; os.detune.value = (Math.random() - .5) * 5;
+    const ng = c.createGain(), pk = .07 * vv;
+    ng.gain.setValueAtTime(0, t); ng.gain.linearRampToValueAtTime(pk, t + .005); ng.gain.setValueAtTime(pk, end); ng.gain.setTargetAtTime(0, end, .02);
+    os.connect(ng); ng.connect(o); os.start(t); os.stop(end + .2);
+    // percusión: el armónico de arriba que pega al apretar la tecla y se apaga enseguida
+    const pc = c.createOscillator(), pg = c.createGain(); pc.frequency.value = f * 3;
+    pg.gain.setValueAtTime(0, t); pg.gain.linearRampToValueAtTime(pk * .32, t + .003); pg.gain.setTargetAtTime(0, t + .003, .09);
+    pc.connect(pg); pg.connect(o); pc.start(t); pc.stop(Math.min(end + .2, t + .7));
+    g = ng;
+  });
+  // el "clic" de los contactos al bajar las teclas
+  const nz = c.createBufferSource(); nz.buffer = NZ(c); const bp = bq(c, 'bandpass', 2600, .8), cg = c.createGain();
+  cg.gain.setValueAtTime(.025 * vv, t); cg.gain.setTargetAtTime(0, t, .004);
+  nz.connect(bp); bp.connect(cg); cg.connect(o); nz.start(t, Math.random() * .5); nz.stop(t + .04);
   return g;
 }
 // rasguido: arma el acorde como en una guitarra (6 cuerdas) y lo toca hacia abajo o hacia arriba según el paso
@@ -2004,6 +2147,10 @@ const mk = (n, d, key, op, fb) => ({ n, d, keys: [key], smp: 1, f: (c, o, t, v, 
 const ck = (n, d, key, op, fb) => ({ n, d, keys: [key], smp: 1, f: (c, o, t, v, x) => smpChord(c, o, t, v, key, x, op) || fb(c, o, t, v, x) });
 const sk = (n, d, key, op, fb) => ({ n, d, keys: [key], smp: 1, f: (c, o, t, v, x) => smpStrum(c, o, t, v, key, x, op) || fb(c, o, t, v, x) });
 const sy = (n, d, f) => ({ n, d, f });
+const cu = (v, k) => { v.cu = k; return v; }; // el cuerpo por el que pasa (ver CUERPOS)
+// vientos: cuánto suben a la nota (cents), vibrato (cents y velocidad), golpe de aire al empezar, aire sostenido y su color
+const SAXO = { sc: 45, vib: 16, hz: 5, ch: .42, aire: .03, bf: 2300 }, FLAUTA = { sc: 15, vib: 18, hz: 5.4, ch: .3, aire: .09, bf: 5200 },
+  TROMPETA = { sc: 30, vib: 9, hz: 5.6, ch: .32, aire: .02, bf: 3000 }, ARMONICA = { sc: 70, vib: 16, hz: 4.6, ch: .2, aire: .03, bf: 2600 };
 const VOICES = [
   [ // BOMBO
     dk('Banda', 'Batería grabada, micrófono cerca', 'bd_banda', 1.05, O(0, 0)),
@@ -2063,23 +2210,23 @@ const VOICES = [
     sk('Rasguido', 'Acorde rasgueado, acústica', 'gt_acustica', { g: .3 }, O(5, 0)),
   ],
   [ // ACORDES
-    ck('Piano', 'Piano de cola', 'ch_piano', { g: .55, ring: .45, rel: .25 }, O(6, 0)),
+    cu(ck('Piano', 'Piano de cola', 'ch_piano', { g: .7, ring: 1.1, rel: .35, voz: 57, izq: 43, pan: 1 }, O(6, 0)), 'piano'),
     sk('Rasguido', 'Guitarra acústica rasgueada', 'gt_acustica', { g: .3 }, O(6, 0)),
-    ck('Piano viejo', 'Piano vertical, apenas desafinado', 'ch_vertical', { g: .34, ring: .35, rel: .2, det: 18, lp: 5200 }, O(6, 0)),
-    sy('Pad', 'Colchón suave (sintetizado)', O(6, 4)),
-    ck('Órgano', 'Órgano de tubos', 'ch_organo', { g: .26, sus: true, oct: -12, att: .015, lp: 0, spread: 0 }, O(6, 3)),
-    ck('Vibráfono', 'Acordes de vibráfono', 'ld_vibrafono', { g: .2, ring: .6, rel: .3 }, O(6, 0)),
-    sy('Stab', 'Acorde de sinte', O(6, 1)),
+    cu(ck('Piano viejo', 'Piano vertical, apenas desafinado', 'ch_vertical', { g: .38, ring: .8, rel: .3, det: 18, lp: 5200, voz: 57, izq: 43, pan: 1 }, O(6, 0)), 'vertical'),
+    cu(sy('Pad', 'Colchón suave (sintetizado)', O(6, 4)), 'ancho'),
+    cu(sy('Órgano', 'De soul y reggae, con parlante giratorio', organ), 'organo'),
+    cu(ck('Vibráfono', 'Acordes de vibráfono', 'ld_vibrafono', { g: .2, ring: .6, rel: .3, voz: 60, pan: .7 }, O(6, 0)), 'vibra'),
+    cu(sy('Stab', 'Acorde de sinte', O(6, 1)), 'ancho'),
   ],
   [ // MELODÍA
-    mk('Saxo', 'Saxo tenor', 'ld_saxo', { g: .5, sus: true, oct: -12, att: .018, rel: .1 }, O(7, 4)),
-    mk('Flauta', 'Flauta traversa', 'ld_flauta', { g: .68, sus: true, oct: -12, att: .03, rel: .12 }, O(7, 4)),
-    mk('Vibráfono', 'Metal con motor, de jazz', 'ld_vibrafono', { g: .38, ring: .7, rel: .3 }, O(7, 0)),
-    sy('Lead', 'Sinte que canta (sintetizado)', O(7, 1)),
-    mk('Marimba', 'Madera golpeada', 'ld_marimba', { g: .62, ring: .5 }, O(7, 0)),
-    mk('Trompeta', 'Trompeta', 'ld_trompeta', { g: .4, sus: true, oct: -12, att: .02, rel: .1 }, O(7, 1)),
-    mk('Campanita', 'Glockenspiel', 'ld_campanita', { g: .55, ring: 1 }, O(7, 3)),
-    mk('Armónica', 'Armónica de blues', 'ld_armonica', { g: .4, sus: true, att: .025, rel: .1 }, O(7, 4)),
+    cu(mk('Saxo', 'Saxo tenor', 'ld_saxo', { g: .46, sus: true, oct: -12, att: .022, rel: .09, sopla: SAXO }, O(7, 4)), 'viento'),
+    cu(mk('Flauta', 'Flauta traversa', 'ld_flauta', { g: .66, sus: true, oct: -12, att: .035, rel: .12, sopla: FLAUTA }, O(7, 4)), 'viento'),
+    cu(mk('Vibráfono', 'Metal con motor, de jazz', 'ld_vibrafono', { g: .38, ring: .7, rel: .3, pan: .7 }, O(7, 0)), 'vibra'),
+    cu(sy('Lead', 'Sinte que canta (sintetizado)', O(7, 1)), 'ancho'),
+    cu(mk('Marimba', 'Madera golpeada', 'ld_marimba', { g: .62, ring: .5, pan: .8 }, O(7, 0)), 'mazo'),
+    cu(mk('Trompeta', 'Trompeta', 'ld_trompeta', { g: .4, sus: true, oct: -12, att: .022, rel: .1, sopla: TROMPETA }, O(7, 1)), 'viento'),
+    cu(mk('Campanita', 'Glockenspiel', 'ld_campanita', { g: .55, ring: 1, pan: .8 }, O(7, 3)), 'mazo'),
+    cu(mk('Armónica', 'Armónica de blues', 'ld_armonica', { g: .4, sus: true, att: .028, rel: .1, sopla: ARMONICA }, O(7, 4)), 'viento'),
   ],
 ];
 // nombres de Greenpad (para importar .txt hechos con la otra versión)
@@ -2442,14 +2589,33 @@ function plugRun(src) { // corre el archivo de un plugin y devuelve lo que decla
   PLG.def = null;
   try { new Function(String(src))(); } catch (e) { PLG.def = null; throw e; }
   const d = PLG.def; PLG.def = null;
+  return plugNorm(d);
+}
+function plugNorm(d) {
   if (!d || typeof d !== 'object') throw new Error('el archivo no llama a GREENPAD.plugin({...})');
   const id = plugId(d.id); if (!id) throw new Error('falta el id');
   return { id, n: plugTxt(d.nombre, 40) || id, a: plugTxt(d.autor, 40), v: plugTxt(d.version, 12) || '1.0', d: plugTxt(d.descripcion, 200), setup: d.setup };
 }
+// los que vienen prendidos (se cargan con <script src="plugins/..."> antes de este código). Se pueden apagar desde el
+// menú, pero no quitar. LS_PLUG_OFF guarda los que se apagaron en este equipo.
+const PLUG_BASE = ['guitarra', 'tuchacha', 'boombap', 'trap'], LS_PLUG_OFF = 'greenpad.plugins.apagados.v1';
+const plugOff = () => { const l = store.get(LS_PLUG_OFF); return Array.isArray(l) ? l.filter(x => typeof x === 'string') : []; };
 window.GREENPAD = Object.freeze({ version: 1, plugin(def) { PLG.def = def; } });
 function plugStored() { const l = store.get(LS_PLUG); return Array.isArray(l) ? l.filter(x => x && typeof x.id === 'string' && typeof x.code === 'string') : []; }
 (function plugBoot() {
+  const base = Array.isArray(window.GP_BASE) ? window.GP_BASE : [], off = plugOff();
+  const prueba = new Set(plugStored().filter(e => e.src === 'archivo').map(e => plugId(e.id))); // uno propio con el mismo id (probando una versión nueva) reemplaza al que viene
+  for (const id of PLUG_BASE) {
+    if (prueba.has(id)) continue;
+    const raw = base.find(x => x && plugId(x.id) === id); if (!raw) continue; // sin conexión y sin copia guardada: queda afuera esta vez
+    let d; try { d = plugNorm(raw); } catch { continue; }
+    const rec = { id, n: d.n, a: d.a, v: d.v, src: 'base', on: !off.includes(id), k: new Set(), err: null, ran: false };
+    PLG.list.push(rec);
+    if (!rec.on || PLG.safe) continue;
+    try { rec.ran = true; if (typeof d.setup === 'function') d.setup(plugApi(rec)); } catch (err) { plugErr(rec, err, 'al cargar'); }
+  }
   for (const e of plugStored()) {
+    if (PLG.list.some(r => r.src === 'base' && r.id === plugId(e.id))) continue; // ya viene con GREENPAD: manda la versión del repo
     const rec = { id: plugId(e.id), n: plugTxt(e.n, 40) || e.id, a: plugTxt(e.a, 40), v: plugTxt(e.v, 12), src: e.src === 'archivo' ? 'archivo' : 'repo', on: e.on !== false, k: new Set(), err: null, ran: false };
     PLG.list.push(rec);
     if (!rec.on || PLG.safe) continue;
@@ -2553,7 +2719,8 @@ function playTrack(tr, t, v = 1, val = 1, dur = .3, dest) {
   if (VG.live.length >= MAXV) { const x = VG.live.find(y => y.end > t && y.t < t); if (x) vgFade(x, t, .02); }
   const list = stylesOf(tr), isRec = list.includes(VC(tr));
   if (!isRec) for (const y of arr) if (y.rec && y.t < t && y.end > t) vgFade(y, t, .04); // la grabación de otro track se apaga cuando el instrumento vuelve a lo normal
-  const vg = c.createGain(); vg.connect(o); vg.__vg = true;
+  const vc0 = list[0] === VC(tr) ? null : voiceAt(tr, list[0]), cuk = vc0 && vc0.cu; // teclados y vientos: por su cuerpo (ver CUERPOS)
+  const vg = c.createGain(); vg.connect(cuk ? cuerpoFor(c, o, cuk) : o); vg.__vg = true;
   const info = TR[tr].mel ? { f: mtof(midiOf(tr, val || 1)), fs: TR[tr].chord || TR[tr].id === 'GT' ? chordOf(tr, val || 1) : null, dur } : null;
   const k = (S.lvl[tr] == null ? 1 : S.lvl[tr]) / Math.sqrt(list.length);
   const pf = Math.pow(2, (S.tune[tr] || 0) / 12);
@@ -7649,10 +7816,14 @@ function renderPlugs() {
     li.innerHTML = '<div class="pi"><b></b><small></small></div><button class="pt"></button><button class="pd" aria-label="Quitar plugin"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.7 9h5.6l.7-9"/></svg></button>';
     li.querySelector('b').textContent = r.n;
     const kinds = [...r.k].map(k => PLUG_KIND[k]).join(' y ') || (r.css ? PLUG_KIND.bandeja : '');
-    li.querySelector('small').textContent = r.err ? 'No anduvo: ' + r.err : [kinds || (r.on && !PLG.safe ? '' : 'Apagado'), r.v && 'v' + r.v, r.a && 'de ' + r.a, r.src === 'archivo' && 'de prueba'].filter(Boolean).join(' · ');
+    li.querySelector('small').textContent = r.err ? 'No anduvo: ' + r.err : [kinds || (r.on && !PLG.safe ? '' : 'Apagado'), r.v && 'v' + r.v, r.src === 'base' ? 'viene con GREENPAD' : r.a && 'de ' + r.a, r.src === 'archivo' && 'de prueba'].filter(Boolean).join(' · ');
     const pt = li.querySelector('.pt'); pt.textContent = r.on ? 'SÍ' : 'NO'; pt.classList.toggle('on', r.on); pt.title = r.on ? 'Apagar este plugin' : 'Prender este plugin'; pt.setAttribute('aria-pressed', r.on);
-    pt.addEventListener('click', () => { const l = plugStored(), e = l.find(x => plugId(x.id) === r.id); if (!e) return; e.on = !r.on; if (plugSave(l)) plugReload(); });
+    pt.addEventListener('click', () => {
+      if (r.src === 'base') { const off = plugOff().filter(x => x !== r.id); if (r.on) off.push(r.id); if (store.set(LS_PLUG_OFF, off)) plugReload(); return; }
+      const l = plugStored(), e = l.find(x => plugId(x.id) === r.id); if (!e) return; e.on = !r.on; if (plugSave(l)) plugReload();
+    });
     const pd = li.querySelector('.pd'); let armT = 0;
+    if (r.src === 'base') pd.remove();
     pd.addEventListener('click', () => {
       if (!pd.classList.contains('sure')) { pd.classList.add('sure'); pd.textContent = 'Quitar'; clearTimeout(armT); armT = setTimeout(renderPlugs, 2600); return; }
       clearTimeout(armT); if (plugSave(plugStored().filter(x => plugId(x.id) !== r.id))) plugReload();

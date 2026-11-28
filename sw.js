@@ -2,11 +2,13 @@
 // No hace falta tocar VERSION en cada cambio: las páginas van por red primero (cada visita con internet trae la
 // última) y la app abierta se fija sola si el index.html publicado cambió. VERSION es el nombre de la caché:
 // subilo solo cuando cambies este archivo, para que se renueve todo lo guardado.
-const VERSION = 'greenpad-v1.28.1';
+const VERSION = 'greenpad-v1.29.0';
 const CACHE = VERSION;
 const SOUNDS = 'greenpad-sonidos-v1'; // las grabaciones de Banda (no cambian entre versiones)
 // lo justo para abrir sin conexión. El resto (mini.html, plugins.html, el conversor a MP3) se guarda la primera vez que se usa.
-const SHELL = ['./', './banda.webmanifest', './manifest.webmanifest', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './caveat-bold.woff2', './frases.txt', './acerca.txt'];
+// Los plugins que vienen prendidos (los <script src="plugins/..."> de index.html) también, para que estén sin conexión.
+const SHELL = ['./', './banda.webmanifest', './manifest.webmanifest', './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './caveat-bold.woff2', './frases.txt', './acerca.txt',
+  './plugins/guitarra.js', './plugins/tuchacha.js', './plugins/boombap.js', './plugins/trap.js'];
 const NET_WAIT = 4000; // páginas: si la red tarda más que esto, se abre la copia guardada y la nueva queda lista para la próxima
 
 // Cloudflare Pages redirige /index.html a / y /mini.html a /mini: se guarda una copia sin la redirección,
@@ -68,9 +70,18 @@ self.addEventListener('fetch', (e) => {
     })());
     return;
   }
-  // plugins (plugins/*.js): red primero, así la lista de plugins.html siempre instala la versión nueva; caché si no hay conexión
+  // plugins (plugins/*.js): red primero, así la lista de plugins.html siempre instala la versión nueva; caché si no hay conexión.
+  // Los que vienen prendidos los pide la página al abrir: si la red tarda más de NET_WAIT, sale la copia guardada.
   if (url.pathname.includes('/plugins/')) {
-    e.respondWith(fetch(req).then((res) => { if (res.ok) { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); } return res; }).catch(() => caches.match(req)));
+    const key = url.origin + url.pathname;
+    e.respondWith((async () => {
+      const net = fetch(req).then((res) => { if (res.ok) { const copy = res.clone(); e.waitUntil(caches.open(CACHE).then((c) => c.put(key, copy))); } return res; });
+      e.waitUntil(net.catch(() => {}));
+      const hit = await caches.match(key);
+      if (!hit) return net;
+      const late = new Promise((res) => setTimeout(() => res(null), NET_WAIT));
+      return (await Promise.race([net.catch(() => null), late])) || hit;
+    })());
     return;
   }
   // textos editables del repo (así se ven los nuevos apenas se suben)

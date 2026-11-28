@@ -6,6 +6,7 @@ Caja de ritmos y secuenciador de 16 pasos, inspirada en el drumpad de la consola
 
 ## Actualizaciones
 
+- **Teclados y vientos con cuerpo** (`greenpad-v1.29.0`): los plugins Guitarra, Tu Cha Cha, Boom Bap y Trap vienen prendidos (se pueden apagar en el menú, en Plugins). Piano, piano viejo y vibráfono tocan los acordes como un tecladista (la inversión que cae en la misma zona y, en los pianos, la fundamental abajo con la izquierda), se abren en estéreo y dejan sonar las notas. El órgano pasó de uno de tubos grabado a uno de soul y reggae con parlante giratorio. Saxo, trompeta, flauta y armónica entran subiendo a la nota, con el aire del soplido y vibrato en las notas largas. Cada instrumento melódico pasa por su cuerpo y una sala corta estéreo.
 - **Ajustes** (`greenpad-v1.28.1`): sin Node ni build, `index.html` vuelve a ser el archivo que se edita y la app se actualiza sola comparando la huella de la página publicada. En el teléfono, los pasos y las tablas de `plugins.html` y `temas.html` ya no se cortan palabra por palabra. "Mandar mi plugin" y "Mandar mi tema" abren un mail a hello@jeanphillippe.com con el asunto y un texto para completar.
 - **Plantillas, variación y temas** (`greenpad-v1.28.0`): en el menú, **Plantillas de canción** arma un tema nuevo con las partes (Intro, Estrofa, Estribillo, Puente o Solo, Cierre) en tracks con nombre, el orden de la canción y la batería de cada parte; bajo, guitarra, acordes y melodía los suma quien hace el tema, y el cierre viene vacío. **Variación** (en el panel del track, en el menú o con la tecla `F`) copia el track a uno libre con cambios chicos. **temas.html** es la página de temas de la comunidad, enlazada desde el menú y el pie.
 - **Siempre al día** (`greenpad-v1.27.0`, ajustado en `v1.28.1`): cada visita con internet trae la última versión y sin conexión abre la copia guardada (si la red tarda más de 4 segundos, también). Si GREENPAD quedó abierto en segundo plano, al volver se fija si el `index.html` publicado cambió (su huella, el ETag de Cloudflare) y se recarga sola cuando no molesta (sin sonar, sin ventanas abiertas, sin grabar ni video cargado); si la persona la está usando, espera a que pase a otra app o la deje un minuto quieta, y avisa "GREENPAD se actualizó". No hace falta subir ningún número de versión ni correr nada antes de subir. La primera instalación baja la página una sola vez (antes dos) y ya no precarga `mini.html` ni `plugins.html`. Bandejas con el teléfono acostado: los dos discos grandes uno al lado del otro, tracks y FRENO / REBOBINAR entre ambos, crossfader abajo y la mezcla debajo (deslizando).
@@ -267,6 +268,10 @@ SONIDO tiene cuatro familias: **Banda** (micrófono cerca), **Acústico** (la mi
 - **Rasguido** arma el acorde como en una guitarra de 6 cuerdas y lo toca hacia abajo y hacia arriba según el paso.
 - **Saturada** toca un power chord grabado que pasa por un amplificador con distorsión.
 - Los instrumentos melódicos suenan más brillantes cuanto más fuerte se tocan.
+- **Acordes como un tecladista** (`voicing` en `index.html`): Piano, Piano viejo y Vibráfono no suben el acorde entero con cada nota; eligen la inversión que cae en la misma zona del teclado. Los pianos suman la fundamental abajo, más suave (la mano izquierda).
+- **Cuerpo de cada instrumento** (`CUERPOS` en `index.html`): las grabaciones son mono y secas; cada teclado y viento pasa por su ecualización y por una sala corta estéreo (aparte de la reverb general). Las notas de pianos, vibráfono, marimba y campanita se abren en estéreo según su altura. Con el modo liviano no se usa la sala.
+- **Órgano**: es de ruedas fónicas (el de soul, reggae y cumbia), sintetizado como el original (ondas puras sumadas), con percusión, clic de teclas, válvula y parlante giratorio. La grabación de tubos (`ch_organo`) sigue en `sonidos/` para plugins.
+- **Vientos** (`soplar` en `index.html`, ajustes en `SAXO`, `FLAUTA`, `TROMPETA` y `ARMONICA`): entran un poquito abajo y suben a la nota (no todas), se escucha el aire al empezar (en la flauta, todo el tiempo) y las notas largas tienen vibrato que llega de a poco.
 - Mientras una grabación no llegó, suena el sintetizado de Greenpad. Al darle Play la primera vez espera unos segundos a que lleguen ("Afinando la banda").
 
 ### Destiempo
@@ -436,6 +441,10 @@ GREENPAD acepta plugins: archivos `.js` que suman instrumentos, mods para las ba
 | `plugins.html` | Landing de plugins: catálogo, instalar, quitar, actualizar, instrucciones para hacer un plugin con una IA (texto para copiar, en `#promptTxt`) y guía completa plegada |
 | `plugins/*.js` | Un archivo por plugin. Los que vienen: `guitarra.js`, `tuchacha.js`, `boombap.js`, `trap.js` y `arcade.js` (sonido), `djkit.js` y `envivo.js` (bandejas), `cassette.js`, `boombox.js` y `liquida.js` (visuales), `onda.js`, `shadow.js` y `mano.js` (herramientas) |
 | `plugins/plantilla.js` | Plantilla que se baja desde la guía |
+
+**Plugins que vienen prendidos**
+
+Guitarra, Tu Cha Cha, Boom Bap y Trap vienen con GREENPAD: `index.html` los carga con `<script src="plugins/...">` antes del código principal, así siempre se usa la versión del repo y el service worker los guarda para usarlos sin conexión. En el menú, en Plugins, se pueden apagar (queda guardado en ese equipo, en `greenpad.plugins.apagados.v1`) pero no quitar; en `plugins.html` figuran como "Viene con GREENPAD". Para sumar o sacar uno: su línea `<script src>` en `index.html`, su id en `PLUG_BASE`, `incluido: true` en `plugins.html` y su archivo en `SHELL` de `sw.js`. Esos archivos tienen que tener todo adentro de `GREENPAD.plugin({...})`, como cualquier plugin. Si con "Probar un plugin propio" se carga uno con el mismo id, ese reemplaza al que viene (sirve para probar una versión nueva).
 
 **Sumar un plugin que te mandaron**
 
